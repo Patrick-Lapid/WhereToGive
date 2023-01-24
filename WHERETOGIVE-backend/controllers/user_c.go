@@ -7,7 +7,7 @@ import (
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	// Call get user from User model
-	fmt.Println("GetUser")
+	fmt.Println("GetUser cool")
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
