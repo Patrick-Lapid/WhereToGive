@@ -4,9 +4,9 @@ type LandingProps = {}
 
 export default function Landing({}: LandingProps) {
     
-    
+
     
     return (
-        <div>Landing</div>
+        <div className='bg-secondary'>Landing</div>
     );
 }
