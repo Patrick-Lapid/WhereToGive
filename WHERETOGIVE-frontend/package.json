@@ -5,8 +5,10 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@mantine/core": "^5.10.2",
+    "@mantine/ds": "^5.10.2",
     "@mantine/form": "^5.10.2",
     "@mantine/hooks": "^5.10.2",
+    "@tabler/icons": "^2.1.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -14,9 +16,12 @@
     "@types/node": "^16.18.11",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/react-router-dom": "^5.3.3",
     "file-loader": "^6.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router": "^6.8.0",
+    "react-router-dom": "^6.8.0",
     "react-scripts": "5.0.1",
     "url-loader": "^4.1.1",
     "web-vitals": "^2.1.4"
