@@ -1,18 +1,18 @@
+import { AuthenticationForm } from './Login'
+import Dashboard from './Dashboard';
+import Landing from './Landing';
+import Questionnaire from './Questionnaire';
 import React from 'react';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
-import Landing from './Landing';
-
 function App() {
   return (
-    // <div className="App">
-    //   <Landing />
-    // </div>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<p>login</p>} />
-        <Route path="/dashboard" element={<p>dashboard</p>} />
+        <Route path="/login" element={<AuthenticationForm />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/questionnaire" element={<Questionnaire />} />
       </Routes>
     </BrowserRouter>
   );
