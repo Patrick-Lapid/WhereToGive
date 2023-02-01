@@ -1,23 +1,23 @@
 package models
 
 type User struct {
-	ID        int
-	Email     string
-	Location  string
+	ID       int
+	Email    string
+	Location string
 }
 
-func GetUser(){
-	
-}
-
-func CreateUser(){
+func GetUser() {
 
 }
 
-func UpdateUser(){
+func CreateUser() {
 
 }
 
-func DeleteUser(){
+func UpdateUser() {
+
+}
+
+func DeleteUser() {
 
 }
