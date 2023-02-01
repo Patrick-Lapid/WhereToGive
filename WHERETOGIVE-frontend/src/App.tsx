@@ -13,6 +13,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<p>login</p>} />
         <Route path="/dashboard" element={<p>dashboard</p>} />
+        <Route path="/about" element={<p>about</p>} />
+        <Route path="/creators" element={<p>creators</p>} />
       </Routes>
     </BrowserRouter>
   );
