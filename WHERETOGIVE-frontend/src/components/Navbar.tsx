@@ -1,8 +1,8 @@
-import { createStyles, Header, Menu, Group, Center, Burger, Container, Drawer, ScrollArea, Divider, UnstyledButton, Box, Collapse, Button, ThemeIcon, Text } from '@mantine/core';
+import { createStyles, Header, Menu, Group, Center, Burger, Container, Drawer, ScrollArea, Divider, UnstyledButton, Box, Collapse, Button, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown } from '@tabler/icons';
-import { MantineLogo } from '@mantine/ds';
-import React from 'react';
+import { ChevronDown } from 'tabler-icons-react';
+import globe from "../../public/spinningGlobe.gif";
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
@@ -77,9 +77,14 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  linkLabel: {
-    marginRight: 5,
+  linkActive: {
+    '&, &:hover': {
+      backgroundColor: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background,
+      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+    },
   },
+
+
   hiddenMobile: {
     [theme.fn.smallerThan('sm')]: {
       display: 'none',
@@ -95,51 +100,28 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface HeaderSearchProps {
-  links: { link: string; label: string; links: { link: string; label: string }[] }[];
+  links: { link: string; label: string; }[];
 }
 
 export default function Navbar({ links }: HeaderSearchProps) {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [active, setActive] = useState(links[0].link)
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
-  const { classes, theme } = useStyles();
+  const { classes, theme, cx } = useStyles();
 
-  const items = links.map((link) => {
-    const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
-    ));
-
-    if (menuItems) {
-      return (
-        <Menu key={link.label} trigger="hover" exitTransitionDuration={0}>
-          <Menu.Target>
-            <a
-              href={link.link}
-              className={classes.link}
-              onClick={(event) => event.preventDefault()}
-            >
-              <Center>
-                <span className={classes.linkLabel}>{link.label}</span>
-                {/* <IconChevronDown size={12} stroke={1.5} /> */}
-
-              </Center>
-            </a>
-          </Menu.Target>
-          <Menu.Dropdown>{menuItems}</Menu.Dropdown>
-        </Menu>
-      );
-    }
-
-    return (
-      <a
-        key={link.label}
-        href={link.link}
-        className={classes.link}
-        onClick={(event) => event.preventDefault()}
-      >
-        {link.label}
-      </a>
-    );
-  });
+  const items = links.map((link) => (
+    <a
+      key={link.label}
+      href={link.link}
+      className={cx(classes.link, { [classes.linkActive]: active === link.link })}
+      onClick={(event) => {
+        event.preventDefault();
+        setActive(link.link);
+      }}
+    >
+      {link.label}
+    </a>
+  ));
 
   const collapsedLinks = links.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.label}>
@@ -162,21 +144,31 @@ export default function Navbar({ links }: HeaderSearchProps) {
 
   return (
     <Box>
-        <Header height={56} mb={120}>
+        <Header height={56} mb={10}>
             <Container>
                 <div className={classes.inner}>
-                    <MantineLogo size={28} />
-                <Group spacing={5} className={classes.links}>
-                    {items}
-                </Group>
-                <Group className={classes.hiddenMobile}>
-                    <Button variant="default">Log in</Button>
-                    <Button>Sign up</Button>
-                </Group>
-                <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.burger} size="sm" />
+                    {/* Site Header + GIF */}
+                    <Group spacing={8}>
+                        <Title order={3}>WhereToGive</Title>
+                        <img style={{paddingTop : "1px"}} src={globe} alt="logo" width={30} />
+                    </Group>
+                    {/* links + user auth buttons */}
+                    <Group spacing={45} className={classes.links}>
+                        <Group spacing={5}>
+                            {items}
+                        </Group>
+                        
+                        <Group spacing={5}>
+                            <Button className="ml-3" size='xs' variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }}>Log in</Button>
+                            <Button size='xs' variant="subtle">Sign up</Button>
+                        </Group>
+                        
+                    </Group>
+                    <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.burger} size="sm" />
                 </div>
             </Container>
         </Header>
+        {/* FullScreen Drawer */}
         <Drawer
             opened={drawerOpened}
             onClose={closeDrawer}
@@ -187,35 +179,35 @@ export default function Navbar({ links }: HeaderSearchProps) {
             zIndex={1000000}
         >
             <ScrollArea sx={{ height: 'calc(100vh - 60px)' }} mx="-md">
-            <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
+                <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
 
-            <Link to={"/"} className={classes.collapsedLink} onClick={closeDrawer}>
-                Home
-            </Link>
-            <UnstyledButton className={classes.collapsedLink} onClick={toggleLinks}>
-                <Center inline>
-                <Box component="span" mr={5}>
-                    Navigation
-                </Box>
-                {/* <IconChevronDown size={16} color={theme.fn.primaryColor()} /> */}
-                </Center>
-            </UnstyledButton>
-            <Collapse in={linksOpened}>{collapsedLinks}</Collapse>
+                <Link to={"/"} className={classes.collapsedLink} onClick={closeDrawer}>
+                    Home
+                </Link>
+                <UnstyledButton className={classes.collapsedLink} onClick={toggleLinks}>
+                    <Center inline>
+                    <Box component="span" mr={5}>
+                        Navigation
+                    </Box>
+                    <ChevronDown className='pt-1' size={16} color={theme.fn.primaryColor()} />
+                    </Center>
+                </UnstyledButton>
+                <Collapse in={linksOpened}>{collapsedLinks}</Collapse>
 
-            {/* Swap out for HashLink */}
-            <Link to={"/about"} className={classes.collapsedLink}>
-                About
-            </Link>
-            <Link to={"/creators"} className={classes.collapsedLink}>
-                Home
-            </Link>
+                {/* Swap out for HashLink */}
+                <Link to={"/about"} className={classes.collapsedLink}>
+                    About
+                </Link>
+                <Link to={"/creators"} className={classes.collapsedLink}>
+                    Home
+                </Link>
 
-            <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
+                <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
 
-            <Group position="center" grow pb="xl" px="md">
-                <Button variant="default">Log in</Button>
-                <Button>Sign up</Button>
-            </Group>
+                <Group position="center" grow pb="xl" px="md">
+                    <Button variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }}>Log in</Button>
+                    <Button variant="subtle">Sign up</Button>
+                </Group>
             </ScrollArea>
         </Drawer>
     </Box>
