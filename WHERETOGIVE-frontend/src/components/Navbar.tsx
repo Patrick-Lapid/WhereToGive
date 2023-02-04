@@ -159,8 +159,8 @@ export default function Navbar({ links }: HeaderSearchProps) {
                         </Group>
                         
                         <Group spacing={5}>
-                            <Button className="ml-3" size='xs' variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }}>Log in</Button>
-                            <Button size='xs' variant="subtle">Sign up</Button>
+                            <Button className="ml-3" size='xs' variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }} onClick={()=>{window.location.replace("/login")}}>Log in</Button>
+                            <Button size='xs' variant="subtle" onClick={()=>{window.location.replace("/login")}}>Sign up</Button>
                         </Group>
                         
                     </Group>
@@ -205,8 +205,8 @@ export default function Navbar({ links }: HeaderSearchProps) {
                 <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'} />
 
                 <Group position="center" grow pb="xl" px="md">
-                    <Button variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }}>Log in</Button>
-                    <Button variant="subtle">Sign up</Button>
+                    <Button variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }} onClick={()=>{window.location.replace("/login");}}>Log in</Button>
+                    <Button variant="subtle" onClick={()=>{window.location.replace("/login")}}>Sign up</Button>
                 </Group>
             </ScrollArea>
         </Drawer>
