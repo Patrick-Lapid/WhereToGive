@@ -1,8 +1,6 @@
-import { auth } from './firebase';
 import { Button, Center, Text } from '@mantine/core';
 import {createStyles} from '@mantine/core';
 import React from 'react';
-import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 
 const useStyles = createStyles((theme) => ({
@@ -23,16 +21,6 @@ const useStyles = createStyles((theme) => ({
 
 type DashboardProps = {}
 
-function onClickSignOut(){
-    signOut(auth).then(() => {
-        // Sign-out successful.
-        sessionStorage.clear();
-        window.location.replace("/");
-    }).catch((error) => {
-        // An error happened.
-    });
-}
-
 function onClickQuestionnaire(){
     window.location.replace("/questionnaire");
 }
@@ -48,17 +36,12 @@ export default function Dashboard({}: DashboardProps) {
     }, [])
     return (
         <>
-            <Text fw={700} fz="xl" ta="center" c="blue">Dashboard</Text>
+            <Text fw={700} fz="xl" ta="center" c="blue" className='mb-5'>Dashboard</Text>
             <Center className={classes.inner}>
                 <Button 
                     className={classes.button}
                     onClick={onClickQuestionnaire}> 
                     Questionnaire
-                </Button>
-                <Button 
-                    className={classes.button}
-                    onClick={onClickSignOut}> 
-                    Sign Out
                 </Button>
             </Center>
         </>

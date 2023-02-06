@@ -1,7 +1,6 @@
 import { auth } from './firebase';
 import { Button, Center, Text } from '@mantine/core';
 import {createStyles} from '@mantine/core';
-import Navbar from './components/Navbar';
 import React from 'react';
 import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
