@@ -19,6 +19,7 @@ func main() {
 	router := mux.NewRouter()
 	
 	routers.AddUserRouter(router)
+	routers.AddCharityRouter(router)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
