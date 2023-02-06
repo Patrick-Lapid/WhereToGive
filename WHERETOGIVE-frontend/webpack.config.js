@@ -7,10 +7,12 @@ module.exports = {
     output: {
         path: path.join(__dirname, "/dist"),
         filename: "bundle.js",
+        publicPath: "/",
     },
     devtool: "inline-source-map",
     devServer: {
         static: "./dist",
+        historyApiFallback: true,
     },
     module: {
         rules: [
@@ -29,9 +31,16 @@ module.exports = {
                 use: ["style-loader", "css-loader"],
             },
             {
-                test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg|ico)(\?[a-z0-9=.]+)?$/,
-                use: ["url-loader?limit=100000"],
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                loader: "file-loader",
+                options: {
+                    name: "public/icons/[name].[ext]",
+                },
             },
+            // {
+            //     test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg|ico)(\?[a-z0-9=.]+)?$/,
+            //     use: ["url-loader?limit=100000"],
+            // },
         ],
     },
     resolve: {

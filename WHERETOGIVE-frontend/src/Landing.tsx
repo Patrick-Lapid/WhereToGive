@@ -1,12 +1,17 @@
+import { Center } from '@mantine/core';
 import React from 'react';
+
 
 type LandingProps = {}
 
-export default function Landing({}: LandingProps) {
-    
 
-    
+export default function Landing({}: LandingProps) {
+
     return (
-        <div className='bg-secondary'>Landing</div>
+        <>
+            <Center>
+                Landing
+            </Center>
+        </>
     );
 }
