@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	ID           int   			`json: "id"`
-	Userid       int			`json: "userID"`
-	FirstName    string			`json: "first_name"`
-	LastName     string			`json: "last_name"`
-	City         string			`json: "city"`
-	State        string			`json: "state"`
-	DateCreated  datatypes.Date	`json: "date_created"`
+	ID          int            `json: "id"`
+	Userid      int            `json: "userID"`
+	FirstName   string         `json: "first_name"`
+	LastName    string         `json: "last_name"`
+	City        string         `json: "city"`
+	State       string         `json: "state"`
+	DateCreated datatypes.Date `json: "date_created"`
 }
 
 func GetUser(userid int) User {
@@ -30,6 +30,8 @@ func UpdateUser() {
 
 }
 
-func DeleteUser() {
-
+func DeleteUser(userid int) {
+	var users User
+	database.DB.First(&users, "userid = ?", userid)
+	database.DB.Where("userid = ?", userid).Delete(&users)
 }
