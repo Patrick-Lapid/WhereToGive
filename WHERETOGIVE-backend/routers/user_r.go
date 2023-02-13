@@ -1,14 +1,14 @@
 package routers
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/Patrick-Lapid/WhereToGive/WHERETOGIVE-backend/controllers"
+	"github.com/gorilla/mux"
 )
 
-// User route
+// User routes
 func AddUserRouter(router *mux.Router) {
-    router.HandleFunc("/api/user/{id}", controllers.GetUser).Methods("GET")
-    router.HandleFunc("/api/user", controllers.CreateUser).Methods("POST")
-    router.HandleFunc("/api/user/{id}", controllers.UpdateUser).Methods("PUT")
-    router.HandleFunc("/api/user/{id}", controllers.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/api/users/{userID}", controllers.GetUser).Methods("GET")
+	router.HandleFunc("/api/users", controllers.CreateUser).Methods("POST")
+	router.HandleFunc("/api/users/{userID}", controllers.UpdateUser).Methods("PUT")
+	router.HandleFunc("/api/users/{userID}", controllers.DeleteUser).Methods("DELETE")
 }
