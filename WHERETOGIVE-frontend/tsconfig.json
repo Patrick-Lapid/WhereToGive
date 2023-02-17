@@ -8,7 +8,9 @@
     "jsx": "react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "lib": [ "es2015", "dom"],
+    "types": ["cypress", "@testing-library/cypress"]
     },
   "include": [
     "src",

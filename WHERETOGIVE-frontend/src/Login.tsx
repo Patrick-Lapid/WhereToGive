@@ -1,5 +1,5 @@
 import { auth } from './firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail} from "firebase/auth";
 import { ChevronsLeft } from 'tabler-icons-react';
 import React, { useState } from 'react';
 import {
@@ -13,12 +13,31 @@ import {
     Anchor,
     Stack,
     Container,
+    Center
   } from '@mantine/core';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { Modal } from '@mantine/core';
+import {createStyles} from '@mantine/core';
+
+const useStyles = createStyles((theme) => ({
+    inner: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    header: {
+        height: 56,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    button: {
+        margin: 'auto',
+    },
+}));
 
 export function AuthenticationForm(props: PaperProps) {
+    const { classes } = useStyles();
     const [type, toggle] = useToggle(['login', 'register']);
     const form = useForm({
         initialValues: {
@@ -38,6 +57,8 @@ export function AuthenticationForm(props: PaperProps) {
     const [invalidPassword, setInvalidPassword] = useState(false);
     const [invalidEmail, setInvalidEmail] = useState(false);
     const [registrationError, setRegistrationError] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
+    const [resetPasswordClicked, setResetPasswordClicked] = useState(false);
 
     return (
         <Container className='mt-3'>
@@ -69,7 +90,7 @@ export function AuthenticationForm(props: PaperProps) {
                         <TextInput
                             required
                             label="Email"
-                            placeholder="user@example.com"
+                            placeholder="WHERETOGIVE-user@example.com"
                             value={form.values.email}
                             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
                             error={form.errors.email && 'Invalid email'} />
@@ -105,12 +126,30 @@ export function AuthenticationForm(props: PaperProps) {
                     setInvalidPassword(false),
                     setModalIsOpen(false),
                     setInvalidEmail(false),
-                    setRegistrationError(false)
+                    setRegistrationError(false),
+                    setEmailSent(false),
+                    setResetPasswordClicked(false)
                 ]}>
-                { invalidPassword && <Text>Invalid Password.</Text> }
-                { invalidEmail && <Text>Invalid Email.</Text> }
-                { registrationError && <Text>User already exists.</Text> }
-                { invalidPassword && <Button>Reset Password</Button> }
+                { resetPasswordClicked && 
+                    <>                       
+                        <TextInput
+                            required
+                            label="Email"
+                            placeholder="WHERETOGIVE-user@example.com"
+                            value={form.values.email}
+                            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+                            error={form.errors.email && 'Invalid email'} 
+                        />
+                        <Center><Button onClick={()=>onClickResetPassword(form.values.email)}>Submit</Button></Center>
+                    </> 
+                }
+                { emailSent && <Text styles={classes.inner}>Email with password reset directions sent.</Text> }
+                { invalidPassword && <Text styles={classes.inner}>Invalid Password.</Text> }
+                { invalidEmail && <Text styles={classes.inner}>Invalid Email.</Text> }
+                { registrationError && <Text styles={classes.inner}>User already exists.</Text> }
+                <Center>
+                    { invalidPassword && <Button onClick={()=>setResetPasswordClicked(true)}>Reset Password</Button> }
+                </Center>
             </Modal>
 
         </Container>
@@ -161,6 +200,19 @@ export function AuthenticationForm(props: PaperProps) {
                 setModalIsOpen(true);
             }
         }); 
+    }
+
+    function onClickResetPassword(email:string){
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                // Password reset email sent!
+                setEmailSent(true);
+                setModalIsOpen(true);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
     }
 }
 
