@@ -200,8 +200,8 @@ export default function Navbar({ links }: HeaderSearchProps) {
 
   return (
     
-    <Box>
-        <Header height={56} mb={10}>
+    <Box style={{}}>
+        {/* <Header height={56}> */}
             {!loading &&
             <Container>
                 <div className={classes.inner}>
@@ -274,7 +274,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                     <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.burger} size="sm" />
                 </div>
             </Container>}
-        </Header>
+        {/* </Header> */}
         {/* FullScreen Drawer */}
         <Drawer
             opened={drawerOpened}
@@ -322,7 +322,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                 
             </ScrollArea>
         </Drawer>
-        </Box>
+    </Box>
     
     
   );

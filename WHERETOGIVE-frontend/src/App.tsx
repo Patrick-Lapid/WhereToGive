@@ -12,7 +12,8 @@ function App() {
   return (
     <MantineProvider>
       <ModalsProvider>
-        <>
+        {/*  */}
+        <div style={{backgroundColor:"rgb(246,246,246)"}}>
             <BrowserRouter>
             {window.location.href.split("/")[window.location.href.split("/").length - 1] !== "login" && <Navbar links={[{link : "google.com", label : "Home"}, {link : "facebook.com", label : "About"}, {link : "google2.com", label : "Link1"}]} />}
             <Routes>
@@ -22,7 +23,7 @@ function App() {
                 <Route path="/questionnaire" element={<Questionnaire />} />
             </Routes>
             </BrowserRouter>
-        </>
+        </div>
       </ModalsProvider>
     </MantineProvider>
     
