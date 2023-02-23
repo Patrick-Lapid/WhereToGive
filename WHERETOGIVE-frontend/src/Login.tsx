@@ -22,6 +22,7 @@ import {createStyles} from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
     inner: {
+        background : "none",
         display: 'flex',
         alignItems: 'center',
     },

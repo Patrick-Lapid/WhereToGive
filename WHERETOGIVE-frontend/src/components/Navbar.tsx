@@ -211,8 +211,8 @@ export default function Navbar({ links }: HeaderSearchProps) {
                         <img style={{paddingTop : "1px"}} src={globe} alt="logo" width={30} />
                     </Group>
                     {/* links + user auth buttons */}
-                    <Group spacing={45} className={classes.links}>
-                        <Group spacing={5}>
+                    <Group spacing={45} className={classes.links} color="teal">
+                        <Group spacing={5} >
                             {items}
                         </Group>
                         {
