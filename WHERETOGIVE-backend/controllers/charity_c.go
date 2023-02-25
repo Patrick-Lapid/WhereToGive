@@ -12,7 +12,6 @@ import (
 )
 
 func GetCharities(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 
 	charities := models.GetAllCharities();
@@ -25,7 +24,6 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCharity(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
