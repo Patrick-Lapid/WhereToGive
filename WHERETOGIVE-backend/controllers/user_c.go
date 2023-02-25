@@ -31,7 +31,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	userID, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		w.WriteHeader(400)
-        w.Write([]byte("id must be an integer"))
+        w.Write([]byte("userID must be an integer"))
 		return
 	}
 
@@ -39,7 +39,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	if user.FirstName == "" {
 		w.WriteHeader(404)
-        w.Write([]byte("user not found"))
+        w.Write([]byte("User not found"))
 		return
 	}
 
@@ -100,7 +100,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		w.WriteHeader(400)
-        w.Write([]byte("id must be an integer"))
+        w.Write([]byte("userID must be an integer"))
 		return
 	}
 	
