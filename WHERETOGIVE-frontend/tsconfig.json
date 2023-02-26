@@ -8,12 +8,14 @@
     "jsx": "react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": "http://localhost:8080",
     "moduleResolution": "node",
     "lib": [ "es2015", "dom"],
     // "types": ["cypress", "@testing-library/cypress"]
     },
   "include": [
     "src",
-    "decs.d.ts"
+    "decs.d.ts",
+    "cypress/support/**/*.ts"
   ]
 }
