@@ -13,6 +13,7 @@ import (
 
 func GetCharities(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	charities := models.GetAllCharities();
 
@@ -25,6 +26,7 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 
 func GetCharity(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
@@ -53,6 +55,27 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	errAdd := json.NewEncoder(w).Encode(charity)
+
+	if errAdd != nil {
+		log.Fatalln("Error encoding charities")
+	}
+}
+
+func GetCharitiesByTag(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	query := r.URL.Query()
+    tag := query.Get("tag")
+
+	if tag == "" {
+		w.WriteHeader(400)
+        w.Write([]byte("Must be tag parameter"))
+		return
+	}
+
+	charities := models.GetCharitiesByTag(tag);
+
+	errAdd := json.NewEncoder(w).Encode(charities)
 
 	if errAdd != nil {
 		log.Fatalln("Error encoding charities")

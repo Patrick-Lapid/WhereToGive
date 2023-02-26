@@ -14,6 +14,7 @@ import (
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
 	id, ok := vars["userID"]
@@ -52,6 +53,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user);
@@ -80,6 +82,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
 	id, ok := vars["userID"]
