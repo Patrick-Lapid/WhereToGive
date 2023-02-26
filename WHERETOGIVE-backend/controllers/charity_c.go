@@ -60,3 +60,24 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Error encoding charities")
 	}
 }
+
+func GetCharitiesByTag(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	query := r.URL.Query()
+    tag := query.Get("tag")
+
+	if tag == "" {
+		w.WriteHeader(400)
+        w.Write([]byte("Must be tag parameter"))
+		return
+	}
+
+	charities := models.GetCharitiesByTag(tag);
+
+	errAdd := json.NewEncoder(w).Encode(charities)
+
+	if errAdd != nil {
+		log.Fatalln("Error encoding charities")
+	}
+}

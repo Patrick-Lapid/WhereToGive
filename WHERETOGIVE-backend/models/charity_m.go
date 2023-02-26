@@ -37,3 +37,11 @@ func GetCharity(id int) Charity {
 	
 	return charity
 }
+
+func GetCharitiesByTag(tag string) []Charity {
+	var charities []Charity
+
+	database.DB.Raw("SELECT * FROM charities WHERE ? = ANY(tags)", tag).Scan(&charities)
+
+	return charities
+}
