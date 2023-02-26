@@ -22,9 +22,9 @@ func main() {
 	routers.AddUserRouter(router)
 	routers.AddCharityRouter(router)
 
-	// all origins accepted for GET and POST 
+	// frontend origin for all methods
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{"http://localhost:8080"},
 		AllowCredentials: true,
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	})
