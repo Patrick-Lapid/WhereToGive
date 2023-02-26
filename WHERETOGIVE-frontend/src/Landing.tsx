@@ -451,7 +451,7 @@ const Landing = (props: Props) => {
                             name="Micaiah Kennedy" 
                             role="Backend Developer"
                             image={noProfilePicture}
-                            info="Doesn't sleep at all"
+                            info=""
                             url=""
                             />
                         </div>
