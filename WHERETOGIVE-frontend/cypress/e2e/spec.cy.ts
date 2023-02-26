@@ -16,6 +16,18 @@ describe('WhereToGiveStarter', () => {
         cy.contains("Know WhereToGive");
     });
 
+    it("Navigate Steps Iterate", () => {
+
+        cy.get('.mantine-Stepper-content').should("contain", "Create an account / Login to Existing account").and("be.visible");
+
+        cy.get('.mantine-1qfjwh7 > :nth-child(3)').click();
+        cy.get('.mantine-Stepper-content').should("contain", "Complete Survey to Find NonProfits Tailored to You / Browse all charities").and("be.visible");
+
+        cy.get('.mantine-1qfjwh7 > :nth-child(5)').click();
+        cy.get('.mantine-Stepper-content').should("contain", "Self Report Donations to Charities / Save Favorite Charities for Later").and("be.visible");
+
+    });
+
     it("Developer Cards Flip", () => {
         
         // Patrick Dev Card
