@@ -1,13 +1,15 @@
 import { Text, Title, Button, createStyles, Stepper, Group, Card, Badge, Divider, Image } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight } from 'tabler-icons-react';
+import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight, Bolt } from 'tabler-icons-react';
 import Typewriter from 'typewriter-effect';
 import clipart from "../public/whereToGiveClipart.svg";
+import noProfilePicture from "../public/noProfilePicture.png";
 import chartClipart from "../public/charts2.jpg";
 import givingClipart from "../public/giving.png";
 import wave1 from "../public/wave1.svg";
 import wave2 from "../public/wave2.svg";
 import { Link } from 'react-router-dom';
+import DeveloperCard from './components/Card';
 
 type Props = {}
 
@@ -174,11 +176,54 @@ const useStyles = createStyles((theme, _params, getRef) => ({
         }
       },
 
+    footerTitle : {
+        fontSize : "45px",
+        textAlign : 'center',
+        [theme.fn.smallerThan('md')] : {
+            fontSize : "35px",
+        }
+    },
+
     footer : {
         backgroundColor : "#001220",
-        height : '45rem',
+        height : '55rem',
         color : 'white',
-        paddingTop : "5rem"
+        paddingTop : "5rem",
+        display : "flex",
+        flexDirection : "column",
+        alignItems : "center",
+        [theme.fn.smallerThan(1700)] : {
+            height : '90rem',
+        },
+        [theme.fn.smallerThan(850)] : {
+            height : '165rem',
+        }
+
+    },
+    developerGrid : {
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        columnGap : "1rem",
+        placeItems:  "center",
+        [theme.fn.smallerThan(1700)] : {
+            gridTemplateColumns: "repeat(3, 1fr)",
+        },
+        [theme.fn.smallerThan(1275)] : {
+            gridTemplateColumns: "repeat(2, 1fr)",
+        },
+        [theme.fn.smallerThan(850)] : {
+            gridTemplateColumns: "repeat(1, 1fr)",
+        }
+    },
+    responsiveGridDeveloperCard : {
+        gridArea: "auto",
+        [theme.fn.smallerThan(1700)] : {
+            gridArea: "2 / 2 / 3 / 3"
+        },
+        [theme.fn.smallerThan(850)] : {
+            gridArea: " 4 / 1 / 5 / 2"
+        },
+        
     },
     links : {
         color: "inherit", /* blue colors for links too */
@@ -190,9 +235,7 @@ const Landing = (props: Props) => {
 
     const {classes, cx}  = useStyles();
     const [loggedIn, setLoggedIn] = useState(false);
-    const [active, setActive] = useState(1);
-    const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current));
-    const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+    const [active, setActive] = useState(0);
 
     useEffect(() => {
         // Check session storage for auth token
@@ -201,8 +244,7 @@ const Landing = (props: Props) => {
         
         if (authToken) {
             setLoggedIn(true);
-            // generate user asynchronously
-            setActive(2);
+            // setActive(1);
         }
 
     }, []);
@@ -216,7 +258,6 @@ const Landing = (props: Props) => {
                             <Title 
                                 className='mt-5'
                                 variant="gradient"
-                    
                                 gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
                                 sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
                                 fw={700}
@@ -380,7 +421,44 @@ const Landing = (props: Props) => {
                 
 
                 {/* Footer */}
-                <div className={classes.footer}></div>
+                <div className={classes.footer}>
+                    <Title ta="center" className={classes.footerTitle}>Meet The Developers <Bolt size={45} strokeWidth={2} style={{paddingBottom : "2px"}}/></Title>
+
+                    <div className={classes.developerGrid}>
+                        <DeveloperCard 
+                        name="Patrick Lapid" 
+                        role="Frontend Developer"
+                        image={noProfilePicture}
+                        info="Developed responsive landing page, user dashboard, and navigation bar. Oversaw Front-end design choices."
+                        url="https://github.com/Patrick-Lapid"
+                        />
+                        <DeveloperCard 
+                        name="Ai-Linh Nguyen" 
+                        role="Frontend Developer"
+                        image={noProfilePicture}
+                        info=""
+                        url=""
+                        />
+                        <DeveloperCard 
+                        name="Deep Patel" 
+                        role="Backend Developer"
+                        image={noProfilePicture}
+                        info=""
+                        url=""
+                        />
+                        <div className={classes.responsiveGridDeveloperCard}>
+                            <DeveloperCard 
+                            name="Micaiah Kennedy" 
+                            role="Backend Developer"
+                            image={noProfilePicture}
+                            info="Doesn't sleep at all"
+                            url=""
+                            />
+                        </div>
+                        
+                    </div>
+                    
+                </div>
             </>
             
                               
