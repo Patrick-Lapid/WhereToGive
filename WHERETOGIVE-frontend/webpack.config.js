@@ -12,6 +12,7 @@ module.exports = {
     devtool: "inline-source-map",
     devServer: {
         static: "./dist",
+        hot: true,
         historyApiFallback: true,
     },
     module: {
@@ -27,8 +28,9 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.css$/i,
+                test: /\.css$/,
                 use: ["style-loader", "css-loader"],
+                exclude: /node_modules/,
             },
             {
                 test: /\.(jpe?g|png|gif|svg)$/i,
