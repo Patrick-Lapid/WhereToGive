@@ -1,5 +1,5 @@
 import { Text, Title, Button, createStyles, Stepper, Group, Card, Badge, Divider, Image } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight, Bolt } from 'tabler-icons-react';
 import Typewriter from 'typewriter-effect';
 import clipart from "../public/whereToGiveClipart.svg";

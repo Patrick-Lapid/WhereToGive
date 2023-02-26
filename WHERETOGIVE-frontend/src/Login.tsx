@@ -83,6 +83,7 @@ export function AuthenticationForm(props: PaperProps) {
                     <Stack>
                         {type === 'register' && (
                             <TextInput
+                                id="NameInput"
                                 label="Name"
                                 placeholder="Your name"
                                 value={form.values.name}
@@ -90,6 +91,7 @@ export function AuthenticationForm(props: PaperProps) {
                         )}
                         <TextInput
                             required
+                            id="EmailInput"
                             label="Email"
                             placeholder="WHERETOGIVE-user@example.com"
                             value={form.values.email}
@@ -97,6 +99,7 @@ export function AuthenticationForm(props: PaperProps) {
                             error={form.errors.email && 'Invalid email'} />
                         <PasswordInput
                             required
+                            id="PasswordInput"
                             label="Password"
                             placeholder="Your password"
                             value={form.values.password}

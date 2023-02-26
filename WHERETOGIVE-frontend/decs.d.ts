@@ -1,3 +1,4 @@
+
 declare module "*.png" {
     const value: any;
     export default value;
@@ -22,3 +23,12 @@ declare module "*.png" {
     const value: any;
     export default value;
   } 
+
+  
+
+    declare namespace Cypress {
+        export interface Chainable {
+        mount: typeof mount
+        }
+    }
+    
