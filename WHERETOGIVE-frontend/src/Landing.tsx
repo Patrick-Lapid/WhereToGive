@@ -1,10 +1,13 @@
-import { Text, Title, Button, createStyles, Stepper, Group } from '@mantine/core';
+import { Text, Title, Button, createStyles, Stepper, Group, Card, Badge, Divider, Image } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck } from 'tabler-icons-react';
+import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight } from 'tabler-icons-react';
 import Typewriter from 'typewriter-effect';
 import clipart from "../public/whereToGiveClipart.svg";
+import chartClipart from "../public/charts2.jpg";
+import givingClipart from "../public/giving.png";
 import wave1 from "../public/wave1.svg";
 import wave2 from "../public/wave2.svg";
+import { Link } from 'react-router-dom';
 
 type Props = {}
 
@@ -67,10 +70,15 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 
     infoSection : {
         backgroundColor : "#009c77",
-        height : '45rem',
+        height : '55rem',
         color : 'white',
-        paddingTop : "5rem"
-        
+        paddingTop : "5rem",
+        [theme.fn.smallerThan('md')] : {
+            height : '85rem',
+        },
+        [theme.fn.smallerThan('sm')] : {
+            height : '95rem',
+        }
     },
 
     infoBox : {
@@ -89,7 +97,6 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     },
 
     stepSection : {
-        width: '70%',
         margin : "auto",
     },
 
@@ -138,7 +145,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
         '&[data-completed]': {
           borderWidth: 0,
           backgroundColor: 'transparent',
-          backgroundImage: theme.fn.linearGradient(45, theme.colors.blue[8], theme.colors.cyan[2]),
+          backgroundImage: theme.fn.linearGradient(45, theme.colors.teal[7], theme.colors.cyan[2]),
         },
       },
     
@@ -150,13 +157,32 @@ const useStyles = createStyles((theme, _params, getRef) => ({
         '&[data-progress]': {
           transform: 'scale(1.05)',
         },
-      },    
+      },   
+
+      infoNav : {
+        width : "65%",
+        justifyContent: "center",
+        display : 'flex',
+        flexDirection : "row",
+        gap : "2em",
+        margin : "3em auto",
+        [theme.fn.smallerThan('md')] : {
+            width: "80%",
+            flexDirection : "column",
+            margin : "auto",
+            gap : "1em",
+        }
+      },
 
     footer : {
         backgroundColor : "#001220",
         height : '45rem',
         color : 'white',
         paddingTop : "5rem"
+    },
+    links : {
+        color: "inherit", /* blue colors for links too */
+        textDecoration: "inherit", /* no underline */
     }
 }));
 
@@ -221,16 +247,18 @@ const Landing = (props: Props) => {
                                     />
                                 </Text>
                             </div>
-                            
-                            <Button 
-                                variant="gradient" 
-                                gradient={{ from: 'teal', to: 'blue', deg: 60 }}
-                                className="mt-5"
-                            >
-                                <ChevronRight size={16} strokeWidth={2.5}/>
-                                Find the perfect charity 
-                                <Text td="underline" style={{marginLeft : "3px"}}> for you</Text>
-                            </Button>
+
+                            <Link className={classes.links} to={"/dashboard"}>
+                                <Button 
+                                    variant="gradient" 
+                                    gradient={{ from: 'teal', to: 'blue', deg: 60 }}
+                                    className="mt-5"
+                                >
+                                    <ChevronRight size={16} strokeWidth={2.5}/>
+                                    Find the perfect charity 
+                                    <Text td="underline" style={{marginLeft : "3px"}}> for you</Text>
+                                </Button>
+                            </Link>
                             
                         </div>
                         <div className={classes.HeroSectionBoxRight}>
@@ -257,30 +285,93 @@ const Landing = (props: Props) => {
                             <Compass size={45} strokeWidth={1.5} style={{marginLeft: '10px'}}></Compass>
                         </Title>
                         
-                        {/* <div className={classes.stepSection}> */}
-                            <Stepper iconSize={65} size={'xl'} active={active} classNames={classes} onStepClick={setActive} breakpoint="md">
-                                <Stepper.Step label="First" description="Create Account" icon={<UserCheck size={31} />}>
-                                Create an account / Login to Existing account
-                                </Stepper.Step>
-                                <Stepper.Step label="Second" description="Browse Charities" icon={<MapSearch size={31} />}>
-                                Complete Survey to find charities tailored to you / Browse Charity Dashboard
-                                </Stepper.Step>
-                                <Stepper.Step label="Full Access" description="Track Donations" icon={<ShieldCheck size={31} />}>
-                                Self Report Donations to Charities / Save Favorite Charities for Later
-                                </Stepper.Step>
-                            </Stepper>
+                        <Stepper iconSize={65} size={'xl'} active={active} classNames={classes} onStepClick={setActive} breakpoint="md">
+                            <Stepper.Step label="Register" description="Create Account" icon={<UserCheck size={31} />}>
+                            Create an account / Login to Existing account
+                            </Stepper.Step>
+                            <Stepper.Step label="Browse" description="Browse Charities" icon={<MapSearch size={31} />}>
+                            Complete Survey to Find NonProfits Tailored to You / Browse all charities
+                            </Stepper.Step>
+                            <Stepper.Step label="Full Access" description="Track Donations" icon={<ShieldCheck size={31} />}>
+                            Self Report Donations to Charities / Save Favorite Charities for Later
+                            </Stepper.Step>
+                        </Stepper>
+                        
+                        <div className={classes.infoNav}>
 
-                            {/* <Group position="center" mt="xl">
-                                <Button variant="default" onClick={prevStep}>Back</Button>
-                                <Button onClick={nextStep}>Next step</Button>
-                            </Group> */}
+                            <Card shadow="sm" p="lg" radius="md">
+                                <Card.Section>
+                                    <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
+                                        <Image
+                                        src={givingClipart}
+                                        height={160}
+                                        alt="giving"
+                                        />
+                                    </Link>
+                                </Card.Section>
 
-                        {/* </div> */}
+                                <Group position="center" mt="md" mb="xs">
+                                    <Text weight={500}>Explore NonProfits</Text>
+                                </Group>
 
+                                <Text size="sm" color="dimmed">
+                                    Ready to Give? Complete a quick survey and we will help find 
+                                    nonProfits that align with your interests. You will also be able
+                                    to browse our selection of charities to gift.
+                                </Text>
+
+                                <Link className={classes.links} to={"/dashboard"}>
+                                    <Button variant="gradient" 
+                                    gradient={{ from: 'teal', to: 'violet', deg: 20 }}
+                                    fullWidth 
+                                    mt="md" 
+                                    radius="md">
+                                        Browse Charities
+                                        <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
+                                    </Button>
+                                </Link>
+                                
+                            </Card>
+
+                            <Divider orientation="vertical" />
+
+                            <Card shadow="lg" p="lg" radius="md">
+                                <Card.Section>
+                                    <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
+                                        <Image
+                                        src={chartClipart}
+                                        height={160}
+                                        alt="analytics"
+                                        />
+                                    </Link>
+                                </Card.Section>
+
+                                <Group position="center" mt="md" mb="xs">
+                                    <Text weight={500}>User Dashboard</Text>
+                                    
+                                </Group>
+
+                                <Text size="sm" color="dimmed">
+                                    Made a Donation? Let us track it by using the Self-Reporting feature. You will be able to 
+                                    monitor your giving and even set up a recurring payment to any charity listed on our site. 
+                                    Your favorite charities will also be listed here.
+                                </Text>
+                                
+                                <Link className={classes.links} to={"/dashboard"}>
+                                    <Button variant="gradient" 
+                                    gradient={{ from: 'teal', to: 'violet', deg: 20 }}
+                                    fullWidth 
+                                    mt="md" 
+                                    radius="md">
+                                        Track Donations
+                                        <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
+                                    </Button>
+                                </Link>
+                            </Card>
+
+                        </div>
+                            
                     </div>
-                    
-                    
-                  
 
                 </div>
 
