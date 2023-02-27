@@ -63,6 +63,7 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 
 func GetCharitiesByTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	query := r.URL.Query()
     tag := query.Get("tag")
