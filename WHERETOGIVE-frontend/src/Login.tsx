@@ -117,7 +117,7 @@ export function AuthenticationForm(props: PaperProps) {
                         ? 'Already have an account? Login'
                         : "Don't have an account? Register"}
                         </Anchor>
-                        <Button type="submit">{upperFirst(type)}</Button>
+                        <Button id="login-toggle-selector" type="submit">{upperFirst(type)}</Button>
                     </Group>
                 </form>
             </Paper>
