@@ -20,6 +20,7 @@
     "@types/react-dom": "^18.0.10",
     "@types/react-router-dom": "^5.3.3",
     "chance": "^1.1.10",
+    "embla-carousel-react": "^7.0.9",
     "file-loader": "^6.2.0",
     "firebase": "^9.16.0",
     "react": "^18.2.0",
@@ -36,7 +37,7 @@
     "start": "webpack-dev-server --open --mode development --hot",
     "build": "webpack --mode production",
     "test": "cypress open",
-    "e2e" : "cypress run --browser chrome",
+    "e2e": "cypress run --browser chrome",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -66,6 +67,7 @@
     "css-loader": "^6.7.3",
     "css-modules-typescript-loader": "^2.0.1",
     "cypress": "^12.6.0",
+    "cypress-react-selector": "^3.0.0",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.4.2",
