@@ -61,6 +61,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if user.Userid == 0 {
 		w.WriteHeader(400)
 		w.Write([]byte("Unable to create user. Userid required"))
+		return
 	}
 	
 	if err != nil {
