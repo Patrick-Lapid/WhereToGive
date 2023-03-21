@@ -281,7 +281,7 @@ const Landing = (props: Props) => {
                                     
                                     <Typewriter
                                         options={{
-                                            strings: ['Donor', 'Giver', 'Helpful', 'Generous'],
+                                            strings: ['Generous', 'Compassionate', 'Helpful', 'Kind', 'World Changers'  ],
                                             autoStart: true,
                                             loop: true,
                                         }}
