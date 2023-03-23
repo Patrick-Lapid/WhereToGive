@@ -280,27 +280,27 @@ const Landing = (props: Props) => {
                                     </Text>
                                 </div>
 
-                                <Link className={classes.links} to={"/dashboard"}>
-                                    <Button 
-                                        variant="gradient" 
-                                        gradient={{ from: 'teal', to: 'blue', deg: 60 }}
-                                        className="mt-5"
-                                    >
-                                        <ChevronRight size={16} strokeWidth={2.5}/>
-                                        Find the perfect charity 
-                                        <Text td="underline" style={{marginLeft : "3px"}}> for you</Text>
-                                    </Button>
-                                </Link>
-                                
-                            </div>
-                            <div className={classes.HeroSectionBoxRight}>
-                                <img src={clipart} alt="Landing Clipart" />
-                            </div>
+                            <Link className={classes.links} to={"/dashboard"}>
+                                <Button 
+                                    variant="gradient" 
+                                    gradient={{ from: 'teal', to: 'blue', deg: 60 }}
+                                    className="mt-5"
+                                >
+                                    <ChevronRight size={16} strokeWidth={2.5}/>
+                                    Find the perfect charity for you
+                                    <Text td="underline" style={{marginLeft : "3px"}}> for you</Text>
+                                </Button>
+                            </Link>
+                            
+                        </div>
+                        <div className={classes.HeroSectionBoxRight}>
+                            <img src={clipart} alt="Landing Clipart" />
                         </div>
                     </div>
-                    
-                    {/* Wave1 spacer */}
-                    <div className={cx(classes.spacer, classes.spacer1)}></div>
+                </div>
+                
+                {/* Wave1 spacer */}
+                <div className={cx(classes.spacer, classes.spacer1)}></div>
 
                     {/* InfoSection */}
                     <div className={classes.infoSection}>
