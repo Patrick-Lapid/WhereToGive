@@ -1,12 +1,13 @@
-import { createStyles, Header, Group, Center, Burger, Container, Drawer, ScrollArea, Divider, UnstyledButton, Box, Collapse, Button, Text, Title, Menu, Avatar } from '@mantine/core';
+import { createStyles, Group, Center, Burger, Container, Drawer, ScrollArea, Divider, UnstyledButton, Box, Collapse, Button, Text, Title, Menu, Avatar } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import { ArrowsExchange, ChevronDown, LayoutDashboard, Logout, PigMoney, Settings, WorldDownload } from 'tabler-icons-react';
 import globe from "../../public/spinningGlobe.gif";
 import profilePicture from "../../public/noProfilePicture.png";
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../ts/authenticate';
 
 const useStyles = createStyles((theme) => ({
   inner: {
@@ -135,25 +136,9 @@ export default function Navbar({ links }: HeaderSearchProps) {
   const [active, setActive] = useState(links[0].link)
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes, theme, cx } = useStyles();
-  const [user, setUser] = useState({} as User);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { logout, loading, currentUser } = useAuth();
 
-  useEffect(() => {
-        // Check session storage for auth token
-        
-        let authToken = sessionStorage.getItem('Auth Token')
-        
-        if (authToken) {
-            setLoggedIn(true);
-            // generate user asynchronously
-            setUser({name : "Test User", image : profilePicture});
-        }
-
-        setLoading(false);
-
-    }, []);
 
   const items = links.map((link) => (
     <a
@@ -187,22 +172,13 @@ export default function Navbar({ links }: HeaderSearchProps) {
     </UnstyledButton>
   ));
 
-  function onClickSignOut(){
-    signOut(auth).then(() => {
-        // Sign-out successful.
-        sessionStorage.clear();
-        window.location.replace("/");
-    }).catch((error) => {
-        // An error happened.
-    });
-}
 
 
   return (
     
     <Box style={{}}>
         {/* <Header height={56}> */}
-            {!loading &&
+        {!loading &&
             <Container>
                 <div className={classes.inner}>
                     {/* Site Header + GIF */}
@@ -216,7 +192,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                             {items}
                         </Group>
                         {
-                            !loggedIn &&
+                            !currentUser &&
                             <Group spacing={5}>
                                 <Button className="ml-3" size='xs' variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }} onClick={()=>{window.location.replace("/login")}}>Log in</Button>
                                 <Button size='xs' variant="subtle" onClick={()=>{window.location.replace("/login")}}>Sign up</Button>
@@ -224,7 +200,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                         }
 
                         {
-                            loggedIn &&
+                            currentUser &&
                             <Menu
                                 width={260}
                                 position="bottom-end"
@@ -237,9 +213,9 @@ export default function Navbar({ links }: HeaderSearchProps) {
                                     className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
                                 >
                                     <Group spacing={7}>
-                                    <Avatar src={user.image} alt={user.name} radius="xl" size={20} />
+                                    <Avatar src={currentUser && currentUser.photoURL} alt={currentUser && currentUser.displayName} radius="xl" size={20} />
                                     <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                                        {user.name}
+                                        {currentUser && currentUser.displayName}
                                     </Text>
                                     <ChevronDown size={12} />
                                     </Group>
@@ -247,7 +223,9 @@ export default function Navbar({ links }: HeaderSearchProps) {
                                 </Menu.Target>
                                 <Menu.Dropdown>
                                 <Menu.Item icon={<LayoutDashboard size={14} />}>
-                                    Dashboard
+                                    <Link to={"/profile"}>
+                                        Dashboard
+                                    </Link>
                                 </Menu.Item>
                                 <Menu.Item icon={<WorldDownload size={14} />}>
                                     Saved charities
@@ -261,7 +239,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                                 <Menu.Item icon={<ArrowsExchange size={14}/>}>
                                     Change account
                                 </Menu.Item>
-                                <Menu.Item icon={<Logout color='red' size={14}/>} onClick={onClickSignOut}>
+                                <Menu.Item icon={<Logout color='red' size={14}/>} onClick={logout}>
                                     Logout
                                 </Menu.Item>
 
@@ -273,7 +251,9 @@ export default function Navbar({ links }: HeaderSearchProps) {
                     </Group>
                     <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.burger} size="sm" />
                 </div>
-            </Container>}
+            </Container>
+        }
+            
         {/* </Header> */}
         {/* FullScreen Drawer */}
         <Drawer
@@ -313,7 +293,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
 
 
                 {
-                !loggedIn &&
+                !currentUser &&
                 <Group position="center" grow pb="xl" px="md">
                     <Button variant="gradient" gradient={{ from: 'indigo', to: 'cyan' }} onClick={()=>{window.location.replace("/login");}}>Log in</Button>
                     <Button variant="subtle" onClick={()=>{window.location.replace("/login")}}>Sign up</Button>

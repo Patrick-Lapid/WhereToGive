@@ -1,6 +1,6 @@
-import { Text, Title, Button, createStyles, Stepper, Group, Card, Badge, Divider, Image } from '@mantine/core';
+import { Text, Title, Button, createStyles, Stepper, Group, Card, Badge, Divider, Image, Loader, Center, Container } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight, Bolt } from 'tabler-icons-react';
+import { ChevronRight, Compass, UserCheck, MapSearch, ShieldCheck, ArrowRight, Bolt} from 'tabler-icons-react';
 import Typewriter from 'typewriter-effect';
 import clipart from "../public/whereToGiveClipart.svg";
 import noProfilePicture from "../public/noProfilePicture.png";
@@ -10,6 +10,7 @@ import wave1 from "../public/wave1.svg";
 import wave2 from "../public/wave2.svg";
 import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
+import { useAuth } from '../ts/authenticate';
 
 type Props = {}
 
@@ -234,44 +235,34 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 const Landing = (props: Props) => {
 
     const {classes, cx}  = useStyles();
-    const [loggedIn, setLoggedIn] = useState(false);
     const [active, setActive] = useState(0);
-
-    useEffect(() => {
-        // Check session storage for auth token
-        
-        let authToken = sessionStorage.getItem('Auth Token')
-        
-        if (authToken) {
-            setLoggedIn(true);
-            // setActive(1);
-        }
-
-    }, []);
+    const {loading} = useAuth();
 
     return (
-            <>
-                {/* Hero Section */}
-                <div className={classes.HeroSection}>
-                    <div className={classes.HeroSectionBox}>
-                        <div className={classes.HeroSectionBoxLeft}>
-                            <Title 
-                                className='mt-5'
-                                variant="gradient"
-                                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                                sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                                fw={700}
-                            >
-                                Know WhereToGive 
-                            </Title>
-                            
-                            <div className='d-flex mt-2 ml-1' style={{gap:"4px"}}>
-                                <Text
-                                    fw={600}
-                                    c="dimmed"
+        <>
+            {!loading && 
+                <div>
+                    {/* Hero Section */}
+                    <div className={classes.HeroSection}>
+                        <div className={classes.HeroSectionBox}>
+                            <div className={classes.HeroSectionBoxLeft}>
+                                <Title 
+                                    className='mt-5'
+                                    variant="gradient"
+                                    gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+                                    sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                                    fw={700}
                                 >
-                                    Built for the
-                                </Text>
+                                    Know WhereToGive 
+                                </Title>
+                                
+                                <div className='d-flex mt-2 ml-1' style={{gap:"4px"}}>
+                                    <Text
+                                        fw={600}
+                                        c="dimmed"
+                                    >
+                                        Built for the
+                                    </Text>
 
                                 <Text
                                     fw={600}
@@ -296,7 +287,7 @@ const Landing = (props: Props) => {
                                     className="mt-5"
                                 >
                                     <ChevronRight size={16} strokeWidth={2.5}/>
-                                    Find the perfect charity 
+                                    Find the perfect charity for you
                                     <Text td="underline" style={{marginLeft : "3px"}}> for you</Text>
                                 </Button>
                             </Link>
@@ -311,158 +302,168 @@ const Landing = (props: Props) => {
                 {/* Wave1 spacer */}
                 <div className={cx(classes.spacer, classes.spacer1)}></div>
 
-                {/* InfoSection */}
-                <div className={classes.infoSection}>
-                   {/* InfoSection Title */}
-                    <div className={classes.infoBox}>
-                        <Title
-                            sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                            className={classes.infoTitle}
-                            fw={700}
-                            // color="dimmed"
+                    {/* InfoSection */}
+                    <div className={classes.infoSection}>
+                    {/* InfoSection Title */}
+                        <div className={classes.infoBox}>
+                            <Title
+                                sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                                className={classes.infoTitle}
+                                fw={700}
+                                // color="dimmed"
 
-                        >
-                            Let us Navigate You 
-                            <Compass size={45} strokeWidth={1.5} style={{marginLeft: '10px'}}></Compass>
-                        </Title>
-                        
-                        <Stepper iconSize={65} size={'xl'} active={active} classNames={classes} onStepClick={setActive} breakpoint="md">
-                            <Stepper.Step label="Register" description="Create Account" icon={<UserCheck size={31} />}>
-                            Create an account / Login to Existing account
-                            </Stepper.Step>
-                            <Stepper.Step label="Browse" description="Browse Charities" icon={<MapSearch size={31} />}>
-                            Complete Survey to Find NonProfits Tailored to You / Browse all charities
-                            </Stepper.Step>
-                            <Stepper.Step label="Full Access" description="Track Donations" icon={<ShieldCheck size={31} />}>
-                            Self Report Donations to Charities / Save Favorite Charities for Later
-                            </Stepper.Step>
-                        </Stepper>
-                        
-                        <div className={classes.infoNav}>
-
-                            <Card shadow="sm" p="lg" radius="md">
-                                <Card.Section>
-                                    <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
-                                        <Image
-                                        src={givingClipart}
-                                        height={160}
-                                        alt="giving"
-                                        />
-                                    </Link>
-                                </Card.Section>
-
-                                <Group position="center" mt="md" mb="xs">
-                                    <Text weight={500}>Explore NonProfits</Text>
-                                </Group>
-
-                                <Text size="sm" color="dimmed">
-                                    Ready to Give? Complete a quick survey and we will help find 
-                                    nonProfits that align with your interests. You will also be able
-                                    to browse our selection of charities to gift.
-                                </Text>
-
-                                <Link className={classes.links} to={"/dashboard"}>
-                                    <Button variant="gradient" 
-                                    gradient={{ from: 'teal', to: 'violet', deg: 20 }}
-                                    fullWidth 
-                                    mt="md" 
-                                    radius="md">
-                                        Browse Charities
-                                        <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
-                                    </Button>
-                                </Link>
-                                
-                            </Card>
-
-                            <Divider orientation="vertical" />
-
-                            <Card shadow="lg" p="lg" radius="md">
-                                <Card.Section>
-                                    <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
-                                        <Image
-                                        src={chartClipart}
-                                        height={160}
-                                        alt="analytics"
-                                        />
-                                    </Link>
-                                </Card.Section>
-
-                                <Group position="center" mt="md" mb="xs">
-                                    <Text weight={500}>User Dashboard</Text>
-                                    
-                                </Group>
-
-                                <Text size="sm" color="dimmed">
-                                    Made a Donation? Let us track it by using the Self-Reporting feature. You will be able to 
-                                    monitor your giving and even set up a recurring payment to any charity listed on our site. 
-                                    Your favorite charities will also be listed here.
-                                </Text>
-                                
-                                <Link className={classes.links} to={"/dashboard"}>
-                                    <Button variant="gradient" 
-                                    gradient={{ from: 'teal', to: 'violet', deg: 20 }}
-                                    fullWidth 
-                                    mt="md" 
-                                    radius="md">
-                                        Track Donations
-                                        <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
-                                    </Button>
-                                </Link>
-                            </Card>
-
-                        </div>
+                            >
+                                Let us Navigate You 
+                                <Compass size={45} strokeWidth={1.5} style={{marginLeft: '10px'}}></Compass>
+                            </Title>
                             
+                            <Stepper iconSize={65} size={'xl'} active={active} classNames={classes} onStepClick={setActive} breakpoint="md">
+                                <Stepper.Step label="Register" description="Create Account" icon={<UserCheck size={31} />}>
+                                Create an account / Login to Existing account
+                                </Stepper.Step>
+                                <Stepper.Step label="Browse" description="Browse Charities" icon={<MapSearch size={31} />}>
+                                Complete Survey to Find NonProfits Tailored to You / Browse all charities
+                                </Stepper.Step>
+                                <Stepper.Step label="Full Access" description="Track Donations" icon={<ShieldCheck size={31} />}>
+                                Self Report Donations to Charities / Save Favorite Charities for Later
+                                </Stepper.Step>
+                            </Stepper>
+                            
+                            <div className={classes.infoNav}>
+
+                                <Card shadow="sm" p="lg" radius="md">
+                                    <Card.Section>
+                                        <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
+                                            <Image
+                                            src={givingClipart}
+                                            height={160}
+                                            alt="giving"
+                                            />
+                                        </Link>
+                                    </Card.Section>
+
+                                    <Group position="center" mt="md" mb="xs">
+                                        <Text weight={500}>Explore NonProfits</Text>
+                                    </Group>
+
+                                    <Text size="sm" color="dimmed">
+                                        Ready to Give? Complete a quick survey and we will help find 
+                                        nonProfits that align with your interests. You will also be able
+                                        to browse our selection of charities to gift.
+                                    </Text>
+
+                                    <Link className={classes.links} to={"/dashboard"}>
+                                        <Button variant="gradient" 
+                                        gradient={{ from: 'teal', to: 'violet', deg: 20 }}
+                                        fullWidth 
+                                        mt="md" 
+                                        radius="md">
+                                            Browse Charities
+                                            <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
+                                        </Button>
+                                    </Link>
+                                    
+                                </Card>
+
+                                <Divider orientation="vertical" />
+
+                                <Card shadow="lg" p="lg" radius="md">
+                                    <Card.Section>
+                                        <Link className={classes.links} style={{cursor:"pointer"}} to={"/dashboard"}>
+                                            <Image
+                                            src={chartClipart}
+                                            height={160}
+                                            alt="analytics"
+                                            />
+                                        </Link>
+                                    </Card.Section>
+
+                                    <Group position="center" mt="md" mb="xs">
+                                        <Text weight={500}>User Dashboard</Text>
+                                        
+                                    </Group>
+
+                                    <Text size="sm" color="dimmed">
+                                        Made a Donation? Let us track it by using the Self-Reporting feature. You will be able to 
+                                        monitor your giving and even set up a recurring payment to any charity listed on our site. 
+                                        Your favorite charities will also be listed here.
+                                    </Text>
+                                    
+                                    <Link className={classes.links} to={"/dashboard"}>
+                                        <Button variant="gradient" 
+                                        gradient={{ from: 'teal', to: 'violet', deg: 20 }}
+                                        fullWidth 
+                                        mt="md" 
+                                        radius="md">
+                                            Track Donations
+                                            <ArrowRight style={{marginLeft: "4px"}} size={18} strokeWidth={2.5}/>
+                                        </Button>
+                                    </Link>
+                                </Card>
+
+                            </div>
+                                
+                        </div>
+
                     </div>
 
-                </div>
+                    {/* Wave2 spacer */}
+                    <div className={cx(classes.spacer, classes.spacer2)}></div>
+                    
 
-                {/* Wave2 spacer */}
-                <div className={cx(classes.spacer, classes.spacer2)}></div>
-                
+                    {/* Footer */}
+                    <div className={classes.footer}>
+                        <Title ta="center" className={classes.footerTitle}>Meet The Developers <Bolt size={45} strokeWidth={2} style={{paddingBottom : "2px"}}/></Title>
 
-                {/* Footer */}
-                <div className={classes.footer}>
-                    <Title ta="center" className={classes.footerTitle}>Meet The Developers <Bolt size={45} strokeWidth={2} style={{paddingBottom : "2px"}}/></Title>
-
-                    <div className={classes.developerGrid}>
-                        <DeveloperCard 
-                        name="Patrick Lapid" 
-                        role="Frontend Developer"
-                        image={noProfilePicture}
-                        info="Developed responsive landing page, user dashboard, and navigation bar. Oversaw Front-end design choices."
-                        url="https://github.com/Patrick-Lapid"
-                        />
-                        <DeveloperCard 
-                        name="Ai-Linh Nguyen" 
-                        role="Frontend Developer"
-                        image={noProfilePicture}
-                        info=""
-                        url=""
-                        />
-                        <DeveloperCard 
-                        name="Deep Patel" 
-                        role="Backend Developer"
-                        image={noProfilePicture}
-                        info=""
-                        url=""
-                        />
-                        <div className={classes.responsiveGridDeveloperCard}>
+                        <div className={classes.developerGrid}>
                             <DeveloperCard 
-                            name="Micaiah Kennedy" 
+                            name="Patrick Lapid" 
+                            role="Frontend Developer"
+                            image={noProfilePicture}
+                            info="Developed responsive landing page, user dashboard, and navigation bar. Oversaw Front-end design choices."
+                            url="https://github.com/Patrick-Lapid"
+                            />
+                            <DeveloperCard 
+                            name="Ai-Linh Nguyen" 
+                            role="Frontend Developer"
+                            image={noProfilePicture}
+                            info=""
+                            url=""
+                            />
+                            <DeveloperCard 
+                            name="Deep Patel" 
                             role="Backend Developer"
                             image={noProfilePicture}
                             info=""
                             url=""
                             />
+                            <div className={classes.responsiveGridDeveloperCard}>
+                                <DeveloperCard 
+                                name="Micaiah Kennedy" 
+                                role="Backend Developer"
+                                image={noProfilePicture}
+                                info=""
+                                url=""
+                                />
+                            </div>
+                            
                         </div>
                         
                     </div>
-                    
                 </div>
-            </>
-            
-                              
-    )
+            }
+            {loading && 
+                <div style={{backgroundColor : "white", height : "50rem"}}>
+                    <Center h={500}>
+                        <div>
+                            <Loader size="xl" color="teal" variant="dots" />
+                        </div>
+                    </Center>
+                </div>
+            }
+        </>
+                            
+    );
 };
 
 export default Landing;
