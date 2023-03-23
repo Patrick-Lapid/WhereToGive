@@ -1,4 +1,4 @@
-import { Title, Text, Container, Button, Overlay, createStyles } from '@mantine/core';
+import { Title, Text, Container, Button, Overlay, createStyles, Center, Loader } from '@mantine/core';
 import React from 'react';
 import { Carousel } from '@mantine/carousel';
 import { useMediaQuery } from '@mantine/hooks';
@@ -51,6 +51,7 @@ import veterans from "../public/veterans.png";
 import voting_rights from "../public/voting-rights.png";
 import wildfires from "../public/wildfires.png";
 import wildlife from "../public/wildlife.png";
+import { useAuth } from '../ts/authenticate';
 
 function routeToCharityByCategory(tag:string){
   window.location.replace(`/charity?param=${tag}`);
@@ -464,43 +465,58 @@ export default function Dashboard() {
       </div>
     ));
   const { classes } = useStyles();
+  const { loading } = useAuth();
 
   return (
-
-    <div>
-      <div className={classes.wrapper}>
-        <Overlay color="#000" opacity={0.65} zIndex={1} />
-        <div className={classes.inner}>
-          <Title className={classes.title}>
-            Find{' '}
-            <Text component="span" inherit className={classes.highlight}>
-              WhereToGive
-            </Text>
-          </Title>
-          <Container size={640}>
-            <Text size="lg" className={classes.description}>
-            Complete a brief questionnaire to find the perfect charities that match your preferences.
-            </Text>
-          </Container>
-          <div className={classes.controls}>
-            <Button id="get-started-button" className={classes.control} variant="white" size="lg">
-              Get started
-            </Button>
+    <>
+        {!loading && 
+        <div>
+            <div className={classes.wrapper}>
+              <Overlay color="#000" opacity={0.65} zIndex={1} />
+              <div className={classes.inner}>
+                <Title className={classes.title}>
+                  Find{' '}
+                  <Text component="span" inherit className={classes.highlight}>
+                    WhereToGive
+                  </Text>
+                </Title>
+                <Container size={640}>
+                  <Text size="lg" className={classes.description}>
+                  Complete a brief questionnaire to find the perfect charities that match your preferences.
+                  </Text>
+                </Container>
+                <div className={classes.controls}>
+                  <Button id="get-started-button" className={classes.control} variant="white" size="lg">
+                    Get started
+                  </Button>
+                </div>
+              </div>
+            </div>
+      
+            <div id="carousel" className={classes.spacer}>
+              <Carousel
+                slideSize="25%"
+                breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
+                slideGap="xl"
+                align="start"
+                slidesToScroll={mobile ? 1 : 2}
+              >
+                  {slides}
+              </Carousel>
+            </div>
           </div>
+        }
+        { loading &&
+            <div style={{backgroundColor : "white", height : "50rem"}}>
+            <Center h={500}>
+                <div>
+                    <Loader size="xl" color="teal" variant="dots" />
+                </div>
+            </Center>
         </div>
-      </div>
-
-      <div id="carousel" className={classes.spacer}>
-        <Carousel
-          slideSize="25%"
-          breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
-          slideGap="xl"
-          align="start"
-          slidesToScroll={mobile ? 1 : 2}
-        >
-            {slides}
-        </Carousel>
-      </div>
-    </div>
+        }
+    </>
+    
+    
   );
 }
