@@ -264,21 +264,21 @@ const Landing = (props: Props) => {
                                         Built for the
                                     </Text>
 
-                                    <Text
-                                        fw={600}
-                                        c="dimmed"
-                                        className='ml-3'
-                                    >
-                                        
-                                        <Typewriter
-                                            options={{
-                                                strings: ['Donor', 'Giver', 'Helpful', 'Generous'],
-                                                autoStart: true,
-                                                loop: true,
-                                            }}
-                                        />
-                                    </Text>
-                                </div>
+                                <Text
+                                    fw={600}
+                                    c="dimmed"
+                                    className='ml-3'
+                                >
+                                    
+                                    <Typewriter
+                                        options={{
+                                            strings: ['Generous', 'Compassionate', 'Helpful', 'World Changer.'  ],
+                                            autoStart: true,
+                                            loop: true,
+                                        }}
+                                    />
+                                </Text>
+                            </div>
 
                             <Link className={classes.links} to={"/dashboard"}>
                                 <Button 
