@@ -130,8 +130,20 @@ export function AuthenticationForm(props: PaperProps) {
                         setEmailSent(false),
                         setResetPasswordClicked(false)
                     ]}>
+                    
+                    <Center>
+                    
+                    { invalidPassword && <Text styles={classes.inner}>Invalid Password</Text> }
+                    { invalidEmail && <Text styles={classes.inner}>User Not Found</Text> }
+                    { registrationError && <Text styles={classes.inner}>User already exists</Text> }
+                    </Center>
+                    <Center>
+                        { invalidPassword && <Button onClick={()=>setResetPasswordClicked(true)}>Reset Password</Button> }
+                    </Center>
+                    <Center>
                     { resetPasswordClicked && 
-                        <>                       
+                    <Center>
+                        <div>                       
                             <TextInput
                                 required
                                 label="Email"
@@ -140,15 +152,14 @@ export function AuthenticationForm(props: PaperProps) {
                                 onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
                                 error={form.errors.email && 'Invalid email'} 
                             />
-                            <Center><Button onClick={()=>resetPassword(form.values.email)}>Submit</Button></Center>
-                        </> 
+                        </div> 
+                        <div>
+                            <Button onClick={()=>resetPassword(form.values.email)}>Submit</Button>
+                        </div> 
+                    </Center>
+                        
                     }
-                    { emailSent && <Text styles={classes.inner}>Email with password reset directions sent.</Text> }
-                    { invalidPassword && <Text styles={classes.inner}>Invalid Password.</Text> }
-                    { invalidEmail && <Text styles={classes.inner}>Invalid Email.</Text> }
-                    { registrationError && <Text styles={classes.inner}>User already exists.</Text> }
-                    <Center>
-                        { invalidPassword && <Button onClick={()=>setResetPasswordClicked(true)}>Reset Password</Button> }
+                    { emailSent && <Text styles={classes.inner}>Email with password reset directions sent</Text> }
                     </Center>
                 </Modal>
 

@@ -172,6 +172,11 @@ export default function Navbar({ links }: HeaderSearchProps) {
     </UnstyledButton>
   ));
 
+  useEffect(() => {
+    
+    console.log( currentUser );
+  }, [loading]);
+
 
 
   return (

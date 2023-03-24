@@ -51,7 +51,11 @@ export function AuthProvider({ children } : any) {
         .then(async (userCredential: { user: any; }) => {
             // Signed in 
             // navigate to Dashboard on login success
-            updateProfile(userCredential.user, {displayName : name})
+            updateProfile(userCredential.user, {displayName : name}).then(() => {
+                console.log("Display Name Saved")
+              }).catch((error) => {
+                console.log("PROFILE ERROR")
+              });
             const user = userCredential.user;
             const refreshToken = user.getIdToken();
             sessionStorage.setItem('Auth Token', await refreshToken);

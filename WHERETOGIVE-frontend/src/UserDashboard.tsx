@@ -14,7 +14,13 @@ import {
     Selector
   } from 'tabler-icons-react';
 import { UserButton } from './components/UserButton';
+import UserAnalytics from './components/UserAnalytics';
   
+enum UserTabs {
+    "UserCharities" = "Saved Charities",
+    "Analytics" = "Analytics",
+    "Settings" = "Account Settings",
+}
 
   const useStyles = createStyles((theme) => ({
     section: {
@@ -76,27 +82,34 @@ import { UserButton } from './components/UserButton';
         
       },
     },
+    componentSection : {
+        height : "100%",
+        width : "100%",
+        // [theme.fn.smallerThan('lg')] : {
+        //     width: '90%',
+        // },
+        // [theme.fn.smallerThan('md')] : {
+        //     width: '100%',
+        //     height : '45rem'
+        // }
+    }
   }));
   
 
   const tabs = [
     
-      { link: '', label: 'Notifications', icon: BellRinging },
-      { link: '', label: 'Billing', icon: Receipt2 },
-      { link: '', label: 'Security', icon: Fingerprint },
-      { link: '', label: 'SSH Keys', icon: Key },
-      { link: '', label: 'Databases', icon: DatabaseImport },
-      { link: '', label: 'Authentication', icon: TwoFA },
-      { link: '', label: 'Other Settings', icon: Settings },
+      { link: '', label: UserTabs.UserCharities , icon: BellRinging },
+      { link: '', label: UserTabs.Analytics, icon: Receipt2 },
+      { link: '', label: UserTabs.Settings, icon: Settings },
     
   ];
   
 
 const UserDashboard = () => {
     
-    const {currentUser, loading} = useAuth();
+    const {currentUser, loading, logout} = useAuth();
     const { classes, cx } = useStyles();
-    const [active, setActive] = useState('Billing');
+    const [active, setActive] = useState<UserTabs>(UserTabs.UserCharities);
 
     const links = tabs.map((item) => (
         <a
@@ -109,14 +122,13 @@ const UserDashboard = () => {
           }}
         >
           <item.icon className={classes.linkIcon} />
-          <span>{item.label}</span>
+          {item.label}
         </a>
       ));
     
 
     useEffect(() => {
-
-
+        console.log(currentUser);
     }, []);
 
     return (
@@ -128,7 +140,7 @@ const UserDashboard = () => {
             <Navbar.Section className={classes.section}>
                 <UserButton
                 image="https://i.imgur.com/fGxgcDF.png"
-                name="Test User"
+                name={currentUser ? currentUser.displayName : "Default Name"}
                 email="Potential Donor"
                 icon={<Selector size="0.9rem" stroke="1.5" />}
                 />
@@ -139,17 +151,24 @@ const UserDashboard = () => {
                 </Navbar.Section>
 
                 <Navbar.Section className={classes.footer}>
-                    <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+                    <div className={classes.link} onClick={() => logout()}>
                     <SwitchHorizontal className={classes.linkIcon}  />
                     <span>Change account</span>
-                    </a>
+                    </div>
 
-                    <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+                    <div className={classes.link} onClick={() => logout()}>
                     <Logout className={classes.linkIcon} />
                     <span>Logout</span>
-                    </a>
+                    </div>
                 </Navbar.Section>
             </Navbar>
+            
+
+            <div className={classes.componentSection}>
+                {active === UserTabs.UserCharities && <UserAnalytics />}
+                {active === UserTabs.Analytics && <p>{UserTabs.Analytics}</p>}
+                {active === UserTabs.Settings && <p>{UserTabs.Settings}</p>}
+            </div>
             
             
         </div>

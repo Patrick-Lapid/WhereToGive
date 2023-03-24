@@ -508,12 +508,12 @@ export default function Dashboard() {
         }
         { loading &&
             <div style={{backgroundColor : "white", height : "50rem"}}>
-            <Center h={500}>
-                <div>
-                    <Loader size="xl" color="teal" variant="dots" />
-                </div>
-            </Center>
-        </div>
+                <Center h={500}>
+                    <div>
+                        <Loader size="xl" color="teal" variant="dots" />
+                    </div>
+                </Center>
+            </div>
         }
     </>
     
