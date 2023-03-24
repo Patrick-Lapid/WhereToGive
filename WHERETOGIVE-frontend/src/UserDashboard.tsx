@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { auth } from './firebase';
-import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth";
-
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 
 const UserDashboard = () => {
-    
-    const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
 
-    useEffect(() => {
-        
+  useEffect(() => {}, []);
 
-    }, []);
-
-    return (
-        <div>test</div>
-    );
-}
+  return <div>test</div>;
+};
 
 export default UserDashboard;
