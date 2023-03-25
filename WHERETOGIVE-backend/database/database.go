@@ -20,7 +20,7 @@ func InitDB() *gorm.DB {
 	}
 
 	host := os.Getenv("HOST")
-	user := os.Getenv("USER")
+	user := "postgres"
 	password := os.Getenv("PASSWORD")
 	name := os.Getenv("NAME")
 	port := os.Getenv("PORT")
@@ -30,8 +30,8 @@ func InitDB() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-        log.Fatalln(err)
-    }
+		log.Fatalln(err)
+	}
 
 	fmt.Printf("connected")
 
