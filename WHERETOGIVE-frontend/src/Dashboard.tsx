@@ -61,9 +61,14 @@ import voting_rights from '../public/voting-rights.png';
 import wildfires from '../public/wildfires.png';
 import wildlife from '../public/wildlife.png';
 import { useAuth } from '../ts/authenticate';
+import CharitySearch from './CharitySearch';
 
 function routeToCharityByCategory(tag: string) {
   window.location.replace(`/charity?param=${tag}`);
+}
+
+function handleGetStartedClick() {
+  window.location.replace(`/charitysearch`);
 }
 
 const useStyles = createStyles((theme) => ({
@@ -497,8 +502,7 @@ export default function Dashboard() {
               </Title>
               <Container size={640}>
                 <Text size="lg" className={classes.description}>
-                  Complete a brief questionnaire to find the perfect charities
-                  that match your preferences.
+                  Search for your favorite charities.
                 </Text>
               </Container>
               <div className={classes.controls}>
@@ -507,6 +511,7 @@ export default function Dashboard() {
                   className={classes.control}
                   variant="white"
                   size="lg"
+                  onClick={handleGetStartedClick}
                 >
                   Get started
                 </Button>

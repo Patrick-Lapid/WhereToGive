@@ -157,6 +157,7 @@ function CharityTile({
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button
+          data-cy="rating-info-button"
           onClick={() => handleViewRatingClick(EIN)}
           variant="default"
           fullWidth
@@ -170,7 +171,7 @@ function CharityTile({
           fullWidth
           mt="md"
         >
-          More
+          Visit Website
         </Button>
       </div>
     </Paper>
@@ -205,7 +206,6 @@ export default function CharityByCategory() {
         const jsonData = await response.json();
         setData(jsonData);
         setIsLoading(false);
-        console.log(jsonData);
       } catch (error) {
         setError(error);
         setIsLoading(false);

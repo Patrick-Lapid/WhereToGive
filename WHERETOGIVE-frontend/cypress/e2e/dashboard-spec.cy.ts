@@ -5,7 +5,7 @@ describe('Dashboard component', () => {
 
   it("Displays title and description", () => {
     cy.contains("Find WhereToGive");
-    cy.contains("Complete a brief questionnaire to find the perfect charities that match your preferences.");
+    cy.contains("Search for your favorite charities.");
   });
 
   it("Displays Get Started button", () => {
@@ -20,7 +20,11 @@ describe('Dashboard component', () => {
     cy.get("#card-selector").should('exist');
   });
 
-  it("Displays Expore button on cards", () => {
+  it("Displays Explore button on cards", () => {
+    cy.get("#card-selector").find('#explore-button').click();
+  });
+
+  it("Displays Explore button on cards", () => {
     cy.get("#card-selector").find('#explore-button').click();
   });
 
@@ -28,6 +32,7 @@ describe('Dashboard component', () => {
     cy.get("#card-selector").find('#explore-button').click();
     cy.url().should('include', '/charity')
   });
+
 
 });
 
