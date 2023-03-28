@@ -102,3 +102,31 @@ func GetAllTags(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Error encoding tags")
 	}
 }
+
+func GetCharitiesBySearch(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+
+	//query := r.URL.Query()
+	//tags := query["tag"]
+
+	searchStr := r.URL.Query().Get("terms")
+
+	if searchStr == "" {
+		w.WriteHeader(400)
+		w.Write([]byte("Must provide at least one search term"))
+		return
+	}
+	terms := strings.Split(searchStr, ",")
+	charities := models.GetCharitiesBySearch(terms)
+	if len(charities) == 0 {
+		w.WriteHeader(400)
+		w.Write([]byte("No matches found for specified search term(s)"))
+		return
+	}
+	errAdd := json.NewEncoder(w).Encode(charities)
+
+	if errAdd != nil {
+		log.Fatalln("Error encoding charities")
+	}
+}
