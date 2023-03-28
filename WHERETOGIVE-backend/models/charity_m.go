@@ -45,3 +45,10 @@ func GetCharitiesByTag(tag string) []Charity {
 
 	return charities
 }
+
+func GetAllTags() []string {
+	var tagList []string
+	database.DB.Raw("SELECT DISTINCT tag FROM charities, UNNEST(tags) AS tag ORDER BY tag ASC").Scan(&tagList)
+
+	return tagList
+}

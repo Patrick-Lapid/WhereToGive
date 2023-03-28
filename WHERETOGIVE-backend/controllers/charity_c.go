@@ -15,7 +15,7 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
-	charities := models.GetAllCharities();
+	charities := models.GetAllCharities()
 
 	errAdd := json.NewEncoder(w).Encode(charities)
 
@@ -34,7 +34,7 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 	// Check if id is passed
 	if !ok {
 		w.WriteHeader(400)
-        w.Write([]byte("Missing parameter id"))
+		w.Write([]byte("Missing parameter id"))
 		return
 	}
 
@@ -42,15 +42,15 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 	charityID, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		w.WriteHeader(400)
-        w.Write([]byte("id must be an integer"))
+		w.Write([]byte("id must be an integer"))
 		return
 	}
 
-	charity := models.GetCharity(charityID);
+	charity := models.GetCharity(charityID)
 
 	if charity.Name == "" {
 		w.WriteHeader(404)
-        w.Write([]byte("Charity not found"))
+		w.Write([]byte("Charity not found"))
 		return
 	}
 
@@ -66,19 +66,32 @@ func GetCharitiesByTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	query := r.URL.Query()
-    tag := query.Get("tag")
+	tag := query.Get("tag")
 
 	if tag == "" {
 		w.WriteHeader(400)
-        w.Write([]byte("Must be tag parameter"))
+		w.Write([]byte("Must be tag parameter"))
 		return
 	}
 
-	charities := models.GetCharitiesByTag(tag);
+	charities := models.GetCharitiesByTag(tag)
 
 	errAdd := json.NewEncoder(w).Encode(charities)
 
 	if errAdd != nil {
 		log.Fatalln("Error encoding charities")
+	}
+}
+
+func GetAllTags(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+
+	tags := models.GetAllTags()
+
+	errAdd := json.NewEncoder(w).Encode(tags)
+
+	if errAdd != nil {
+		log.Fatalln("Error encoding tags")
 	}
 }
