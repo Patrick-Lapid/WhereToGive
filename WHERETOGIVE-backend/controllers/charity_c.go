@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -65,17 +66,23 @@ func GetCharitiesByTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
-	query := r.URL.Query()
-	tag := query.Get("tag")
+	//query := r.URL.Query()
+	//tags := query["tag"]
 
-	if tag == "" {
+	tagsStr := r.URL.Query().Get("tag")
+
+	if tagsStr == "" {
 		w.WriteHeader(400)
-		w.Write([]byte("Must be tag parameter"))
+		w.Write([]byte("Must provide at least one tag"))
 		return
 	}
-
-	charities := models.GetCharitiesByTag(tag)
-
+	tags := strings.Split(tagsStr, ",")
+	charities := models.GetCharitiesByTag(tags)
+	if len(charities) == 0 {
+		w.WriteHeader(400)
+		w.Write([]byte("No matches found for specified tag(s)"))
+		return
+	}
 	errAdd := json.NewEncoder(w).Encode(charities)
 
 	if errAdd != nil {
