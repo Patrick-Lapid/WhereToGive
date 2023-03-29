@@ -21,6 +21,7 @@ func main() {
 	
 	routers.AddUserRouter(router)
 	routers.AddCharityRouter(router)
+	routers.AddDonationsRouter(router);
 
 	// frontend origin for all methods
 	c := cors.New(cors.Options{
