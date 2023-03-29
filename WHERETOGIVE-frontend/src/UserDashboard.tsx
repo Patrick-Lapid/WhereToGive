@@ -24,6 +24,12 @@ enum UserTabs {
     "Settings" = "Account Settings",
 }
 
+interface userProfile {
+    name : string;
+    email: string;
+    profilePicture: string;
+}
+
   const useStyles = createStyles((theme) => ({
     section: {
         marginLeft: `calc(${theme.spacing.md} * -1)`,
@@ -106,6 +112,7 @@ enum UserTabs {
       { link: '', label: UserTabs.Settings, icon: Settings },
     
   ];
+
   
 
 const UserDashboard = () => {
@@ -113,6 +120,8 @@ const UserDashboard = () => {
     const {currentUser, loading, logout} = useAuth();
     const { classes, cx } = useStyles();
     const [active, setActive] = useState<UserTabs>(UserTabs.UserCharities);
+
+    const [profile, setProfile] = useState<userProfile>();
 
     const links = tabs.map((item) => (
         <a
@@ -128,6 +137,10 @@ const UserDashboard = () => {
           {item.label}
         </a>
       ));
+
+    useEffect(() => {
+        console.log("test")
+    }, [currentUser]);
     
 
     useEffect(() => {
@@ -143,8 +156,8 @@ const UserDashboard = () => {
             <Navbar.Section className={classes.section}>
                 <UserButton
                 image="https://i.imgur.com/fGxgcDF.png"
-                name={currentUser ? currentUser.displayName : "Default Name"}
-                email="Potential Donor"
+                name={currentUser.displayName}
+                email={currentUser.email}
                 icon={<Selector size="0.9rem" stroke="1.5" />}
                 />
             </Navbar.Section>
@@ -170,7 +183,7 @@ const UserDashboard = () => {
             <div className={classes.componentSection}>
                 {active === UserTabs.UserCharities && <p><UserCharities /></p>}
                 {active === UserTabs.Analytics && <UserAnalytics />}
-                {active === UserTabs.Settings && <UserSettings />}
+                {active === UserTabs.Settings && <UserSettings bubbleProfileState={setProfile} />}
             </div>
             
         </div>

@@ -196,6 +196,7 @@ export default function UserAnalytics ({}: Props) {
                         <Paper
                             radius="md"
                             withBorder
+                            shadow="sm"
                             p="lg"
                             style={{
                                 height: '350px',
@@ -211,6 +212,7 @@ export default function UserAnalytics ({}: Props) {
                     <Paper
                         radius="md"
                         withBorder
+                        shadow="sm"
                         p="lg"
                         style={{
                             height: '350px',
@@ -289,6 +291,7 @@ export default function UserAnalytics ({}: Props) {
                     <Paper
                         radius="md"
                         withBorder
+                        shadow="sm"
                         p="lg"
                         style={{
                             height: '325px',
@@ -304,6 +307,7 @@ export default function UserAnalytics ({}: Props) {
                     <Paper
                         radius="md"
                         withBorder
+                        shadow="sm"
                         p="lg"
                         style={{
                             height: '325px',
