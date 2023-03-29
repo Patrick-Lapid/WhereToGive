@@ -14,4 +14,3 @@ root.render(
     </MantineProvider>
   </React.StrictMode>
 );
-
