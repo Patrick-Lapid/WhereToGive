@@ -31,7 +31,7 @@ type Props = {}
 const useStyles = createStyles(() => ({
     mainContainer : {
         width : "95%",
-        margin: '2rem auto',
+        margin: '1rem auto 0',
 
         // [theme.fn.smallerThan('lg')] : {
         //     width: '90%',
@@ -198,7 +198,7 @@ export default function UserAnalytics ({}: Props) {
                             withBorder
                             p="lg"
                             style={{
-                                height: '400px',
+                                height: '350px',
                                 width : "100%",
                                 padding : "35px"
                             }}
@@ -213,7 +213,7 @@ export default function UserAnalytics ({}: Props) {
                         withBorder
                         p="lg"
                         style={{
-                            height: '400px',
+                            height: '350px',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
@@ -291,7 +291,7 @@ export default function UserAnalytics ({}: Props) {
                         withBorder
                         p="lg"
                         style={{
-                            height: '400px',
+                            height: '325px',
                             
                         }}
                     >
@@ -306,7 +306,7 @@ export default function UserAnalytics ({}: Props) {
                         withBorder
                         p="lg"
                         style={{
-                            height: '400px',
+                            height: '325px',
                         }}
                     >
                         <ScrollArea>
