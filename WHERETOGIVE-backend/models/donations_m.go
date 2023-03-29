@@ -10,12 +10,26 @@ type Donation struct {
 	Charityid        int       		`json: "charityid"`
 	Amount			 int			`json: "amount"`
 	TransDate 	 	 datatypes.Date `json: "trans_date"`
-
 }
 
-func GetAllDonationsByUser(userid int) []Donation{
-	var donations []Donation
-	result := database.DB.Raw("SELECT * FROM donations WHERE userid = ?", userid).Scan(&donations)
+type DetailedDonation struct {
+	Name      		 string         `json: "name"`
+	LogoURL          string         `gorm:"type:text" json: "logo_url"`
+	Amount			 int			`json: "amount"`
+	TransDate 	 	 datatypes.Date `json: "trans_date"`
+}
+
+type TotalAmount struct {
+	TotalAmount int `json: "total_amount"`
+}
+
+func GetAllDonationsByUser(userid int) []DetailedDonation{
+	var donations []DetailedDonation
+	result := database.DB.Raw(`SELECT d.amount, d.trans_date, c.name, c.logo_url 
+							   FROM donations d 
+							   INNER JOIN charities c ON d.charityid = c.id
+							   WHERE d.userid = ?
+							   ORDER BY d.trans_date DESC`, userid).Scan(&donations)
 	if result.Error != nil {
 		// Send error
 	}
@@ -32,5 +46,12 @@ func CreateDonation(donation Donation) {
 	}
 }
 
-
+func GetTotalAmountByUser(userid int) TotalAmount{
+	var total TotalAmount
+	result := database.DB.Raw("SELECT SUM(amount) total_amount FROM donations WHERE userid = ?", userid).Scan(&total)
+	if result.Error != nil {
+		// Send error
+	}
+	return total
+}
 
