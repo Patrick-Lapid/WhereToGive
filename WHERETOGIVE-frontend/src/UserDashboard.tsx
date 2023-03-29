@@ -85,6 +85,7 @@ enum UserTabs {
     componentSection : {
         height : "100%",
         width : "100%",
+        backgroundColor : "rgb(246,246,246)"
         // [theme.fn.smallerThan('lg')] : {
         //     width: '90%',
         // },

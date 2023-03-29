@@ -20,7 +20,10 @@ function App() {
             <BrowserRouter>
               {window.location.href.split('/')[
                 window.location.href.split('/').length - 1
-              ] !== 'login' && (
+              ] !== 'login' && 
+              window.location.href.split('/')[
+                window.location.href.split('/').length - 1
+              ] !== 'profile' && (
                 <Navbar
                   links={[
                     { link: 'google.com', label: 'Home' },
