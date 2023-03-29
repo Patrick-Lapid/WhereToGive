@@ -10,6 +10,7 @@ import { ModalsProvider } from '@mantine/modals';
 import { AuthProvider } from '../ts/authenticate';
 import CharityByCategory from './CharityByCategoryView';
 import UserDashboard from './UserDashboard';
+import CharitySearch from './CharitySearch';
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
                 <Route path="/login" element={<AuthenticationForm />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<UserDashboard />} />
-                <Route path="/questionnaire" element={<Questionnaire />} />
+                <Route path="/charitysearch" element={<CharitySearch />} />
                 <Route path="/charity" element={<CharityByCategory />} />
               </Routes>
             </BrowserRouter>

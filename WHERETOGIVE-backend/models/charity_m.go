@@ -38,10 +38,17 @@ func GetCharity(id int) Charity {
 	return charity
 }
 
-func GetCharitiesByTag(tag string) []Charity {
+func GetCharitiesByTag(tags []string) []Charity {
 	var charities []Charity
 
-	database.DB.Raw("SELECT * FROM charities WHERE ? = ANY(tags)", tag).Scan(&charities)
+	database.DB.Raw("SELECT * FROM charities WHERE tags && ?::text[]", pq.Array(tags)).Scan(&charities)
 
 	return charities
+}
+
+func GetAllTags() []string {
+	var tagList []string
+	database.DB.Raw("SELECT DISTINCT tag FROM charities, UNNEST(tags) AS tag ORDER BY tag ASC").Scan(&tagList)
+
+	return tagList
 }
