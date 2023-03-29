@@ -15,6 +15,8 @@ import {
   } from 'tabler-icons-react';
 import { UserButton } from './components/UserButton';
 import UserAnalytics from './components/UserAnalytics';
+import UserCharities from './components/UserCharities';
+import UserSettings from './components/UserSettings';
   
 enum UserTabs {
     "UserCharities" = "Saved Charities",
@@ -166,11 +168,10 @@ const UserDashboard = () => {
             
 
             <div className={classes.componentSection}>
-                {active === UserTabs.UserCharities && <UserAnalytics />}
-                {active === UserTabs.Analytics && <p>{UserTabs.Analytics}</p>}
-                {active === UserTabs.Settings && <p>{UserTabs.Settings}</p>}
+                {active === UserTabs.UserCharities && <p><UserCharities /></p>}
+                {active === UserTabs.Analytics && <UserAnalytics />}
+                {active === UserTabs.Settings && <UserSettings />}
             </div>
-            
             
         </div>
         

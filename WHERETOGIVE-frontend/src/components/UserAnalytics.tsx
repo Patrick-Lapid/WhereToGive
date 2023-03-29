@@ -1,13 +1,37 @@
-import { Avatar, Button, Center, createStyles, Group, HoverCard, NumberInput, Paper, Select, Table, Text } from '@mantine/core';
-import React, { forwardRef, useState } from 'react';
+import { Avatar, Badge, Button, Center, createStyles, Group, HoverCard, NumberInput, Paper, ScrollArea, Select, Table, Text } from '@mantine/core';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { BorderRadius, CaretDown } from 'tabler-icons-react';
+import { useAuth } from '../../ts/authenticate';
+import humans from "../../public/humans.png";
+import seniors from "../../public/seniors.png";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
 type Props = {}
 
 const useStyles = createStyles(() => ({
     mainContainer : {
         width : "95%",
-        margin: '4rem auto',
+        margin: '2rem auto',
 
         // [theme.fn.smallerThan('lg')] : {
         //     width: '90%',
@@ -21,59 +45,148 @@ const useStyles = createStyles(() => ({
 }));
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
-    image: string;
-    name: string;
-    description: string;
+    LogoURL: string;
+    value : string;
+    label : string;
+    Name: string;
+    ID: number;
 }  
 
+interface searchResultType {
+    ID : number
+    LogoURL : string
+    Name : string
+    Tags : string[]
+}
+
+
 const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ image, description, ...others }: ItemProps, ref) => (
+    ({ LogoURL, Name, ...others }: ItemProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          <Avatar src={image} />
-  
+          <Avatar src={LogoURL} />
           <div>
-            <Text>{description}</Text>
+            <Text>{Name}</Text>
           </div>
         </Group>
       </div>
     )
 );
 
-const data = [
-    {
-      image: 'https://img.icons8.com/clouds/256/000000/futurama-bender.png',
-      label: 'Charity 1',
-      value: "1",
-      description: 'Charity 1',
+export const options = {
+    responsive: true,
+    tension : 0.4,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      }
     },
+    scales : {
+        y: {
+            grid: {
+                display : false
+            }
+        },
+        x: {
+            grid: {
+                display : false
+            }
+        }
+    }
+  };
   
-    {
-      image: 'https://img.icons8.com/clouds/256/000000/futurama-mom.png',
-      label: 'Charity 2',
-      value: "2",
-      description: 'Charity 2',
-    },
-    {
-      image: 'https://img.icons8.com/clouds/256/000000/homer-simpson.png',
-      label: 'Charity 3',
-      value: "3",
-      description: 'Charity 3',
-    },
-    {
-      image: 'https://img.icons8.com/clouds/256/000000/spongebob-squarepants.png',
-      label: 'Charity 4',
-      value: "4",
-      description: 'Charity 4',
-    },
-];
+  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   
+  export const chartData = {
+    labels,
+    datasets: [
+      {
+        label: 'Donations',
+        data: [400, 500, 600, 534, 234, 933, 333, 643, 400, 323],
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      
+    ],
+  };
   
 
 export default function UserAnalytics ({}: Props) {
 
     const {classes, cx}  = useStyles();
-    const [selectedCharity, setCharity] = useState<number>(null);
+    const [selectedCharityID, setCharityID] = useState<number>(null);
+    const [selectedCharityName, setSelectedCharityName] = useState<string>(null);
+    const [searchResults, updateSearchResults] = useState<ItemProps[]>([]);
+    const {currentUser} = useAuth();
+
+    useEffect(() => {
+        // pull in user donation data
+    }, []);
+
+    const getCharityName = async (charityID : number) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/charities/${charityID}`
+            );
+            const jsonData = await response.json();
+            console.log(jsonData);
+    
+            setSelectedCharityName(jsonData.Name);
+            
+        } catch (error) {
+        
+            console.log("simple search error")
+        
+        }
+    }
+
+    const handleSearchChange = async (searchParam : string) => {
+
+        if(searchParam.length > 2){
+            try {
+                const response = await fetch(
+                    `http://localhost:8000/api/charities/search/?terms=${searchParam}`
+                );
+                const jsonData : searchResultType[] = await response.json();
+                console.log(jsonData);
+        
+                const cleanedArray : ItemProps[] = [];
+        
+                jsonData.forEach(val=>{cleanedArray.push({
+                    LogoURL: val.LogoURL,
+                    value : val.ID.toString(),
+                    Name: val.Name,
+                    label : val.Name,
+                    ID: val.ID,
+                })});
+
+                console.log(cleanedArray);
+        
+                updateSearchResults(cleanedArray);
+                
+            } catch (error) {
+            
+                console.log("simple search error")
+            
+            }
+        }
+        
+    }
+
+    const onDonate = () => {
+        // send json to endpoint
+        /**
+         * {
+         *      userID
+         *      amount
+         *      charityID
+         *      trans_date
+         * 
+         * }
+         */
+        // repull trx data
+    }
 
     return (
         <div className={classes.mainContainer}>
@@ -86,12 +199,11 @@ export default function UserAnalytics ({}: Props) {
                             p="lg"
                             style={{
                                 height: '400px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
+                                width : "100%",
+                                padding : "35px"
                             }}
                         >
-                            chart
+                            <Line style={{width: "100%"}} options={options} data={chartData} />
                         </Paper>
                     </div>
                     
@@ -109,15 +221,15 @@ export default function UserAnalytics ({}: Props) {
                     >
                         
                         <div>
-                            <Text>
+                            <Text fw={700}>
                                 Self-Report Donations
                             </Text>
                             <Avatar src={``} size={50} radius={50} mx="auto" />
                             <HoverCard width={450} shadow="md">
                                 <HoverCard.Target>
                                     <Text color="black" align="center" size="lg" weight={500} mt="md" style={{cursor : "pointer"}}>
-                                        {!selectedCharity && "Choose Charity"}
-                                        {selectedCharity && data[selectedCharity - 1].label}
+                                        {!selectedCharityName && "Choose Charity"}
+                                        {selectedCharityName && selectedCharityName}
                                         <CaretDown size={25} strokeWidth={1} className="p-1" />
                                     </Text>
                                 </HoverCard.Target>
@@ -126,15 +238,12 @@ export default function UserAnalytics ({}: Props) {
                                     label="Search Charities"
                                     placeholder="Pick one"
                                     itemComponent={SelectItem}
-                                    onChange={(event) => setCharity(parseInt(event))}
-                                    data={data}
+                                    onChange={(event) => {getCharityName(parseInt(event)); setCharityID(parseInt(event));}}
+                                    onSearchChange={(searchTerm)=>{handleSearchChange(searchTerm)}}
+                                    data={searchResults && searchResults.length > 0 ? searchResults : []}
                                     searchable
                                     maxDropdownHeight={400}
                                     nothingFound="Charity Not Found"
-                                    filter={(value, item) =>
-                                        item.label.toLowerCase().includes(value.toLowerCase().trim()) ||
-                                        item.description.toLowerCase().includes(value.toLowerCase().trim())
-                                    }
                                     />
 
                                 </HoverCard.Dropdown>
@@ -145,7 +254,7 @@ export default function UserAnalytics ({}: Props) {
                         
                         
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            {selectedCharity && 
+                            {selectedCharityID && 
                                 <NumberInput
                                 label="Donation Amount"
                                 defaultValue={50}
@@ -162,7 +271,8 @@ export default function UserAnalytics ({}: Props) {
                             }
                             <Button
                             // onClick={() => handleMoreClick(WebsiteURL)}
-                            variant="default"
+                            variant="gradient"
+                            gradient={{ from: 'teal', to: 'blue', deg: 60 }}
                             fullWidth
                             mt="md"
                             >
@@ -199,15 +309,71 @@ export default function UserAnalytics ({}: Props) {
                             height: '400px',
                         }}
                     >
-                        <Table highlightOnHover>
+                        <ScrollArea>
+                        <Table highlightOnHover verticalSpacing="sm" >
+                            <thead>
+                                <tr>
+                                    <th>Charity Name</th>
+                                    
+                                    <th>Posted Date</th>
+                                    <th>Donation</th>
+                                    <th>Type</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
                             <tr>
-                                <th>Charity Name</th>
-                                <th>Posted Date</th>
-                                <th>Donation</th>
-                                <th></th>
+                                <td>
+                                    <Group spacing="sm">
+                                <Avatar size={30} src={humans} radius={30} />
+                                <Text fz="sm" fw={500}>
+                                    American Red Cross
+                                </Text>
+                                </Group>
+                                </td>
+                                
+                                <td>January</td>
+                                <td>$36.81</td>
+                                <td>
+                                    <Badge
+                                    variant="gradient"
+                                    gradient={{ from: 'teal', to: 'violet', deg: 60 }}
+                                    >
+                                    Recurring
+                                    </Badge>
+                                </td>
+                                <td></td>
                             </tr>
+                            <tr>
+                                <td><Group spacing="sm">
+                                <Avatar size={30} src={seniors} radius={30} />
+                                <Text fz="sm" fw={500}>
+                                    Feeding America
+                                </Text>
+                                </Group>
+                                </td>
+                                
+                                <td>February</td>
+                                <td>$73.81</td>
+                                <td>
+                                    <Badge
+                                    variant='outline'
+                                    
+                                    >
+                                    One Time
+                                    </Badge>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                            
+
+                            
 
                         </Table>
+                        </ScrollArea>
+                        
                     </Paper>
                     </div>
                 </div>
