@@ -11,17 +11,22 @@ import { AuthProvider } from '../ts/authenticate';
 import CharityByCategory from './CharityByCategoryView';
 import UserDashboard from './UserDashboard';
 import CharitySearch from './CharitySearch';
+// import { Notifications } from '@mantine/notifications';
 
 function App() {
   return (
     <MantineProvider>
       <ModalsProvider>
         <AuthProvider>
+        {/* <Notifications /> */}
           <div style={{ backgroundColor: 'rgb(246,246,246)' }}>
             <BrowserRouter>
               {window.location.href.split('/')[
                 window.location.href.split('/').length - 1
-              ] !== 'login' && (
+              ] !== 'login' && 
+              window.location.href.split('/')[
+                window.location.href.split('/').length - 1
+              ] !== 'profile' && (
                 <Navbar
                   links={[
                     { link: 'google.com', label: 'Home' },

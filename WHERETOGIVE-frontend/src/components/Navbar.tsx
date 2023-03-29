@@ -291,8 +291,10 @@ export default function Navbar({ links }: HeaderSearchProps) {
                     </UnstyledButton>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item icon={<LayoutDashboard size={14} />}>
-                      <Link to={'/profile'}>Dashboard</Link>
+                    <Menu.Item icon={<LayoutDashboard size={14} />} onClick={() => {
+                  window.location.replace('/profile');
+                }}>
+                      <Text>Dashboard</Text>
                     </Menu.Item>
                     <Menu.Item icon={<WorldDownload size={14} />}>
                       Saved charities
