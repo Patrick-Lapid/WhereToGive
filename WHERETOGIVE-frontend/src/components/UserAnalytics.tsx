@@ -237,6 +237,7 @@ export default function UserAnalytics ({}: Props) {
                                 </HoverCard.Target>
                                 <HoverCard.Dropdown>
                                     <Select
+                                    id="simpleSearch"
                                     label="Search Charities"
                                     placeholder="Pick one"
                                     itemComponent={SelectItem}

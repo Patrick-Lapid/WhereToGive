@@ -122,7 +122,7 @@ const UserSettings = (props: Props) => {
                 {!editDisplayName &&
                     <Group>
                         <Text fz="md" fw={500}>Display Name: {currentUser && currentUser.displayName == null ? "None" : currentUser.displayName}</Text>
-                        <Button size="xs" variant="outline" color='gray' onClick={() => toggleEditDisplayName(true)}><Pencil size="0.8rem" /></Button>
+                        <Button id="editDisplayName" size="xs" variant="outline" color='gray' onClick={() => toggleEditDisplayName(true)}><Pencil size="0.8rem" /></Button>
                     </Group>
                 }
 
@@ -130,6 +130,7 @@ const UserSettings = (props: Props) => {
 
                     <Group>
                         <TextInput
+                            id="DisplayName"
                             placeholder="Name"
                             value={displayName}
                             onChange={(event) => setDisplayName(event.currentTarget.value)}
@@ -138,7 +139,7 @@ const UserSettings = (props: Props) => {
                             
                         />
                         <Group>
-                            <Button size="md" variant="outline" color='green' onClick={handleDisplayNameChange}><Check size="0.8rem" /></Button>
+                            <Button size="md" variant="outline" color='green' id="updateDisplayName" onClick={handleDisplayNameChange}><Check size="0.8rem" /></Button>
                             <Button size="md" variant="outline" color='red' onClick={() => toggleEditDisplayName(false)}><X size="0.8rem" /></Button>
                         </Group>
 
