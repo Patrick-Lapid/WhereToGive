@@ -293,7 +293,7 @@ const Landing = (props: Props) => {
                           'Generous',
                           'Compassionate',
                           'Helpful',
-                          'World Changer.',
+                          'World Changers',
                         ],
                         autoStart: true,
                         loop: true,

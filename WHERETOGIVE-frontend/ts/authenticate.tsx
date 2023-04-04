@@ -56,10 +56,26 @@ export function AuthProvider({ children } : any) {
               }).catch((error) => {
                 console.log("PROFILE ERROR")
               });
-            const user = userCredential.user;
-            const refreshToken = user.getIdToken();
-            sessionStorage.setItem('Auth Token', await refreshToken);
-            window.location.replace("/dashboard");
+            // register user in supabase
+            try {
+                const response = await fetch(`http://localhost:8000/api/users/`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      Userid: userCredential.user.uID,
+                      FirstName : userCredential.user.displayName,
+                      LastName : "",
+                      City : "",
+                      State : ""
+                    })
+                });
+
+                console.log(response);
+                // window.location.replace("/dashboard");
+                    
+            } catch (error) {
+                console.log(error);
+            }
+            
         })
         .catch((error: { code: any; message: any; }) => {
             const errorCode = error.code;

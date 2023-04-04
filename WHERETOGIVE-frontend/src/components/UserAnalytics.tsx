@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, Center, createStyles, Group, HoverCard, NumberInput, Paper, ScrollArea, Select, Table, Text } from '@mantine/core';
+import { Avatar, Badge, Button, Center, createStyles, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text } from '@mantine/core';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { BorderRadius, CaretDown } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
@@ -14,6 +14,8 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartData,
+  Point,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 ChartJS.register(
@@ -98,31 +100,110 @@ export const options = {
   
   const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   
-  export const chartData = {
-    labels,
-    datasets: [
-      {
-        label: 'Donations',
-        data: [400, 500, 600, 534, 234, 933, 333, 643, 400, 323],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      
-    ],
-  };
+
   
 
 export default function UserAnalytics ({}: Props) {
 
     const {classes, cx}  = useStyles();
+    const [loading, setloading] = useState<boolean>(true);
     const [selectedCharityID, setCharityID] = useState<number>(null);
     const [selectedCharityName, setSelectedCharityName] = useState<string>(null);
+    const [donationList, updateUserDonationList] = useState([]);
+    const [chartData, setChartData] = useState<ChartData<"line", (number | Point)[], unknown>>(null);
     const [searchResults, updateSearchResults] = useState<ItemProps[]>([]);
     const {currentUser} = useAuth();
 
     useEffect(() => {
         // pull in user donation data
+        try {
+            getUserDonations();
+        } catch (error) {
+            console.log(error);
+        }
     }, []);
+
+    const getUserDonations = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/donations/getdonations/2`
+            );
+            const jsonData = await response.json();
+            console.log("Donation Fetch", jsonData);
+
+            const donationMap = new Map<string, number>();
+            let labels : string[] = [];
+            let donationData : number[] = [];
+            const tableRow : JSX.Element[] = [];
+            
+            // generate donation map from user donations
+            jsonData.forEach((donation : any) => {
+                if(donationMap.has(donation.TransDate.substring(0,10))){
+                    donationMap.set(donation.TransDate.substring(0,10), donationMap.get(donation.TransDate.substring(0,10)) + donation.Amount);
+                } else {
+                    donationMap.set(donation.TransDate.substring(0,10), donation.Amount);
+                }
+
+                tableRow.push(
+                    <tr>
+                        <td>
+                        <Group spacing="sm">
+                        <Avatar size={30} src={donation.LogoURL} radius={30} />
+                        <Text fz="sm" fw={500}>
+                            {donation.Name}
+                        </Text>
+                        </Group>
+                        </td>
+                        
+                        <td>{`${donation.TransDate.substring(5, 7)}/${donation.TransDate.substring(8, 10)}/${donation.TransDate.substring(2,4)}`}</td>
+                        <td>{`$ ${donation.Amount}`}</td>
+                        <td>
+                            <Badge
+                            variant="gradient"
+                            gradient={{ from: 'teal', to: 'violet', deg: 60 }}
+                            >
+                            Recurring
+                            </Badge>
+                        </td>
+                        <td></td>
+                    </tr>
+                )
+
+            });
+
+            // generates map arrays
+            donationMap.forEach((donation, label) => {
+                labels.push(`${label.substring(5, 7)}/${label.substring(8, 10)}/${label.substring(2,4)}`);
+                donationData.push(donation);
+            });
+
+            // reverses arrays 
+            labels = labels.map((val, index, array) => array[array.length - 1 - index]);
+            donationData = donationData.map((val, index, array) => array[array.length - 1 - index]);
+
+            // sets chartData
+            setChartData ({
+                labels,
+                datasets: [
+                  {
+                    label: 'Donations ($)',
+                    data: donationData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                  },
+                ],
+            });
+    
+            updateUserDonationList(tableRow);
+
+            setloading(false);
+            
+        } catch (error) {
+        
+            console.log(error)
+        
+        }
+    }
 
     const getCharityName = async (charityID : number) => {
         try {
@@ -176,21 +257,31 @@ export default function UserAnalytics ({}: Props) {
 
     const onDonate = () => {
         // send json to endpoint
-        /**
-         * {
-         *      userID
-         *      amount
-         *      charityID
-         *      trans_date
-         * 
-         * }
-         */
+        if(selectedCharityID){
+
+        } else {
+            
+        }
+
+
         // repull trx data
+        getUserDonations();
     }
 
     return (
         <div className={classes.mainContainer}>
-            <div className="d-flex flex-column">
+            {loading && 
+            <div style={{backgroundColor : "white", height : "50rem"}}>
+                <Center h={500}>
+                    <div>
+                        <Loader size="xl" color="teal" variant="dots" />
+                    </div>
+                </Center>
+            </div>
+            }
+            
+            {!loading &&
+                <div className="d-flex flex-column">
                 <div className="d-flex">
                     <div className="col-8 p-1">
                         <Paper
@@ -314,7 +405,7 @@ export default function UserAnalytics ({}: Props) {
                             height: '325px',
                         }}
                     >
-                        <ScrollArea>
+                        <ScrollArea h={290}>
                         <Table highlightOnHover verticalSpacing="sm" >
                             <thead>
                                 <tr>
@@ -328,54 +419,9 @@ export default function UserAnalytics ({}: Props) {
                             </thead>
                             
                             <tbody>
-                            <tr>
-                                <td>
-                                    <Group spacing="sm">
-                                <Avatar size={30} src={humans} radius={30} />
-                                <Text fz="sm" fw={500}>
-                                    American Red Cross
-                                </Text>
-                                </Group>
-                                </td>
-                                
-                                <td>January</td>
-                                <td>$36.81</td>
-                                <td>
-                                    <Badge
-                                    variant="gradient"
-                                    gradient={{ from: 'teal', to: 'violet', deg: 60 }}
-                                    >
-                                    Recurring
-                                    </Badge>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><Group spacing="sm">
-                                <Avatar size={30} src={seniors} radius={30} />
-                                <Text fz="sm" fw={500}>
-                                    Feeding America
-                                </Text>
-                                </Group>
-                                </td>
-                                
-                                <td>February</td>
-                                <td>$73.81</td>
-                                <td>
-                                    <Badge
-                                    variant='outline'
-                                    
-                                    >
-                                    One Time
-                                    </Badge>
-                                </td>
-                                <td></td>
-                            </tr>
+                                {donationList.map(x => x)}
                             </tbody>
-                            
-
-                            
-
+                    
                         </Table>
                         </ScrollArea>
                         
@@ -383,7 +429,9 @@ export default function UserAnalytics ({}: Props) {
                     </div>
                 </div>
                 
-            </div>
+                </div>
+            }
+            
         </div>
         
     );
