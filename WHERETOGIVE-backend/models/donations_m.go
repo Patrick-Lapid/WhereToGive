@@ -6,7 +6,7 @@ import (
 )
 
 type Donation struct {
-	Userid           int       		`json: "userid"`
+	Userid      	 string        	`gorm:"type:text" json: "logo_url"`
 	Charityid        int       		`json: "charityid"`
 	Amount			 int			`json: "amount"`
 	TransDate 	 	 datatypes.Date `json: "trans_date"`
@@ -23,7 +23,7 @@ type TotalAmount struct {
 	TotalAmount int `json: "total_amount"`
 }
 
-func GetAllDonationsByUser(userid int) []DetailedDonation{
+func GetAllDonationsByUser(userid string) []DetailedDonation{
 	var donations []DetailedDonation
 	result := database.DB.Raw(`SELECT d.amount, d.trans_date, c.name, c.logo_url 
 							   FROM donations d 
@@ -46,7 +46,7 @@ func CreateDonation(donation Donation) {
 	}
 }
 
-func GetTotalAmountByUser(userid int) TotalAmount{
+func GetTotalAmountByUser(userid string) TotalAmount{
 	var total TotalAmount
 	result := database.DB.Raw("SELECT SUM(amount) total_amount FROM donations WHERE userid = ?", userid).Scan(&total)
 	if result.Error != nil {

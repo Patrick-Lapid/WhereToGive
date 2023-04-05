@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -17,7 +16,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
-	id, ok := vars["userID"]
+	userID, ok := vars["userID"]
 
 	// Check if id is passed
 	if !ok {
@@ -26,17 +25,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check integer conversion
-	userID, errConv := strconv.Atoi(id)
-	if errConv != nil {
-		w.WriteHeader(400)
-        w.Write([]byte("userID must be an integer"))
-		return
-	}
-
 	user := models.GetUser(userID)
 
-	if user.FirstName == "" {
+	if user.Userid == "" {
 		w.WriteHeader(404)
         w.Write([]byte("User not found"))
 		return
@@ -58,7 +49,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user);
 
-	if user.Userid == 0 {
+	if user.Userid == "" {
 		w.WriteHeader(400)
 		w.Write([]byte("Unable to create user. Userid required"))
 		return
@@ -86,7 +77,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
-	id, ok := vars["userID"]
+	userID, ok := vars["userID"]
 
 	// Check if id is passed
 	if !ok {
@@ -95,14 +86,6 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check integer conversion
-	userID, errConv := strconv.Atoi(id)
-	if errConv != nil {
-		w.WriteHeader(400)
-        w.Write([]byte("userID must be an integer"))
-		return
-	}
-	
 	// Call delete user from User model
 	models.DeleteUser(userID)
 	w.WriteHeader(200)
