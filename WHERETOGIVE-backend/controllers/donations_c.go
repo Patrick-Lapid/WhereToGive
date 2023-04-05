@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -16,20 +16,12 @@ func GetDonationsByUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
-	id, ok := vars["userID"]
+	userID, ok := vars["userID"]
 
 	// Check if id is passed
 	if !ok {
 		w.WriteHeader(400)
 		w.Write([]byte("Missing parameter userID"))
-		return
-	}
-
-	// Check integer conversion
-	userID, errConv := strconv.Atoi(id)
-	if errConv != nil {
-		w.WriteHeader(400)
-		w.Write([]byte("userID must be an integer"))
 		return
 	}
 
@@ -47,20 +39,12 @@ func GetTotalAmountByUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	vars := mux.Vars(r)
-	id, ok := vars["userID"]
+	userID, ok := vars["userID"]
 
 	// Check if id is passed
 	if !ok {
 		w.WriteHeader(400)
 		w.Write([]byte("Missing parameter userID"))
-		return
-	}
-
-	// Check integer conversion
-	userID, errConv := strconv.Atoi(id)
-	if errConv != nil {
-		w.WriteHeader(400)
-		w.Write([]byte("userID must be an integer"))
 		return
 	}
 
@@ -79,8 +63,9 @@ func CreateDonation(w http.ResponseWriter, r *http.Request) {
 
 	var donation models.Donation
 	err := json.NewDecoder(r.Body).Decode(&donation);
+	fmt.Print(donation);
 
-	if donation.Userid == 0 || donation.Charityid == 0 {
+	if donation.Userid == "" || donation.Charityid == 0 {
 		w.WriteHeader(400)
 		w.Write([]byte("Unable to create donation. user and charity ids required"))
 		return

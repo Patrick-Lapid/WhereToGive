@@ -1,21 +1,15 @@
 package models
 
 import (
-	"gorm.io/datatypes"
-
 	"github.com/Patrick-Lapid/WhereToGive/WHERETOGIVE-backend/database"
 )
 
 type User struct {
-	Userid      int            `json: "userid"  validate:"required"`
-	FirstName   string         `json: "first_name"`
-	LastName    string         `json: "last_name"`
-	City        string         `json: "city"`
-	State       string         `json: "state"`
-	DateCreated datatypes.Date `json: "date_created"`
+	Userid      	 string         `gorm:"type:text" json: "user_id"`
+	DisplayName      string         `gorm:"type:text" json: "display_name"`
 }
 
-func GetUser(userid int) User {
+func GetUser(userid string) User {
 	var user User
 	err := database.DB.First(&user, "userid = ?", userid).Error
 	if err != nil {
@@ -38,7 +32,7 @@ func UpdateUser() {
 
 }
 
-func DeleteUser(userid int) {
+func DeleteUser(userid string) {
 	var user User
 	result := database.DB.Where("userid = ?", userid).Delete(&user)
 	if result.RowsAffected == 0 {
