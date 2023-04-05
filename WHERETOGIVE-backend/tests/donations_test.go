@@ -14,8 +14,8 @@ import (
 
 func TestCreateDonation(t *testing.T) {
 	donation := &models.Donation{
-		Userid: 2,
-		Charityid: 11,
+		Userid: "test",
+		Charityid: 843,
 		Amount: 10,
 	}
 	
@@ -40,24 +40,24 @@ func TestCreateDonation(t *testing.T) {
 }
 
 func TestGetDonationsByUser(t *testing.T) {
-	resp, errGetting := http.Get("http://localhost:8000/api/donations/getdonations/2")
+	resp, errGetting := http.Get("http://localhost:8000/api/donations/getdonations/test")
 	if errGetting != nil {
         t.Fatalf("Couldn't make request: %v\n", errGetting)
     }
 
 	assert.Equal(t, resp.StatusCode, http.StatusOK, "The status of this request should be 200 (OK)")
 
-	var donation []models.Donation;
-	json.NewDecoder(resp.Body).Decode(&donation)
-	assert.NotEqual(t, donation[0].Userid, "", "Userid not found")
-	assert.NotEqual(t, donation[0].Charityid, "", "Charityid not found")
-	assert.NotEqual(t, donation[0].Amount, 0, "Amount is 0")
+	var donations []models.DetailedDonation;
+	json.NewDecoder(resp.Body).Decode(&donations)
+	assert.NotEqual(t, donations[0].Name, "", "Name not found")
+	assert.NotEqual(t, donations[0].LogoURL, "", "Charityid not found")
+	assert.NotEqual(t, donations[0].Amount, 0, "Amount is 0")
 	resp.Body.Close()
 }
 
 
 func TestGetUserTotalAmount(t *testing.T) {
-	resp, errGetting := http.Get("http://localhost:8000/api/donations/getamount/2")
+	resp, errGetting := http.Get("http://localhost:8000/api/donations/getamount/test")
 	if errGetting != nil {
         t.Fatalf("Couldn't make request: %v\n", errGetting)
     }
