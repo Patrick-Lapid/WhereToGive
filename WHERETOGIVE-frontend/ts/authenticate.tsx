@@ -51,30 +51,32 @@ export function AuthProvider({ children } : any) {
         .then(async (userCredential: { user: any; }) => {
             // Signed in 
             // navigate to Dashboard on login success
-            updateProfile(userCredential.user, {displayName : name}).then(() => {
-                console.log("Display Name Saved")
+            updateProfile(userCredential.user, {displayName : name}).then(async () => {
+                console.log("Display Name Saved");
+                try {
+                    const user = await userCredential.user;
+                    console.log(user.uid);
+                    const response = await fetch(`http://localhost:8000/api/users/`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                          Userid: user.uid, // zcwmy3K0ONPjn72zeiPaLySbeeI3
+                          DisplayName : user.displayName, // Display Name
+                          City : "",
+                          State : ""
+                        })
+                    });
+    
+                    console.log(response);
+                    // window.location.replace("/dashboard");
+                        
+                } catch (error) {
+                    console.log(error);
+                }
               }).catch((error) => {
                 console.log("PROFILE ERROR")
               });
             // register user in supabase
-            try {
-                const response = await fetch(`http://localhost:8000/api/users/`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                      Userid: userCredential.user.uID,
-                      FirstName : userCredential.user.displayName,
-                      LastName : "",
-                      City : "",
-                      State : ""
-                    })
-                });
-
-                console.log(response);
-                // window.location.replace("/dashboard");
-                    
-            } catch (error) {
-                console.log(error);
-            }
+            
             
         })
         .catch((error: { code: any; message: any; }) => {

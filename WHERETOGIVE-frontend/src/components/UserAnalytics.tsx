@@ -1,6 +1,6 @@
-import { Avatar, Badge, Button, Center, createStyles, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text } from '@mantine/core';
+import { Avatar, Badge, Button, Center, createStyles, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text, Title } from '@mantine/core';
 import React, { forwardRef, useEffect, useState } from 'react';
-import { BorderRadius, CaretDown } from 'tabler-icons-react';
+import { BorderRadius, CaretDown, Check, X } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
 import humans from "../../public/humans.png";
 import seniors from "../../public/seniors.png";
@@ -11,24 +11,22 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
   Tooltip,
   Legend,
   ChartData,
   Point,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { notifications, showNotification } from '@mantine/notifications';
+import { DateInput } from '@mantine/dates';
 ChartJS.register(
     CategoryScale,
     LinearScale,
     PointElement,
     LineElement,
-    Title,
     Tooltip,
     Legend
-  );
-
-type Props = {}
+);
 
 const useStyles = createStyles(() => ({
     mainContainer : {
@@ -59,6 +57,11 @@ interface searchResultType {
     LogoURL : string
     Name : string
     Tags : string[]
+}
+
+interface charity {
+    name : string;
+    photoURL : string;
 }
 
 
@@ -96,19 +99,18 @@ export const options = {
             }
         }
     }
-  };
-  
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  
+};
+    
 
-  
 
-export default function UserAnalytics ({}: Props) {
+export default function UserAnalytics () {
 
     const {classes, cx}  = useStyles();
     const [loading, setloading] = useState<boolean>(true);
-    const [selectedCharityID, setCharityID] = useState<number>(null);
-    const [selectedCharityName, setSelectedCharityName] = useState<string>(null);
+    const [selectedCharityID, setCharityID] = useState<number | null>(null);
+    const [selectedCharity, setSelectedCharity] = useState<charity | null>(null);
+    const [date, setDate] = useState<Date | null>(new Date());
+    const [donationAmt, setDonationAmt] = useState<number | ''>(50);
     const [donationList, updateUserDonationList] = useState([]);
     const [chartData, setChartData] = useState<ChartData<"line", (number | Point)[], unknown>>(null);
     const [searchResults, updateSearchResults] = useState<ItemProps[]>([]);
@@ -137,7 +139,7 @@ export default function UserAnalytics ({}: Props) {
             const tableRow : JSX.Element[] = [];
             
             // generate donation map from user donations
-            jsonData.forEach((donation : any) => {
+            jsonData.forEach((donation : any, index : number) => {
                 if(donationMap.has(donation.TransDate.substring(0,10))){
                     donationMap.set(donation.TransDate.substring(0,10), donationMap.get(donation.TransDate.substring(0,10)) + donation.Amount);
                 } else {
@@ -145,7 +147,7 @@ export default function UserAnalytics ({}: Props) {
                 }
 
                 tableRow.push(
-                    <tr>
+                    <tr key={index}>
                         <td>
                         <Group spacing="sm">
                         <Avatar size={30} src={donation.LogoURL} radius={30} />
@@ -213,7 +215,7 @@ export default function UserAnalytics ({}: Props) {
             const jsonData = await response.json();
             console.log(jsonData);
     
-            setSelectedCharityName(jsonData.Name);
+            setSelectedCharity({name : jsonData.Name, photoURL : jsonData.LogoURL});
             
         } catch (error) {
         
@@ -255,12 +257,56 @@ export default function UserAnalytics ({}: Props) {
         
     }
 
-    const onDonate = () => {
+    const onDonate = async () => {
         // send json to endpoint
         if(selectedCharityID){
 
+            console.log(date.toISOString(), `${date.toISOString().substring(0,4)}-${date.toISOString().substring(5,7)}-${date.toISOString().substring(8,10)}`);
+            console.log(JSON.stringify({
+                Userid: currentUser.uid,
+                Charityid : selectedCharityID,
+                Amount : donationAmt,
+                TransDate : `${date.toISOString().substring(0,4)}-${date.toISOString().substring(5,7)}-${date.toISOString().substring(8,10)}`
+              }));
+
+            fetch(
+                `http://localhost:8000/api/donations/add`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      Userid: currentUser.uid, // zcwmy3K0ONPjn72zeiPaLySbeeI3
+                      Charityid : selectedCharityID, // 124
+                      Amount : donationAmt, // 54
+                      TransDate : `${date.toISOString().substring(0,4)}-${date.toISOString().substring(5,7)}-${date.toISOString().substring(8,10)}` // 2023-04-04
+                    })
+                }
+
+
+            ).then(response => {
+                const payload = response;
+                console.log(payload);
+                setSelectedCharity(null);
+                setCharityID(null);
+                notifications.show({
+                autoClose: 5000,
+                title: "Success!",
+                message: 'Your donation was processed :)',
+                color: "green",
+                icon: <Check color='white'/>,
+                className: 'my-notification-class',
+            });
+            });
+
+
         } else {
-            
+            notifications.show({
+                autoClose: 5000,
+                title: "No charity selected",
+                message: 'Please select a charity',
+                color: "red",
+                icon: <X color='white'/>,
+                className: 'my-notification-class',
+            });
+              
         }
 
 
@@ -317,12 +363,12 @@ export default function UserAnalytics ({}: Props) {
                             <Text fw={700}>
                                 Self-Report Donations
                             </Text>
-                            <Avatar src={``} size={50} radius={50} mx="auto" />
+                            <Avatar src={selectedCharity && selectedCharity.photoURL} size={50} radius={50} mx="auto" />
                             <HoverCard width={450} shadow="md">
                                 <HoverCard.Target>
                                     <Text color="black" align="center" size="lg" weight={500} mt="md" style={{cursor : "pointer"}}>
-                                        {!selectedCharityName && "Choose Charity"}
-                                        {selectedCharityName && selectedCharityName}
+                                        {!selectedCharity && "Choose Charity"}
+                                        {selectedCharity && selectedCharity.name}
                                         <CaretDown size={25} strokeWidth={1} className="p-1" />
                                     </Text>
                                 </HoverCard.Target>
@@ -349,9 +395,20 @@ export default function UserAnalytics ({}: Props) {
                         
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                             {selectedCharityID && 
+                            <>
+                                <DateInput
+                                value={date}
+                                onChange={setDate}
+                                label="Donation Date"
+                                placeholder="Date input"
+                                mt="md"
+                                />
+                                
                                 <NumberInput
                                 label="Donation Amount"
-                                defaultValue={50}
+                                value={donationAmt} 
+                                onChange={setDonationAmt}
+                                mt="sm"
                                 precision={2}
                                 parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
                                 formatter={(value) =>
@@ -361,14 +418,18 @@ export default function UserAnalytics ({}: Props) {
                                 }
                                 stepHoldDelay={500}
                                 stepHoldInterval={(t) => Math.max(1000 / t ** 2, 25)}
-                            />
+                                />
+                            
+                            </>
+                                
                             }
                             <Button
-                            // onClick={() => handleMoreClick(WebsiteURL)}
+                            onClick={onDonate}
                             variant="gradient"
                             gradient={{ from: 'teal', to: 'blue', deg: 60 }}
                             fullWidth
-                            mt="md"
+                            mt="sm"
+                            mb="sm"
                             >
                             Donate
                             </Button>
@@ -390,8 +451,8 @@ export default function UserAnalytics ({}: Props) {
                             
                         }}
                     >
-                        <Center h={350}>
-                            You have no recurring payments setup
+                        <Center h={250}>
+                            <Title>Total Donations: $740</Title>
                         </Center>
                     </Paper>
                     </div>

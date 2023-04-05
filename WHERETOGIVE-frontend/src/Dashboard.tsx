@@ -132,7 +132,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   controls: {
-    marginTop: theme.spacing.xl * 1.5,
+    marginTop: 1.5,
     display: 'flex',
     justifyContent: 'center',
     paddingLeft: theme.spacing.md,

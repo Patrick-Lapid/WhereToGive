@@ -6,14 +6,13 @@ import {
   Stepper,
   Group,
   Card,
-  Badge,
   Divider,
   Image,
   Loader,
   Center,
-  Container,
+  
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ChevronRight,
   Compass,
@@ -163,7 +162,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 
   stepIcon: {
-    ref: getRef('stepIcon'),
+    // ref: getRef('stepIcon'),
     borderColor: 'transparent',
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.white,

@@ -149,58 +149,55 @@ const UserDashboard = () => {
 
     return (
         <>
-        {!loading && 
-        <div style={{height:"100%", display:"flex"}}>
-            <Navbar width={{ sm: 300 }} p="md">
+            {!loading && 
+                <div style={{height:"100%", display:"flex"}}>
+                    <Navbar width={{ sm: 300 }} p="md">
 
-            <Navbar.Section className={classes.section}>
-                <UserButton
-                image="https://i.imgur.com/fGxgcDF.png"
-                name={currentUser.displayName}
-                email={currentUser.email}
-                icon={<Selector size="0.9rem" stroke="1.5" />}
-                />
-            </Navbar.Section>
+                    <Navbar.Section className={classes.section}>
+                        <UserButton
+                        image="https://i.imgur.com/fGxgcDF.png"
+                        name={currentUser.displayName}
+                        email={currentUser.email}
+                        icon={<Selector size="0.9rem" stroke="1.5" />}
+                        />
+                    </Navbar.Section>
 
-                <Navbar.Section grow>
-                    {links}
-                </Navbar.Section>
+                        <Navbar.Section grow>
+                            {links}
+                        </Navbar.Section>
 
-                <Navbar.Section className={classes.footer}>
-                    <div className={classes.link} onClick={() => logout()}>
-                    <SwitchHorizontal className={classes.linkIcon}  />
-                    <span>Change account</span>
+                        <Navbar.Section className={classes.footer}>
+                            <div className={classes.link} onClick={() => logout()}>
+                            <SwitchHorizontal className={classes.linkIcon}  />
+                            <span>Change account</span>
+                            </div>
+
+                            <div className={classes.link} onClick={() => logout()}>
+                            <Logout className={classes.linkIcon} />
+                            <span>Logout</span>
+                            </div>
+                        </Navbar.Section>
+                    </Navbar>
+                    
+
+                    <div className={classes.componentSection}>
+                        {active === UserTabs.UserCharities && <p><UserCharities /></p>}
+                        {active === UserTabs.Analytics && <UserAnalytics />}
+                        {active === UserTabs.Settings && <UserSettings bubbleProfileState={setProfile} />}
                     </div>
+                    
+                </div>
+            }
 
-                    <div className={classes.link} onClick={() => logout()}>
-                    <Logout className={classes.linkIcon} />
-                    <span>Logout</span>
-                    </div>
-                </Navbar.Section>
-            </Navbar>
-            
-
-            <div className={classes.componentSection}>
-                {active === UserTabs.UserCharities && <p><UserCharities /></p>}
-                {active === UserTabs.Analytics && <UserAnalytics />}
-                {active === UserTabs.Settings && <UserSettings bubbleProfileState={setProfile} />}
-            </div>
-            
-        </div>
-        
-
-          
-        }
-
-        {loading && 
-            <div style={{backgroundColor : "white", height : "50rem"}}>
-                <Center h={500}>
-                    <div>
-                        <Loader size="xl" color="teal" variant="dots" />
-                    </div>
-                </Center>
-            </div>
-        }
+            {loading && 
+                <div style={{backgroundColor : "white", height : "50rem"}}>
+                    <Center h={500}>
+                        <div>
+                            <Loader size="xl" color="teal" variant="dots" />
+                        </div>
+                    </Center>
+                </div>
+            }
         </>
     );
 }

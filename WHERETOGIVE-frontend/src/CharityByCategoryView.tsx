@@ -18,13 +18,13 @@ const useStyles = createStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
-    paddingBottom: theme.spacing.xl * 6,
+    paddingBottom: 6,
     zIndex: 1,
     position: 'relative',
 
     [theme.fn.smallerThan('sm')]: {
       height: 500,
-      paddingBottom: theme.spacing.xl * 3,
+    paddingBottom: 3,
     },
   },
 
@@ -56,7 +56,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   control: {
-    marginTop: theme.spacing.xl * 1.5,
+    marginTop: 1.5,
     [theme.fn.smallerThan('sm')]: {
       width: '100%',
     },

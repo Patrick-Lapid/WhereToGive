@@ -17,8 +17,6 @@ import {
   Avatar,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
 import {
   ArrowsExchange,
   ChevronDown,
@@ -29,7 +27,6 @@ import {
   WorldDownload,
 } from 'tabler-icons-react';
 import globe from '../../public/spinningGlobe.gif';
-import profilePicture from '../../public/noProfilePicture.png';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../ts/authenticate';
@@ -165,11 +162,6 @@ interface HeaderSearchProps {
   links: { link: string; label: string }[];
 }
 
-interface User {
-  name: string;
-  image: any;
-}
-
 export default function Navbar({ links }: HeaderSearchProps) {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
@@ -261,7 +253,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                 <Menu
                   width={260}
                   position="bottom-end"
-                  transition="pop-top-right"
+                //   transition="pop-top-right"
                   onClose={() => setUserMenuOpened(false)}
                   onOpen={() => setUserMenuOpened(true)}
                 >
