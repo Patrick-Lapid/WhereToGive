@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from "react"
 import { User as FirebaseUser, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { auth } from "../src/firebase"
+import { notifications } from "@mantine/notifications";
+import { X } from "tabler-icons-react";
 
 interface AuthContextInterface {
     currentUser : FirebaseUser;
@@ -52,11 +54,11 @@ export function AuthProvider({ children } : any) {
             // Signed in 
             // navigate to Dashboard on login success
             updateProfile(userCredential.user, {displayName : name}).then(async () => {
-                console.log("Display Name Saved");
+                
                 try {
                     const user = await userCredential.user;
                     console.log(user.uid);
-                    const response = await fetch(`http://localhost:8000/api/users/`, {
+                    const response = await fetch(`http://localhost:8000/api/users`, {
                         method: 'POST',
                         body: JSON.stringify({
                           Userid: user.uid, // zcwmy3K0ONPjn72zeiPaLySbeeI3
@@ -67,13 +69,27 @@ export function AuthProvider({ children } : any) {
                     });
     
                     console.log(response);
-                    // window.location.replace("/dashboard");
+                    window.location.replace("/dashboard");
                         
                 } catch (error) {
-                    console.log(error);
+                    notifications.show({
+                        autoClose: 5000,
+                        title: "Registration Error",
+                        message: error,
+                        color: "red",
+                        icon: <X color='white'/>,
+                        className: 'my-notification-class',
+                    });
                 }
               }).catch((error) => {
-                console.log("PROFILE ERROR")
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Registration Error",
+                    message: error,
+                    color: "red",
+                    icon: <X color='white'/>,
+                    className: 'my-notification-class',
+                });
               });
             // register user in supabase
             
