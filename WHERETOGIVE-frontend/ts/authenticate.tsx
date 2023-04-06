@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from "react"
 import { User as FirebaseUser, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { auth } from "../src/firebase"
+import { notifications } from "@mantine/notifications";
+import { X } from "tabler-icons-react";
 
 interface AuthContextInterface {
     currentUser : FirebaseUser;
@@ -51,15 +53,47 @@ export function AuthProvider({ children } : any) {
         .then(async (userCredential: { user: any; }) => {
             // Signed in 
             // navigate to Dashboard on login success
-            updateProfile(userCredential.user, {displayName : name}).then(() => {
-                console.log("Display Name Saved")
+            updateProfile(userCredential.user, {displayName : name}).then(async () => {
+                
+                try {
+                    const user = await userCredential.user;
+                    console.log(user.uid);
+                    const response = await fetch(`http://localhost:8000/api/users`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                          Userid: user.uid, // zcwmy3K0ONPjn72zeiPaLySbeeI3
+                          DisplayName : user.displayName, // Display Name
+                          City : "",
+                          State : ""
+                        })
+                    });
+    
+                    console.log(response);
+                    window.location.replace("/dashboard");
+                        
+                } catch (error) {
+                    notifications.show({
+                        autoClose: 5000,
+                        title: "Registration Error",
+                        message: error,
+                        color: "red",
+                        icon: <X color='white'/>,
+                        className: 'my-notification-class',
+                    });
+                }
               }).catch((error) => {
-                console.log("PROFILE ERROR")
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Registration Error",
+                    message: error,
+                    color: "red",
+                    icon: <X color='white'/>,
+                    className: 'my-notification-class',
+                });
               });
-            const user = userCredential.user;
-            const refreshToken = user.getIdToken();
-            sessionStorage.setItem('Auth Token', await refreshToken);
-            window.location.replace("/dashboard");
+            // register user in supabase
+            
+            
         })
         .catch((error: { code: any; message: any; }) => {
             const errorCode = error.code;
