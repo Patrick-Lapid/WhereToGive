@@ -1,4 +1,4 @@
-import { Button, Text, Group, Input, Paper, PasswordInput, TextInput, Title } from '@mantine/core';
+import { Button, Text, Group, Input, Paper, PasswordInput, TextInput, Title, Avatar, Flex } from '@mantine/core';
 import { reauthenticateWithCredential, reauthenticateWithPopup, updateEmail, updateProfile } from 'firebase/auth';
 import React, { useEffect, useState } from 'react'
 import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil } from "tabler-icons-react";
@@ -199,9 +199,10 @@ const UserSettings = (props: Props) => {
                     
                 </Group>
 
-                <div style={{width : "20%"}}>
-                    
-                </div>  
+                <Flex  style={{width : "20%"}} gap="lg" justify="center" align="center" direction="column">
+                    <Avatar size="xl" src={currentUser.photoURL} />
+                    <Button variant="outline" color='gray' >Update Profile Picture</Button>
+                </Flex>  
             
             </Group>
             

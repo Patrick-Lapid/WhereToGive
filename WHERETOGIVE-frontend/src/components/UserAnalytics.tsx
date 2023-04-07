@@ -523,13 +523,22 @@ export default function UserAnalytics () {
                             
                         }}
                     >
+                        {doughnutChartData && 
                         <Flex mih={260} align="center" justify="center" gap="xl">
                             <Text fz="xl" fw={600} variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}>Total Donations: ${userTotal}</Text>
                             <div>
+                                
                                 <Doughnut width={190} options={doughnutOptions} data={doughnutChartData} />
+                                
                             </div>
                             
                         </Flex>
+                        }
+                        {!doughnutChartData &&
+                        <Center h={250}>
+                            <Text fz="xl" fw={600} variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}>Total Donations: ${userTotal}</Text>
+                        </Center>
+                        }
                     </Paper>
                     </div>
                     <div className="col-7 p-1">
