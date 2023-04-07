@@ -17,8 +17,6 @@ import {
   Avatar,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
 import {
   ArrowsExchange,
   ChevronDown,
@@ -29,10 +27,10 @@ import {
   WorldDownload,
 } from 'tabler-icons-react';
 import globe from '../../public/spinningGlobe.gif';
-import profilePicture from '../../public/noProfilePicture.png';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../ts/authenticate';
+import { LINKS, useNavigateContext } from '../../ts/navigate';
 
 const useStyles = createStyles((theme) => ({
   inner: {
@@ -129,7 +127,7 @@ const useStyles = createStyles((theme) => ({
 
   user: {
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+    padding: '8px 12px',
     borderRadius: theme.radius.sm,
     transition: 'background-color 100ms ease',
 
@@ -161,56 +159,36 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface HeaderSearchProps {
-  links: { link: string; label: string }[];
-}
+const links = [
+    { link: '/', label: LINKS.LANDING },
+    { link: '/dashboard', label: LINKS.DASHBOARD },
+    { link: '/charitysearch', label: LINKS.SEARCH },
+];
 
-interface User {
-  name: string;
-  image: any;
-}
 
-export default function Navbar({ links }: HeaderSearchProps) {
+
+export default function Navbar() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes, theme, cx } = useStyles();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const { logout, loading, currentUser } = useAuth();
+  const { activeLink, updateLink, updateActiveProfileSection } = useNavigateContext();
 
   const items = links.map((link) => (
-    <a
+    <Link
       key={link.label}
-      href={link.link}
+      to={link.link}
       className={cx(classes.link, {
-        [classes.linkActive]: active === link.link,
+        [classes.linkActive]: activeLink === link.label,
       })}
       onClick={(event) => {
-        event.preventDefault();
-        setActive(link.link);
+        updateLink(link.label);
       }}
     >
       {link.label}
-    </a>
-  ));
-
-  const collapsedLinks = links.map((item) => (
-    <UnstyledButton className={classes.subLink} key={item.label}>
-      <Group noWrap align="flex-start">
-        {/* <ThemeIcon size={34} variant="default" radius="md">
-          <item.icon size={22} color={theme.fn.primaryColor()} />
-        </ThemeIcon> */}
-        <div>
-          <Text size="sm" weight={500}>
-            {item.label}
-          </Text>
-          {/* <Text size="xs" color="dimmed">
-            {item.description}
-          </Text> */}
-        </div>
-      </Group>
-    </UnstyledButton>
+    </Link>
   ));
 
   return (
@@ -261,7 +239,7 @@ export default function Navbar({ links }: HeaderSearchProps) {
                 <Menu
                   width={260}
                   position="bottom-end"
-                  transition="pop-top-right"
+                //   transition="pop-top-right"
                   onClose={() => setUserMenuOpened(false)}
                   onOpen={() => setUserMenuOpened(true)}
                 >
@@ -296,15 +274,24 @@ export default function Navbar({ links }: HeaderSearchProps) {
                 }}>
                       <Text>Dashboard</Text>
                     </Menu.Item>
-                    <Menu.Item icon={<WorldDownload size={14} />}>
+                    <Menu.Item icon={<WorldDownload size={14} />} onClick={() => {
+                    updateActiveProfileSection(LINKS.SAVED_CHARITIES);
+                    window.location.replace('/profile');
+                }}>
                       Saved charities
                     </Menu.Item>
-                    <Menu.Item icon={<PigMoney size={14} />}>
+                    <Menu.Item icon={<PigMoney size={14} />} onClick={() => {
+                    updateActiveProfileSection(LINKS.USER_DASHBOARD);
+                    window.location.replace('/profile');
+                }}>
                       Your donations
                     </Menu.Item>
 
                     <Menu.Label>Settings</Menu.Label>
-                    <Menu.Item icon={<Settings size={14} />}>
+                    <Menu.Item icon={<Settings size={14} />} onClick={() => {
+                    updateActiveProfileSection(LINKS.SETTINGS);
+                    window.location.replace('/profile');
+                }}>
                       Account settings
                     </Menu.Item>
                     <Menu.Item icon={<ArrowsExchange size={14} />}>
@@ -354,35 +341,25 @@ export default function Navbar({ links }: HeaderSearchProps) {
           >
             Home
           </Link>
-          <UnstyledButton
-            className={classes.collapsedLink}
-            onClick={toggleLinks}
-          >
-            <Center inline>
-              <Box component="span" mr={5}>
-                Navigation
-              </Box>
-              <ChevronDown
-                className="pt-1"
-                size={16}
-                color={theme.fn.primaryColor()}
-              />
-            </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>{collapsedLinks}</Collapse>
 
-          {/* Swap out for HashLink */}
-          <Link to={'/about'} className={classes.collapsedLink}>
-            About
+          <Link to={'/dashboard'} className={classes.collapsedLink} onClick={closeDrawer}>
+            Charity Dashboard
           </Link>
-          <Link to={'/creators'} className={classes.collapsedLink}>
-            Home
+          <Link to={'/charitysearch'} className={classes.collapsedLink} onClick={closeDrawer}>
+            Charity Search
           </Link>
 
           <Divider
             my="sm"
             color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
           />
+
+         <Link to={'/profile'} className={classes.collapsedLink} onClick={() => {
+                  window.location.replace('/profile');
+                  closeDrawer();
+                }}>
+            User Dashboard
+          </Link>
 
           {!currentUser && (
             <Group position="center" grow pb="xl" px="md">

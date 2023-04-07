@@ -11,40 +11,37 @@ import { AuthProvider } from '../ts/authenticate';
 import CharityByCategory from './CharityByCategoryView';
 import UserDashboard from './UserDashboard';
 import CharitySearch from './CharitySearch';
-// import { Notifications } from '@mantine/notifications';
+import { NavigateProvider } from "../ts/navigate";
+import { Notifications } from '@mantine/notifications';
 
 function App() {
   return (
     <MantineProvider>
       <ModalsProvider>
         <AuthProvider>
-        {/* <Notifications /> */}
-          <div style={{ backgroundColor: 'rgb(246,246,246)' }}>
-            <BrowserRouter>
-              {window.location.href.split('/')[
-                window.location.href.split('/').length - 1
-              ] !== 'login' && 
-              window.location.href.split('/')[
-                window.location.href.split('/').length - 1
-              ] !== 'profile' && (
-                <Navbar
-                  links={[
-                    { link: 'google.com', label: 'Home' },
-                    { link: 'facebook.com', label: 'About' },
-                    { link: 'google2.com', label: 'Link1' },
-                  ]}
-                />
-              )}
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<AuthenticationForm />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<UserDashboard />} />
-                <Route path="/charitysearch" element={<CharitySearch />} />
-                <Route path="/charity" element={<CharityByCategory />} />
-              </Routes>
-            </BrowserRouter>
-          </div>
+            <NavigateProvider>
+                <Notifications />
+                <div style={{ backgroundColor: 'rgb(246,246,246)' }}>
+                    <BrowserRouter>
+                    {window.location.href.split('/')[
+                        window.location.href.split('/').length - 1
+                    ] !== 'login' && 
+                    window.location.href.split('/')[
+                        window.location.href.split('/').length - 1
+                    ] !== 'profile' && (
+                        <Navbar/>
+                    )}
+                    <Routes>
+                        <Route path="/" element={<Landing />} />
+                        <Route path="/login" element={<AuthenticationForm />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/profile" element={<UserDashboard />} />
+                        <Route path="/charitysearch" element={<CharitySearch />} />
+                        <Route path="/charity" element={<CharityByCategory />} />
+                    </Routes>
+                    </BrowserRouter>
+                </div>
+          </NavigateProvider>
         </AuthProvider>
       </ModalsProvider>
     </MantineProvider>

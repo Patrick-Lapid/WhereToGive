@@ -1,28 +1,21 @@
-import { Center, Code, createStyles, Group, Loader, Navbar, Text  } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { Center, createStyles,  Loader, Navbar  } from '@mantine/core';
+import React, {  useEffect, useState } from 'react';
 import { useAuth } from '../ts/authenticate';
 import {
-    BellRinging,
-    Fingerprint,
-    Key,
+    LayoutList,
     Settings,
-    TwoFA,
-    DatabaseImport,
-    Receipt2,
     Logout,
     SwitchHorizontal,
-    Selector
+    Selector,
+    Home,
+    DeviceDesktopAnalytics
   } from 'tabler-icons-react';
 import { UserButton } from './components/UserButton';
 import UserAnalytics from './components/UserAnalytics';
 import UserCharities from './components/UserCharities';
 import UserSettings from './components/UserSettings';
-  
-enum UserTabs {
-    "UserCharities" = "Saved Charities",
-    "Analytics" = "Analytics",
-    "Settings" = "Account Settings",
-}
+import { LINKS, useNavigateContext } from '../ts/navigate';
+
 
 interface userProfile {
     name : string;
@@ -105,13 +98,7 @@ interface userProfile {
   }));
   
 
-  const tabs = [
-    
-      { link: '', label: UserTabs.UserCharities , icon: BellRinging },
-      { link: '', label: UserTabs.Analytics, icon: Receipt2 },
-      { link: '', label: UserTabs.Settings, icon: Settings },
-    
-  ];
+  
 
   
 
@@ -119,88 +106,92 @@ const UserDashboard = () => {
     
     const {currentUser, loading, logout} = useAuth();
     const { classes, cx } = useStyles();
-    const [active, setActive] = useState<UserTabs>(UserTabs.UserCharities);
-
     const [profile, setProfile] = useState<userProfile>();
+    const {activeProfileSection, updateActiveProfileSection} = useNavigateContext();
+
+    const tabs = [
+    
+        { link: '', label: LINKS.SAVED_CHARITIES , icon: LayoutList },
+        { link: '', label: LINKS.USER_DASHBOARD, icon: DeviceDesktopAnalytics },
+        { link: '', label: LINKS.SETTINGS, icon: Settings },
+      
+    ];
 
     const links = tabs.map((item) => (
         <a
-          className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+          className={cx(classes.link, { [classes.linkActive]: item.label === activeProfileSection })}
           href={item.link}
           key={item.label}
           onClick={(event) => {
             event.preventDefault();
-            setActive(item.label);
+            updateActiveProfileSection(item.label);
           }}
         >
           <item.icon className={classes.linkIcon} />
           {item.label}
         </a>
-      ));
+    ));
 
     useEffect(() => {
-        console.log("test")
-    }, [currentUser]);
-    
-
-    useEffect(() => {
-        console.log(currentUser);
-    }, []);
+        console.log(activeProfileSection);
+    }, [activeProfileSection]);
 
     return (
         <>
-        {!loading && 
-        <div style={{height:"100%", display:"flex"}}>
-            <Navbar width={{ sm: 300 }} p="md">
+            {!loading && 
+                <div style={{height:"100%", display:"flex"}}>
+                    <Navbar width={{ sm: 300 }} p="md">
 
-            <Navbar.Section className={classes.section}>
-                <UserButton
-                image="https://i.imgur.com/fGxgcDF.png"
-                name={currentUser.displayName}
-                email={currentUser.email}
-                icon={<Selector size="0.9rem" stroke="1.5" />}
-                />
-            </Navbar.Section>
+                    <Navbar.Section className={classes.section}>
+                        <UserButton
+                        image={currentUser.photoURL}
+                        name={currentUser.displayName}
+                        email={currentUser.email}
+                        icon={<Selector size="0.9rem" stroke="1.5" />}
+                        />
+                    </Navbar.Section>
 
-                <Navbar.Section grow>
-                    {links}
-                </Navbar.Section>
+                        <Navbar.Section grow>
+                            {links}
+                        </Navbar.Section>
 
-                <Navbar.Section className={classes.footer}>
-                    <div className={classes.link} onClick={() => logout()}>
-                    <SwitchHorizontal className={classes.linkIcon}  />
-                    <span>Change account</span>
+                        <Navbar.Section className={classes.footer}>
+                            <div style={{cursor : "pointer"}} className={classes.link} onClick={() => window.location.replace('/')}>
+                            <Home className={classes.linkIcon}  />
+                            <span>Home</span>
+                            </div>
+
+                            <div style={{cursor : "pointer"}} className={classes.link} onClick={() => logout()}>
+                            <SwitchHorizontal className={classes.linkIcon}  />
+                            <span>Change account</span>
+                            </div>
+
+                            <div style={{cursor : "pointer"}} className={classes.link} onClick={() => logout()}>
+                            <Logout className={classes.linkIcon} />
+                            <span>Logout</span>
+                            </div>
+                        </Navbar.Section>
+                    </Navbar>
+                    
+
+                    <div className={classes.componentSection}>
+                        {activeProfileSection === LINKS.SAVED_CHARITIES && <p><UserCharities /></p>}
+                        {activeProfileSection === LINKS.USER_DASHBOARD && <UserAnalytics />}
+                        {activeProfileSection === LINKS.SETTINGS && <UserSettings bubbleProfileState={setProfile} />}
                     </div>
+                    
+                </div>
+            }
 
-                    <div className={classes.link} onClick={() => logout()}>
-                    <Logout className={classes.linkIcon} />
-                    <span>Logout</span>
-                    </div>
-                </Navbar.Section>
-            </Navbar>
-            
-
-            <div className={classes.componentSection}>
-                {active === UserTabs.UserCharities && <p><UserCharities /></p>}
-                {active === UserTabs.Analytics && <UserAnalytics />}
-                {active === UserTabs.Settings && <UserSettings bubbleProfileState={setProfile} />}
-            </div>
-            
-        </div>
-        
-
-          
-        }
-
-        {loading && 
-            <div style={{backgroundColor : "white", height : "50rem"}}>
-                <Center h={500}>
-                    <div>
-                        <Loader size="xl" color="teal" variant="dots" />
-                    </div>
-                </Center>
-            </div>
-        }
+            {loading && 
+                <div style={{backgroundColor : "white", height : "50rem"}}>
+                    <Center h={500}>
+                        <div>
+                            <Loader size="xl" color="teal" variant="dots" />
+                        </div>
+                    </Center>
+                </div>
+            }
         </>
     );
 }

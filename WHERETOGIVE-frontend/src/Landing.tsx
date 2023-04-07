@@ -6,12 +6,11 @@ import {
   Stepper,
   Group,
   Card,
-  Badge,
   Divider,
   Image,
   Loader,
   Center,
-  Container,
+  
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import {
@@ -33,6 +32,7 @@ import wave2 from '../public/wave2.svg';
 import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
+import { LINKS, useNavigateContext } from '../ts/navigate';
 
 type Props = {};
 
@@ -163,7 +163,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 
   stepIcon: {
-    ref: getRef('stepIcon'),
+    // ref: getRef('stepIcon'),
     borderColor: 'transparent',
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.white,
@@ -262,6 +262,11 @@ const Landing = (props: Props) => {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState(0);
   const { loading } = useAuth();
+  const { updateLink } = useNavigateContext();
+
+  useEffect(() => {
+    updateLink(LINKS.LANDING);
+  }, []);
 
   return (
     <>
@@ -394,9 +399,10 @@ const Landing = (props: Props) => {
                   </Group>
 
                   <Text size="sm" color="dimmed">
-                    Ready to Give? Complete a quick survey and we will help find
-                    nonProfits that align with your interests. You will also be
-                    able to browse our selection of charities to gift.
+                    Ready to Give? We help find
+                    nonProfits that align with your interests. You will be
+                    able to browse our selection of charities and filter
+                    based off locations and tags that interest you.
                   </Text>
 
                   <Link className={classes.links} to={'/dashboard'}>
