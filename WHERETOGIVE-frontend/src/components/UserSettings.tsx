@@ -1,9 +1,12 @@
-import { Button, Text, Group, Input, Paper, PasswordInput, TextInput, Title, Avatar, Flex } from '@mantine/core';
+import { Button, Text, Group, Image, Paper, PasswordInput, TextInput, Title, Avatar, Flex, FileInput } from '@mantine/core';
 import { reauthenticateWithCredential, reauthenticateWithPopup, updateEmail, updateProfile } from 'firebase/auth';
-import React, { useEffect, useState } from 'react'
-import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil } from "tabler-icons-react";
+import React, { useEffect, useState, useRef } from 'react'
+import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil, Checkbox } from "tabler-icons-react";
 // import { notifications } from '@mantine/notifications';
 import { useAuth } from '../../ts/authenticate';
+import { storage } from '../firebase';
+import {ref as firebaseRef, uploadBytes, getDownloadURL} from "firebase/storage";
+import { notifications } from '@mantine/notifications';
 
 interface userProfile {
     name : string;
@@ -21,7 +24,8 @@ const UserSettings = (props: Props) => {
     const [displayName, setDisplayName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
+    const ref = useRef<HTMLButtonElement>(null);
+    const [photo, setPhoto] = useState<any>(null);
     const [editDisplayName, toggleEditDisplayName] = useState<boolean>(false);
     const [editEmail, toggleEditEmail] = useState<boolean>(false);
     const [editPassword, toggleEditPassword] = useState<boolean>(false);
@@ -51,16 +55,56 @@ const UserSettings = (props: Props) => {
           });
     }
 
-    const updateProfilePicture = (firstName : string, lastName : string) => {
-        updateProfile(currentUser, {
-            photoURL: `${firstName} ${lastName}`
-          }).then(() => {
-            props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
-            console.log("Photo updated!");
-          }).catch((error) => {
-            console.log(error);
-          });
+    const updateProfilePicture = () => {
+        if(photo){
+            
+            const storageRef = firebaseRef(storage, `${currentUser.uid}/avatar.${photo.type.split(['/'])[1]}`);
+            uploadBytes(storageRef, photo).then((snapshot) => {
+                getDownloadURL(storageRef).then((url) => {
+                    updateProfile(currentUser, {
+                        photoURL: url
+                      }).then(() => {
+                        props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
+                        console.log("Photo updated!", url);
+                        setPhoto(null);
+                        notifications.show({
+                            title: 'Success!',
+                            message: "Your Profile Picture was saved :)",
+                            color: 'green',
+                            icon: <Check color='white' />
+                        }); 
+                      }).catch((error) => {
+                        console.log(error);
+                        notifications.show({
+                            title: 'Photo Upload Error',
+                            message: error,
+                            color: 'red',
+                            icon: <X />
+                        }); 
+                    });
+                }).catch((error) => {
+                    console.log(error);
+                    notifications.show({
+                        title: 'Photo Upload Error',
+                        message: error,
+                        color: 'red',
+                        icon: <X />
+                    }); 
+                });
+            }).catch((error) => {
+                console.log(error);
+                    notifications.show({
+                        title: 'Photo Upload Error',
+                        message: error,
+                        color: 'red',
+                        icon: <X />
+                }); 
+            });
+            
+        }
     }
+
+
 
     const handleDisplayNameChange = () => {
         if(displayName.length === 0){
@@ -89,11 +133,6 @@ const UserSettings = (props: Props) => {
         updateUserEmail(email);
         
     }
-
-    useEffect(() => {
-        // reauthenticateWithCredential(currentUser);
-    })
-
 
     return (
         <div style={{width : "95%", margin: '1rem auto 0'}}>
@@ -199,20 +238,25 @@ const UserSettings = (props: Props) => {
                     
                 </Group>
 
-                <Flex  style={{width : "20%"}} gap="lg" justify="center" align="center" direction="column">
-                    <Avatar size="xl" src={currentUser.photoURL} />
-                    <Button variant="outline" color='gray' >Update Profile Picture</Button>
+                <Flex style={{width : "20%"}} gap="lg" justify="center" align="center" direction="column">
+                    <Image maw={240} mx="auto" radius="md" src={photo ? URL.createObjectURL(photo) : currentUser.photoURL} alt="Random image" />
+                    {!photo &&
+                        <Button variant="outline" color='gray' onClick={() => ref.current.click()}>Update Profile Picture</Button>
+                    }
+                    {photo &&
+                        <Group>
+                            <Button size="md" variant="outline" color='green' onClick={() => updateProfilePicture()}><Check size="0.8rem" /></Button>
+                            <Button size="md" variant="outline" color='red' onClick={() => setPhoto(null)}><X size="0.8rem" /></Button>
+                        </Group>
+                    }
+                    
                 </Flex>  
             
             </Group>
             
-
-            
-
-
             </Paper>
 
-            
+            <FileInput ref={ref} value={photo} onChange={setPhoto} display={"none"} accept="image/png,image/jpeg,image/gif"/>
             
         </div>
     );
