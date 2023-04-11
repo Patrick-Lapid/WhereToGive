@@ -12,7 +12,9 @@ type Charity struct {
 	Name             string         `json: "name"`
 	DescriptionShort string         `json: "description_short"`
 	DescriptionLong  string         `json: "description_long"`
-	Location         string         `json: "location"`
+	City         	 string         `json: "city"`
+	State            string         `json: "state"`
+	Country          string         `json: "country"`
 	WebsiteURL       string         `json: "website_url"`
 	LogoURL          string         `gorm:"type:text" json: "logo_url"`
 	Tags             pq.StringArray `gorm:"type:text[]" json: "tags"`
