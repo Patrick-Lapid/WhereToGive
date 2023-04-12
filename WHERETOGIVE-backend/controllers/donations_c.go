@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -81,4 +82,30 @@ func CreateDonation(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write([]byte("Successfully created donation"))
+}
+
+func DeleteDonation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+
+	vars := mux.Vars(r)
+	id, ok := vars["donationID"]
+	fmt.Print("c");
+	// Check if id is passed
+	if !ok {
+		w.WriteHeader(400)
+		w.Write([]byte("Missing parameter donationID"))
+		return
+	}
+	fmt.Print("a");
+	donationID, err := strconv.Atoi(id)
+    if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte("donationID must be integer"))
+		return
+    }
+	fmt.Print("d");
+	models.DeleteDonation(donationID);
+	w.WriteHeader(200)
+	w.Write([]byte("Successfully deleted donation"))
 }
