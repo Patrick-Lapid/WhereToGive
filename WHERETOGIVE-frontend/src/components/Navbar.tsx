@@ -1,7 +1,6 @@
 import {
   createStyles,
   Group,
-  Center,
   Burger,
   Container,
   Drawer,
@@ -9,7 +8,6 @@ import {
   Divider,
   UnstyledButton,
   Box,
-  Collapse,
   Button,
   Text,
   Title,
@@ -27,7 +25,7 @@ import {
   WorldDownload,
 } from 'tabler-icons-react';
 import globe from '../../public/spinningGlobe.gif';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../ts/authenticate';
 import { LINKS, useNavigateContext } from '../../ts/navigate';
@@ -170,10 +168,9 @@ const links = [
 export default function Navbar() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
-  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes, theme, cx } = useStyles();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const { logout, loading, currentUser } = useAuth();
+  const { logout, loading, currentUser, switchAccount } = useAuth();
   const { activeLink, updateLink, updateActiveProfileSection } = useNavigateContext();
 
   const items = links.map((link) => (
@@ -294,7 +291,9 @@ export default function Navbar() {
                 }}>
                       Account settings
                     </Menu.Item>
-                    <Menu.Item icon={<ArrowsExchange size={14} />}>
+                    <Menu.Item 
+                      icon={<ArrowsExchange size={14} />}
+                      onClick={switchAccount}>
                       Change account
                     </Menu.Item>
                     <Menu.Item

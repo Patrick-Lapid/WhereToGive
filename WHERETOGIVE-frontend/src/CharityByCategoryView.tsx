@@ -1,107 +1,16 @@
 import { Carousel } from '@mantine/carousel';
 import {
   Avatar,
-  createStyles,
   Button,
   Text,
   Paper,
   useMantineTheme,
-  Container,
+  Title,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
+import { useNavigateContext } from '../ts/navigate';
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    height: 700,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    paddingBottom: 6,
-    zIndex: 1,
-    position: 'relative',
-
-    [theme.fn.smallerThan('sm')]: {
-      height: 500,
-    paddingBottom: 3,
-    },
-  },
-
-  title: {
-    color: theme.white,
-    fontSize: 60,
-    fontWeight: 900,
-    lineHeight: 1.1,
-
-    [theme.fn.smallerThan('sm')]: {
-      fontSize: 40,
-      lineHeight: 1.2,
-    },
-
-    [theme.fn.smallerThan('xs')]: {
-      fontSize: 28,
-      lineHeight: 1.3,
-    },
-  },
-
-  description: {
-    color: theme.white,
-    maxWidth: 600,
-
-    [theme.fn.smallerThan('sm')]: {
-      maxWidth: '100%',
-      fontSize: theme.fontSizes.sm,
-    },
-  },
-
-  control: {
-    marginTop: 1.5,
-    [theme.fn.smallerThan('sm')]: {
-      width: '100%',
-    },
-  },
-
-  category: {
-    color: theme.white,
-    opacity: 0.7,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-  },
-
-  card: {
-    height: '450px',
-    backgroundColor:
-      theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
-  },
-
-  section: {
-    maxHeight: '150px',
-    overflowY: 'auto',
-    borderBottom: `1px solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-  },
-
-  scroll: {
-    width: '100%',
-    maxHeight: '200px',
-    overflowY: 'auto',
-  },
-
-  like: {
-    color: theme.colors.red[6],
-  },
-
-  label: {
-    textTransform: 'uppercase',
-    fontSize: theme.fontSizes.xs,
-    fontWeight: 700,
-  },
-}));
 
 interface CharityCardProps {
   DescriptionLong: string;
@@ -189,15 +98,16 @@ function handleMoreClick(websiteURL: string) {
 export default function CharityByCategory() {
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
-  const { classes } = useStyles();
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const paramValue = urlParams.get('param');
   const [data, setData] = useState<CharityCardProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { updateLink } = useNavigateContext();
 
   useEffect(() => {
+    updateLink(null);
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -223,19 +133,35 @@ export default function CharityByCategory() {
     : null;
 
   return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {data.length > 0 && (
-        <Carousel
-          slideSize="33.33%"
-          breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
-          slideGap="xl"
-          align="start"
-          slidesToScroll={mobile ? 1 : 2}
-        >
-          {slides}
-        </Carousel>
-      )}
+    <div style={{ backgroundColor: 'white'}}>
+        <div className="container pt-4">
+            {isLoading && <div>Loading...</div>}
+            {data.length > 0 && (
+                <>
+                    <div className='mb-2'>
+                        <Title className='d-inline' variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} tt="capitalize" sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                        fw={700}>{paramValue}</Title>
+                        <Title 
+                        className='d-inline'
+                        sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                        fw={700}
+                        >  Charities 
+                        </Title>
+                    </div>
+                    
+                    <Carousel
+                    slideSize="33.33%"
+                    breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
+                    slideGap="xl"
+                    align="start"
+                    slidesToScroll={mobile ? 1 : 2}
+                    >
+                    {slides}
+                    </Carousel>
+                </>
+                
+            )}
+        </div>
     </div>
   );
 }
