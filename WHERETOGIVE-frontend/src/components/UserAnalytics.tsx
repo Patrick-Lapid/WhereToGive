@@ -116,7 +116,7 @@ const doughnutOptions = {
 
 export default function UserAnalytics () {
 
-    const {classes, cx}  = useStyles();
+    const {classes}  = useStyles();
     const [loading, setloading] = useState<boolean>(true);
     const [selectedCharityID, setCharityID] = useState<number | null>(null);
     const [selectedCharity, setSelectedCharity] = useState<charity | null>(null);
@@ -165,10 +165,12 @@ export default function UserAnalytics () {
             setUserTotal(userTotalPayload.TotalAmount);
             const jsonData = await response.json();
             if(!jsonData){
+                setDoughnutChartData(null);
+                setLineChartData(null);
+                updateUserDonationList([]);
                 setloading(false);
                 return;
             }
-            console.log("Donation Fetch", jsonData);
 
             const donationMap = new Map<string, number>();
             const charityMap = new Map<string, number>();
@@ -180,7 +182,6 @@ export default function UserAnalytics () {
             
             // generate donation map from user donations
             jsonData.forEach((donation : any, index : number) => {
-                console.log(donation);
                 if(donationMap.has(donation.TransDate.substring(0,10))){
                     donationMap.set(donation.TransDate.substring(0,10), donationMap.get(donation.TransDate.substring(0,10)) + donation.Amount);
                 } else {
@@ -275,8 +276,6 @@ export default function UserAnalytics () {
                   },
                 ],
             });
-
-            
     
             updateUserDonationList(tableRow);
 
@@ -295,8 +294,6 @@ export default function UserAnalytics () {
                 `http://localhost:8000/api/charities/${charityID}`
             );
             const jsonData = await response.json();
-            console.log(jsonData);
-    
             setSelectedCharity({name : jsonData.Name, photoURL : jsonData.LogoURL});
             
         } catch (error) {
@@ -325,8 +322,6 @@ export default function UserAnalytics () {
                     label : val.Name,
                     ID: val.ID,
                 })});
-
-                console.log(cleanedArray);
         
                 updateSearchResults(cleanedArray);
                 
@@ -343,13 +338,12 @@ export default function UserAnalytics () {
         // send json to endpoint
         if(selectedCharityID){
 
-            console.log(date.toISOString(), `${date.toISOString().substring(0,4)}-${date.toISOString().substring(5,7)}-${date.toISOString().substring(8,10)}`);
-            console.log(JSON.stringify({
-                Userid: currentUser.uid,
-                Charityid : selectedCharityID,
-                Amount : donationAmt,
-                TransDate : date
-              }));
+            // console.log(JSON.stringify({
+            //     Userid: currentUser.uid,
+            //     Charityid : selectedCharityID,
+            //     Amount : donationAmt,
+            //     TransDate : date
+            // }));
 
             fetch(
                 `http://localhost:8000/api/donations/add`, {

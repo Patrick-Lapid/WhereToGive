@@ -1,7 +1,7 @@
 import { Button, Text, Group, Image, Paper, PasswordInput, TextInput, Title, Avatar, Flex, FileInput } from '@mantine/core';
 import { reauthenticateWithCredential, reauthenticateWithPopup, updateEmail, updateProfile } from 'firebase/auth';
 import React, { useEffect, useState, useRef } from 'react'
-import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil, Checkbox } from "tabler-icons-react";
+import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil } from "tabler-icons-react";
 // import { notifications } from '@mantine/notifications';
 import { useAuth } from '../../ts/authenticate';
 import { storage } from '../firebase';
@@ -38,8 +38,20 @@ const UserSettings = (props: Props) => {
             props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
             console.log("Display name updated!");
             setDisplayName("");
+            notifications.show({
+                title: 'Success!',
+                message: "Your Display Name was saved",
+                color: 'green',
+                icon: <Check color='white' />
+            }); 
           }).catch((error) => {
             console.log(error);
+            notifications.show({
+                title: 'Display Name Change Error',
+                message: error,
+                color: 'red',
+                icon: <X />
+            });
           });
     }
 
@@ -50,8 +62,20 @@ const UserSettings = (props: Props) => {
             props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
             console.log("Email updated!");
             setEmail("");
+            notifications.show({
+                title: 'Success!',
+                message: "Your Email was saved",
+                color: 'green',
+                icon: <Check color='white' />
+            }); 
           }).catch((error) => {
             console.log(error);
+            notifications.show({
+                title: 'Email Change Error',
+                message: error,
+                color: 'red',
+                icon: <X />
+            });
           });
     }
 
@@ -108,12 +132,12 @@ const UserSettings = (props: Props) => {
 
     const handleDisplayNameChange = () => {
         if(displayName.length === 0){
-            // notifications.show({
-            //     title: 'Error',
-            //     message: 'Display Name must be at least one character.',
-            //     color: 'red',
-            //     icon: <X />
-            // }); 
+            notifications.show({
+                title: 'Error',
+                message: 'Display Name must be at least one character.',
+                color: 'red',
+                icon: <X />
+            }); 
             console.log("display name too short");
         }
         updateDisplayName(displayName);
@@ -121,17 +145,15 @@ const UserSettings = (props: Props) => {
     }
 
     const handleEmailChange = () => {
-        if(displayName.length === 0){
-            // notifications.show({
-            //     title: 'Error',
-            //     message: 'Display Name must be at least one character.',
-            //     color: 'red',
-            //     icon: <X />
-            // }); 
-            console.log("email too short");
+        if(email.length === 0 || !email.includes("@") || !email.includes(".")){
+            notifications.show({
+                title: 'Error',
+                message: 'Invalid Email Format',
+                color: 'red',
+                icon: <X />
+            }); 
         }
-        updateUserEmail(email);
-        
+        updateUserEmail(email);  
     }
 
     return (

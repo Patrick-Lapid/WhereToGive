@@ -57,7 +57,6 @@ export function AuthProvider({ children } : any) {
                 
                 try {
                     const user = await userCredential.user;
-                    console.log(user.uid);
                     const response = await fetch(`http://localhost:8000/api/users`, {
                         method: 'POST',
                         body: JSON.stringify({
@@ -100,7 +99,7 @@ export function AuthProvider({ children } : any) {
             const errorMessage = error.message;
             console.log(errorCode);
             console.log(errorMessage);
-            if(errorCode == "auth/email-already-in-use")
+            if(errorCode === "auth/email-already-in-use")
             {
                 setRegistrationError(true);
                 setModalIsOpen(true);
