@@ -145,6 +145,7 @@ const useStyles = createStyles((theme) => ({
   },
   control: {
     height: 42,
+    marginTop: "6px",
     fontSize: theme.fontSizes.md,
     '&:not(:first-of-type)': {
       marginLeft: theme.spacing.md,
@@ -316,12 +317,12 @@ const data = [
   {
     image: `${food_security}`,
     title: 'Support Food Security and Access',
-    category: 'food security',
+    category: 'food-security',
   },
   {
     image: `${gender_equality}`,
     title: "Support Gender Equality and Women's Rights",
-    category: 'gender equality',
+    category: 'gender-equality',
   },
   {
     image: `${health}`,
@@ -354,7 +355,7 @@ const data = [
     category: 'indigenous-led',
   },
   {
-    category: 'cancer research',
+    category: 'cancer-research',
     image: `${cancer}`,
     title: 'Support cancer research',
   },
@@ -444,7 +445,7 @@ const data = [
     title: 'Support veterans and their families',
   },
   {
-    category: 'voting rights',
+    category: 'voting-rights',
     image: `${voting_rights}`,
     title: 'Protect voting rights',
   },
@@ -478,8 +479,8 @@ const data = [
 export default function Dashboard() {
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
-  const slides = data.map((item) => (
-    <div id="slide">
+  const slides = data.map((item, index) => (
+    <div id="slide" key={index}>
       <Carousel.Slide key={item.title}>
         <Card {...item} />
       </Carousel.Slide>

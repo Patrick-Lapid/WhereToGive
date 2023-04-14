@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, Badge, Button, Center, createStyles, Flex, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text, Title } from '@mantine/core';
 import React, { forwardRef, useEffect, useState } from 'react';
-import { CaretDown, Check, Pencil, Trash, X } from 'tabler-icons-react';
+import { CaretDown, Check, Trash, X } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
 
 import {
@@ -11,8 +11,6 @@ import {
   LineElement,
   Tooltip,
   Legend,
-  ChartData,
-  Point,
   ArcElement,
 } from 'chart.js';
 

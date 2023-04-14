@@ -104,7 +104,7 @@ interface userProfile {
 
 const UserDashboard = () => {
     
-    const {currentUser, loading, logout} = useAuth();
+    const {currentUser, loading, logout, switchAccount} = useAuth();
     const { classes, cx } = useStyles();
     const [profile, setProfile] = useState<userProfile>();
     const {activeProfileSection, updateActiveProfileSection} = useNavigateContext();
@@ -161,7 +161,7 @@ const UserDashboard = () => {
                             <span>Home</span>
                             </div>
 
-                            <div style={{cursor : "pointer"}} className={classes.link} onClick={() => logout()}>
+                            <div style={{cursor : "pointer"}} className={classes.link} onClick={() => switchAccount()}>
                             <SwitchHorizontal className={classes.linkIcon}  />
                             <span>Change account</span>
                             </div>

@@ -10,6 +10,7 @@ interface AuthContextInterface {
     login : (email: string, password: string) => void;
     signup : (email: string, password: string, displayName : string) => void;
     logout : () => void;
+    switchAccount : () => void;
     resetPassword : (email: string) => void;
 
     invalidPassword : boolean;
@@ -112,6 +113,7 @@ export function AuthProvider({ children } : any) {
         .then(async (userCredential: { user: any; }) => {
             // Signed in 
             const user = userCredential.user;
+            console.log(user);
             const refreshToken = user.getIdToken();
             // navigate to Dashboard on login success
             sessionStorage.setItem('Auth Token', await refreshToken);
@@ -119,12 +121,11 @@ export function AuthProvider({ children } : any) {
         })
         .catch((error: { code: any; message: any; }) => {
             const errorCode = error.code;
-            const errorMessage = error.message;
-            if(errorCode == 'auth/wrong-password'){
+            if(errorCode === 'auth/wrong-password'){
                 setInvalidPassword(true);
                 setModalIsOpen(true);
             }
-            if(errorCode == 'auth/user-not-found'){
+            if(errorCode === 'auth/user-not-found'){
                 setInvalidEmail(true);
                 setModalIsOpen(true);
             }
@@ -138,6 +139,13 @@ export function AuthProvider({ children } : any) {
         });
     }
 
+    function switchAccount(){
+        return auth.signOut().then(() => {
+            setLoading(true);
+            window.location.replace("/login");
+        });
+    }
+
     function resetPassword(email : string) {
         return sendPasswordResetEmail(auth, email)
         .then(() => {
@@ -146,8 +154,7 @@ export function AuthProvider({ children } : any) {
             setModalIsOpen(true);
         })
         .catch((error: { code: any; message: any; }) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
+            console.log(error.code, error.message)
         });
     }
 
@@ -163,6 +170,7 @@ export function AuthProvider({ children } : any) {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if(user){
+                console.log("UPDATING CURRENTUSER");
                 setCurrentUser(user)
             } else {
                 setCurrentUser(null)
@@ -181,6 +189,7 @@ export function AuthProvider({ children } : any) {
         login,
         signup,
         logout,
+        switchAccount,
         resetPassword,
         // updateEmail,
         // updatePassword

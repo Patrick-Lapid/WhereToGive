@@ -13,6 +13,7 @@ import UserDashboard from './UserDashboard';
 import CharitySearch from './CharitySearch';
 import { NavigateProvider } from "../ts/navigate";
 import { Notifications } from '@mantine/notifications';
+import RestrictedRoute from './components/RestrictedRoute';
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
         <AuthProvider>
             <NavigateProvider>
                 <Notifications />
-                <div style={{ backgroundColor: 'rgb(246,246,246)' }}>
+                <div style={{ backgroundColor: 'rgb(246,246,246)', height: "100%"}}>
                     <BrowserRouter>
                     {window.location.href.split('/')[
                         window.location.href.split('/').length - 1
@@ -34,10 +35,10 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Landing />} />
                         <Route path="/login" element={<AuthenticationForm />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/profile" element={<UserDashboard />} />
-                        <Route path="/charitysearch" element={<CharitySearch />} />
-                        <Route path="/charity" element={<CharityByCategory />} />
+                        <Route path="/dashboard" element={<RestrictedRoute><Dashboard /></RestrictedRoute>} />
+                        <Route path="/profile" element={<RestrictedRoute><UserDashboard /></RestrictedRoute>} />
+                        <Route path="/charitysearch" element={<RestrictedRoute><CharitySearch /></RestrictedRoute>} />
+                        <Route path="/charity" element={<RestrictedRoute><CharityByCategory /></RestrictedRoute>} />
                     </Routes>
                     </BrowserRouter>
                 </div>

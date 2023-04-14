@@ -25,7 +25,7 @@ export function useNavigateContext() {
 
 export function NavigateProvider({ children } : any){
 
-    const [currLink, setCurrLink] = useState<string>(LINKS.LANDING);
+    const [currLink, setCurrLink] = useState<string | null>(LINKS.LANDING);
     const [currProfileSection, setCurrProfileSection] = useState<string>(LINKS.SAVED_CHARITIES);
     
     const value : NavigateContextInterface = {

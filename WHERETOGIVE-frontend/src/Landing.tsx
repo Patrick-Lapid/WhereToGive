@@ -447,22 +447,23 @@ const Landing = (props: Props) => {
                     site. Your favorite charities will also be listed here.
                   </Text>
 
-                  <Link className={classes.links} to={'/dashboard'}>
-                    <Button
-                      variant="gradient"
-                      gradient={{ from: 'teal', to: 'violet', deg: 20 }}
-                      fullWidth
-                      mt="md"
-                      radius="md"
-                    >
-                      Track Donations
-                      <ArrowRight
-                        style={{ marginLeft: '4px' }}
-                        size={18}
-                        strokeWidth={2.5}
-                      />
-                    </Button>
-                  </Link>
+                  
+                <Button
+                    variant="gradient"
+                    gradient={{ from: 'teal', to: 'violet', deg: 20 }}
+                    fullWidth
+                    mt="md"
+                    radius="md"
+                    onClick={()=>{window.location.replace('/profile')}}
+                >
+                    Track Donations
+                    <ArrowRight
+                    style={{ marginLeft: '4px' }}
+                    size={18}
+                    strokeWidth={2.5}
+                    />
+                </Button>
+                  
                 </Card>
               </div>
             </div>
