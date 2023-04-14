@@ -18,6 +18,7 @@ import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
 import Map from 'react-map-gl';
 import { MAPBOX_ACCESS_TOKEN } from '../config.js';
+import { LINKS, useNavigateContext } from '../ts/navigate';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -150,9 +151,12 @@ export default function CharitySearch({}: CharitySearchProps) {
   const [tags, setTags] = React.useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [charities, setCharities] = useState<CharityCardProps[]>([]);
+  const { updateLink } = useNavigateContext();
+
 
   // fetch all tags from database then use the tags to filter the charities in search
   useEffect(() => {
+    updateLink(LINKS.SEARCH)
     const fetchTags = async () => {
       try {
         const response = await fetch(

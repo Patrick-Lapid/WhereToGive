@@ -8,7 +8,7 @@ import {
   Center,
   Loader,
 } from '@mantine/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { useMediaQuery } from '@mantine/hooks';
 import { Paper, useMantineTheme } from '@mantine/core';
@@ -62,6 +62,7 @@ import wildfires from '../public/wildfires.png';
 import wildlife from '../public/wildlife.png';
 import { useAuth } from '../ts/authenticate';
 import CharitySearch from './CharitySearch';
+import { LINKS, useNavigateContext } from '../ts/navigate';
 
 function routeToCharityByCategory(tag: string) {
   window.location.replace(`/charity?param=${tag}`);
@@ -486,6 +487,11 @@ export default function Dashboard() {
   ));
   const { classes } = useStyles();
   const { loading } = useAuth();
+  const { updateLink } = useNavigateContext();
+
+  useEffect(() => {
+    updateLink(LINKS.DASHBOARD);
+  }, []);
 
   return (
     <>
