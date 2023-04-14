@@ -13,6 +13,7 @@ type Donation struct {
 }
 
 type DetailedDonation struct {
+	ID				 int 			`json: "id"`
 	Name      		 string         `json: "name"`
 	LogoURL          string         `gorm:"type:text" json: "logo_url"`
 	Amount			 int			`json: "amount"`
@@ -25,7 +26,7 @@ type TotalAmount struct {
 
 func GetAllDonationsByUser(userid string) []DetailedDonation{
 	var donations []DetailedDonation
-	result := database.DB.Raw(`SELECT d.amount, d.trans_date, c.name, c.logo_url 
+	result := database.DB.Raw(`SELECT d.id, d.amount, d.trans_date, c.name, c.logo_url 
 							   FROM donations d 
 							   INNER JOIN charities c ON d.charityid = c.id
 							   WHERE d.userid = ?
@@ -53,5 +54,16 @@ func GetTotalAmountByUser(userid string) TotalAmount{
 		// Send error
 	}
 	return total
+}
+
+func DeleteDonation(donationID int) {
+	var donation Donation
+	result := database.DB.Where("id = ?", donationID).Delete(&donation)
+	if result.RowsAffected == 0 {
+		// Send error saying no users found
+	}
+	if result.Error != nil {
+		// Send error
+	}
 }
 

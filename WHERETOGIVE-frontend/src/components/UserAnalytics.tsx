@@ -1,6 +1,6 @@
-import { Avatar, Badge, Button, Center, createStyles, Flex, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text, Title } from '@mantine/core';
+import { ActionIcon, Avatar, Badge, Button, Center, createStyles, Flex, Group, HoverCard, Loader, NumberInput, Paper, ScrollArea, Select, Table, Text, Title } from '@mantine/core';
 import React, { forwardRef, useEffect, useState } from 'react';
-import { CaretDown, Check, X } from 'tabler-icons-react';
+import { CaretDown, Check, Pencil, Trash, X } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
 
 import {
@@ -138,6 +138,21 @@ export default function UserAnalytics () {
         }
     }, []);
 
+    const deleteDonation = (donationID : number) => {
+        try{
+            fetch(`http://localhost:8000/api/donations/delete/${donationID}`,
+            {
+                method: 'DELETE'
+            }).then(() => {
+                getUserDonations();
+            });
+
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const getUserDonations = async () => {
         try {
             const response = await fetch(
@@ -165,6 +180,7 @@ export default function UserAnalytics () {
             
             // generate donation map from user donations
             jsonData.forEach((donation : any, index : number) => {
+                console.log(donation);
                 if(donationMap.has(donation.TransDate.substring(0,10))){
                     donationMap.set(donation.TransDate.substring(0,10), donationMap.get(donation.TransDate.substring(0,10)) + donation.Amount);
                 } else {
@@ -178,7 +194,7 @@ export default function UserAnalytics () {
                 }
 
                 tableRow.push(
-                    <tr key={index}>
+                    <tr key={donation.ID}>
                         <td>
                         <Group spacing="sm">
                         <Avatar size={30} src={donation.LogoURL} radius={30} />
@@ -198,7 +214,11 @@ export default function UserAnalytics () {
                             One-Time
                             </Badge>
                         </td>
-                        <td></td>
+                        <td>
+                            <ActionIcon onClick={()=>deleteDonation(donation.ID)}>
+                                <Trash color='red' size="1.125rem" />
+                            </ActionIcon>
+                        </td>
                     </tr>
                 )
 
