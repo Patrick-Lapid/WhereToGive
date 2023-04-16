@@ -145,7 +145,7 @@ const useStyles = createStyles((theme) => ({
   },
   control: {
     height: 42,
-    marginTop: "6px",
+    marginTop: '6px',
     fontSize: theme.fontSizes.md,
     '&:not(:first-of-type)': {
       marginLeft: theme.spacing.md,

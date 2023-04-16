@@ -10,7 +10,6 @@ import {
   Image,
   Loader,
   Center,
-  
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import {
@@ -399,10 +398,10 @@ const Landing = (props: Props) => {
                   </Group>
 
                   <Text size="sm" color="dimmed">
-                    Ready to Give? We help find
-                    nonProfits that align with your interests. You will be
-                    able to browse our selection of charities and filter
-                    based off locations and tags that interest you.
+                    Ready to Give? We help find nonProfits that align with your
+                    interests. You will be able to browse our selection of
+                    charities and filter based off locations and tags that
+                    interest you.
                   </Text>
 
                   <Link className={classes.links} to={'/dashboard'}>
@@ -447,23 +446,23 @@ const Landing = (props: Props) => {
                     site. Your favorite charities will also be listed here.
                   </Text>
 
-                  
-                <Button
+                  <Button
                     variant="gradient"
                     gradient={{ from: 'teal', to: 'violet', deg: 20 }}
                     fullWidth
                     mt="md"
                     radius="md"
-                    onClick={()=>{window.location.replace('/profile')}}
-                >
+                    onClick={() => {
+                      window.location.replace('/profile');
+                    }}
+                  >
                     Track Donations
                     <ArrowRight
-                    style={{ marginLeft: '4px' }}
-                    size={18}
-                    strokeWidth={2.5}
+                      style={{ marginLeft: '4px' }}
+                      size={18}
+                      strokeWidth={2.5}
                     />
-                </Button>
-                  
+                  </Button>
                 </Card>
               </div>
             </div>

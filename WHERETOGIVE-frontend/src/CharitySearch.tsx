@@ -10,15 +10,16 @@ import {
 import { createStyles } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { Autocomplete, Paper, Col } from '@mantine/core';
-import { useDebouncedValue, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import MultiSelectAutocomplete from './components/MultiSelectAutocomplete';
 import { Container } from '@mantine/core';
 import { ChevronRight } from 'tabler-icons-react';
 import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
-import Map from 'react-map-gl';
+import Map, { Layer, Source } from 'react-map-gl';
 import { MAPBOX_ACCESS_TOKEN } from '../config.js';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import { geojsonData } from '../models/ChartiesGeoJSON';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -153,10 +154,9 @@ export default function CharitySearch({}: CharitySearchProps) {
   const [charities, setCharities] = useState<CharityCardProps[]>([]);
   const { updateLink } = useNavigateContext();
 
-
   // fetch all tags from database then use the tags to filter the charities in search
   useEffect(() => {
-    updateLink(LINKS.SEARCH)
+    updateLink(LINKS.SEARCH);
     const fetchTags = async () => {
       try {
         const response = await fetch(
@@ -269,7 +269,7 @@ export default function CharitySearch({}: CharitySearchProps) {
           </Title>
         </Center>
         <div data-cy="map">
-        <Center>
+          <Center>
             <Map
               initialViewState={{
                 longitude: -100,
@@ -277,11 +277,28 @@ export default function CharitySearch({}: CharitySearchProps) {
                 zoom: 3.5,
               }}
               style={{ width: '100%', height: 500 }}
-              mapStyle="mapbox://styles/mapbox/streets-v9"
+              mapStyle="mapbox://styles/mapbox/dark-v11"
               mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
               attributionControl={false}
-            />  
-        </Center>
+            >
+              {/* <Geocoder
+          mapRef={mapRef}
+          onViewportChange={handleViewportChange}
+          mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+          position="top-left"
+        /> */}
+              <Source id="charities" type="geojson" data={geojsonData}>
+                <Layer
+                  id="charities-layer"
+                  type="circle"
+                  paint={{
+                    'circle-radius': 6,
+                    'circle-color': '#B42222',
+                  }}
+                />
+              </Source>
+            </Map>
+          </Center>
         </div>
       </Stack>
     </div>
