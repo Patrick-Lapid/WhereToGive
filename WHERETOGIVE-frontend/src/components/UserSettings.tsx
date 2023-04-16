@@ -1,12 +1,12 @@
-import { Button, Text, Group, Image, Paper, PasswordInput, TextInput, Title, Avatar, Flex, FileInput } from '@mantine/core';
-import { reauthenticateWithCredential, reauthenticateWithPopup, updateEmail, updateProfile } from 'firebase/auth';
-import React, { useEffect, useState, useRef } from 'react'
-import {At, EyeOff, EyeCheck, Lock, User, Check, X, Pencil } from "tabler-icons-react";
-// import { notifications } from '@mantine/notifications';
+import { Button, Text, Group, Image, Paper, TextInput, Title, Flex, FileInput } from '@mantine/core';
+import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
+import React, { useState, useRef } from 'react'
+import {At, Lock, User, Check, X, Pencil } from "tabler-icons-react";
 import { useAuth } from '../../ts/authenticate';
 import { storage } from '../firebase';
 import {ref as firebaseRef, uploadBytes, getDownloadURL} from "firebase/storage";
 import { notifications } from '@mantine/notifications';
+import { modals } from '@mantine/modals';
 
 interface userProfile {
     name : string;
@@ -21,6 +21,7 @@ type Props = {
 const UserSettings = (props: Props) => {
 
     const {currentUser} = useAuth();
+    const modalRef = useRef(null);
     const [displayName, setDisplayName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -31,6 +32,65 @@ const UserSettings = (props: Props) => {
     const [editPassword, toggleEditPassword] = useState<boolean>(false);
 
 
+    async function handleRequiresRecentLoginError(password : string) {
+        
+        try {
+          // Prompt the user to reauthenticate with a popup
+          const credential = EmailAuthProvider.credential(currentUser.email, password);
+          
+          reauthenticateWithCredential(currentUser, credential).then(() => {
+             if(email !== ''){
+                updateEmail(currentUser, 
+                    email
+                    ).then(() => {
+                    props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
+                    toggleEditEmail(false);
+                    setEmail("");
+                    notifications.show({
+                        title: 'Success!',
+                        message: "Your Email was saved",
+                        color: 'green',
+                        icon: <Check color='white' />
+                    }); 
+                });
+
+                return;
+             }
+
+             if(password !== ''){
+                updatePassword(currentUser, 
+                    password
+                  ).then(() => {
+                    setPassword("");
+                    toggleEditPassword(false);
+                    notifications.show({
+                        title: 'Success!',
+                        message: "Your Password was saved",
+                        color: 'green',
+                        icon: <Check color='white' />
+                    }); 
+                  });
+
+
+                return;
+             }
+
+          }).catch((error) => {
+                if(error.code === 'auth/wrong-password'){
+                    notifications.show({
+                        title: 'Error',
+                        message: 'Wrong Password',
+                        color: 'red',
+                        icon: <X />
+                    });
+                }
+          });
+        } catch (error) {
+          console.error(error);
+        }
+    }
+
+
     const updateDisplayName = (displayName : string) => {
         updateProfile(currentUser, {
             displayName: displayName
@@ -38,6 +98,7 @@ const UserSettings = (props: Props) => {
             props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
             console.log("Display name updated!");
             setDisplayName("");
+            toggleEditDisplayName(false);
             notifications.show({
                 title: 'Success!',
                 message: "Your Display Name was saved",
@@ -62,6 +123,7 @@ const UserSettings = (props: Props) => {
             props.bubbleProfileState({name : currentUser.displayName, email : currentUser.email, profilePicture : currentUser.photoURL});
             console.log("Email updated!");
             setEmail("");
+            toggleEditEmail(false);
             notifications.show({
                 title: 'Success!',
                 message: "Your Email was saved",
@@ -70,12 +132,93 @@ const UserSettings = (props: Props) => {
             }); 
           }).catch((error) => {
             console.log(error);
+            if(error.code === "auth/requires-recent-login"){
+                notifications.show({
+                    title: 'Requires Recent Login',
+                    message: 'Please Re-enter Credentials',
+                    color: 'red',
+                    icon: <X />
+                });
+                modals.openConfirmModal({
+                    title: 'Please Re-Enter Password',
+                    children: (
+                        <TextInput
+                            type="password"
+                            placeholder="Password"
+                            label="Password"
+                            ref={modalRef}
+                        />
+                    ),
+                    labels: { confirm: 'Authenticate', cancel: 'Cancel' },
+                    onCancel: () => {
+                        setEmail("");
+                        toggleEditEmail(false);
+                    },
+                    onConfirm: () => {
+                        if(modalRef.current.value === ""){
+                            console.log("error");
+                            setEmail("");
+                            toggleEditEmail(false);
+                        } else {
+                            handleRequiresRecentLoginError(modalRef.current.value)
+                        }
+                    },
+                });
+                
+            }
+            
+          });
+    }
+
+    const updateUserPassword = (password : string) => {
+        updatePassword(currentUser, 
+            password
+          ).then(() => {
+            setPassword("");
+            toggleEditPassword(false);
             notifications.show({
-                title: 'Email Change Error',
-                message: error,
-                color: 'red',
-                icon: <X />
-            });
+                title: 'Success!',
+                message: "Your Password was saved",
+                color: 'green',
+                icon: <Check color='white' />
+            }); 
+          }).catch((error) => {
+            console.log(error);
+            if(error.code === "auth/requires-recent-login"){
+                notifications.show({
+                    title: 'Requires Recent Login',
+                    message: 'Please Re-enter Credentials',
+                    color: 'red',
+                    icon: <X />
+                });
+                modals.openConfirmModal({
+                    title: 'Please Re-Enter Password',
+                    children: (
+                        <TextInput
+                            type="password"
+                            placeholder="Password"
+                            label="Password"
+                            ref={modalRef}
+                        />
+                    ),
+                    labels: { confirm: 'Authenticate', cancel: 'Cancel' },
+                    onCancel: () => {
+                        setPassword("");
+                        toggleEditPassword(false);
+                    },
+                    onConfirm: () => {
+                        if(modalRef.current.value === ""){
+                            console.log("error");
+                            setPassword("");
+                            toggleEditPassword(false);
+                        } else {
+                            handleRequiresRecentLoginError(modalRef.current.value)
+                        }
+                    },
+                });
+                
+            }
+            
           });
     }
 
@@ -128,8 +271,6 @@ const UserSettings = (props: Props) => {
         }
     }
 
-
-
     const handleDisplayNameChange = () => {
         if(displayName.length === 0){
             notifications.show({
@@ -152,8 +293,22 @@ const UserSettings = (props: Props) => {
                 color: 'red',
                 icon: <X />
             }); 
+            return;
         }
         updateUserEmail(email);  
+    }
+
+    const handlePasswordChange = () => {
+        if(password.length < 6) {
+            notifications.show({
+                title: 'Error',
+                message: 'Invalid Password Length',
+                color: 'red',
+                icon: <X />
+            }); 
+            return;
+        }
+        updateUserPassword(password);
     }
 
     return (
@@ -224,7 +379,7 @@ const UserSettings = (props: Props) => {
                             onChange={(event) => setEmail(event.currentTarget.value)}
                              icon={<At size="0.8rem" />} />
                             <Group>
-                                <Button size="md" variant="outline" color='green' onClick={handleEmailChange}><Check size="0.8rem" /></Button>
+                                <Button size="md" variant="outline" color='green' onClick={() => handleEmailChange()}><Check size="0.8rem" /></Button>
                                 <Button size="md" variant="outline" color='red' onClick={() => toggleEditEmail(false)}><X size="0.8rem" /></Button>
                             </Group>
                         </Group>
@@ -233,18 +388,17 @@ const UserSettings = (props: Props) => {
 
                 {
                     !editPassword &&
-                    <Button variant="outline" color='gray' onClick={() => toggleEditPassword(true)}> Change Password</Button>
+                    <Button variant="outline" color='gray' onClick={() => toggleEditPassword(true)}>Change Password</Button>
                 }
 
                 {   
                     editPassword &&
-
                     <Group>
                         <TextInput
                         type="password"
                         placeholder="Password"
-                        defaultValue="Password"
-
+                        value={password}
+                        onChange={(event) => setPassword(event.currentTarget.value)}
                         size="md"
                         icon={<Lock size="0.8rem" />}
                         // visibilityToggleIcon={({ reveal, size }) =>
@@ -252,7 +406,7 @@ const UserSettings = (props: Props) => {
                         // }
                         />
                         <Group>
-                            <Button size="md" variant="outline" color='green'><Check size="0.8rem" /></Button>
+                            <Button size="md" variant="outline" color='green' onClick={() => handlePasswordChange()}><Check size="0.8rem" /></Button>
                             <Button size="md" variant="outline" color='red' onClick={() => toggleEditPassword(false)}><X size="0.8rem" /></Button>
                         </Group>
                     </Group>

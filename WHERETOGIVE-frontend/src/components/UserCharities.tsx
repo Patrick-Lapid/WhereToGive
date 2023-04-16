@@ -106,7 +106,7 @@ const UserCharities = (props: Props) => {
     return (
         <div className='d-flex' style={{width : "95%",margin: '1rem auto 0'}}>
             {data.map((charity, index) => {
-                return (<div className="col-3 p-1">
+                return (<div key={index} className="col-3 p-1">
                 <Paper
                 radius="md"
                 withBorder
