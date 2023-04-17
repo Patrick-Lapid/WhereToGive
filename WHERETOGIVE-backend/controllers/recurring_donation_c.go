@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"log"
-
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -59,28 +59,47 @@ func CreateRecurringDonation(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Successfully created recurring donation"))
 }
 
-// func DeleteDonation(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+func DeleteRecurringDonation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
-// 	vars := mux.Vars(r)
-// 	id, ok := vars["donationID"]
-// 	fmt.Print("c");
-// 	// Check if id is passed
-// 	if !ok {
-// 		w.WriteHeader(400)
-// 		w.Write([]byte("Missing parameter donationID"))
-// 		return
-// 	}
-// 	fmt.Print("a");
-// 	donationID, err := strconv.Atoi(id)
-//     if err != nil {
-// 		w.WriteHeader(400)
-// 		w.Write([]byte("donationID must be integer"))
-// 		return
-//     }
-// 	fmt.Print("d");
-// 	models.DeleteDonation(donationID);
-// 	w.WriteHeader(200)
-// 	w.Write([]byte("Successfully deleted donation"))
-// }
+	vars := mux.Vars(r)
+	id, ok := vars["donationID"]
+
+	// Check if id is passed
+	if !ok {
+		w.WriteHeader(400)
+		w.Write([]byte("Missing parameter donationID"))
+		return
+	}
+
+	donationID, err := strconv.Atoi(id)
+    if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte("donationID must be integer"))
+		return
+    }
+
+	models.DeleteRecurringDonation(donationID);
+	w.WriteHeader(200)
+	w.Write([]byte("Successfully deleted recurring donation"))
+}
+
+func UpdateRecurringDonation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+
+	var donation models.RecurringDonation
+	err := json.NewDecoder(r.Body).Decode(&donation);
+
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte("Unable to update donation"))
+		return
+	}
+
+	models.UpdateRecurringDonation(donation);
+
+	w.WriteHeader(200)
+	w.Write([]byte("Successfully updated recurring donation"))
+}

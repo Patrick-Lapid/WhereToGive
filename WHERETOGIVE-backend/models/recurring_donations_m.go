@@ -45,3 +45,24 @@ func CreateRecurringDonation(recurringDonation RecurringDonation) {
 		// Send error
 	}
 }
+
+func DeleteRecurringDonation(donationID int) {
+	var donation RecurringDonation
+	result := database.DB.Where("id = ?", donationID).Delete(&donation)
+	if result.RowsAffected == 0 {
+		// Send error saying no users found
+	}
+	if result.Error != nil {
+		// Send error
+	}
+}
+
+func UpdateRecurringDonation(donation RecurringDonation) {
+	result := database.DB.Where("id = ?", donation.Id).Updates(&donation)
+	if result.RowsAffected == 0 {
+		// Send error saying no users found
+	}
+	if result.Error != nil {
+		// Send error
+	}
+}

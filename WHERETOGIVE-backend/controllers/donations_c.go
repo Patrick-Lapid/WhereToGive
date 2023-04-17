@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
+
 	"log"
 	"net/http"
 	"strconv"
@@ -89,21 +89,21 @@ func DeleteDonation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id, ok := vars["donationID"]
-	fmt.Print("c");
+
 	// Check if id is passed
 	if !ok {
 		w.WriteHeader(400)
 		w.Write([]byte("Missing parameter donationID"))
 		return
 	}
-	fmt.Print("a");
+
 	donationID, err := strconv.Atoi(id)
     if err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte("donationID must be integer"))
 		return
     }
-	fmt.Print("d");
+
 	models.DeleteDonation(donationID);
 	w.WriteHeader(200)
 	w.Write([]byte("Successfully deleted donation"))
