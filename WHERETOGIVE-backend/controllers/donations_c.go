@@ -64,7 +64,6 @@ func CreateDonation(w http.ResponseWriter, r *http.Request) {
 
 	var donation models.Donation
 	err := json.NewDecoder(r.Body).Decode(&donation);
-	fmt.Print(donation);
 
 	if donation.Userid == "" || donation.Charityid == 0 {
 		w.WriteHeader(400)
