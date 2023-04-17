@@ -13,7 +13,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Autocomplete, Paper, Col } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import MultiSelectAutocomplete from './components/MultiSelectAutocomplete';
-import { Container } from '@mantine/core';
+import { Container, Tooltip } from '@mantine/core';
 import { ChevronRight } from 'tabler-icons-react';
 import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
@@ -389,17 +389,21 @@ export default function CharitySearch({}: CharitySearchProps) {
             {slides}
           </Carousel>
         )}
+        
         <Center>
-          <Title
-            size="lg"
+        <Tooltip label="Tips: Autocomplete location search will bring map into focus on target location. Selecting a cluster will display the corresponding charity tiles." >
+        <Title
+            className="mt-5"
             variant="gradient"
-            gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
+            gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
             sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-            fw={400}
+            fw={700}
           >
-            Charity Location Search
+            Location Search
           </Title>
+          </Tooltip>
         </Center>
+
         <div data-cy="map">
           <Center>
             <Map
@@ -409,7 +413,7 @@ export default function CharitySearch({}: CharitySearchProps) {
                 latitude: 40,
                 zoom: 3.5,
               }}
-              style={{ width: '100%', height: 500 }}
+              style={{ width: '100%', height: 700 }}
               mapStyle="mapbox://styles/mapbox/dark-v11"
               mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
               attributionControl={false}
@@ -429,33 +433,6 @@ export default function CharitySearch({}: CharitySearchProps) {
                 <Layer {...unclusteredPointLayer} />
               </Source>
             </Map>
-
-            {/* <Map
-              ref={mapRef}
-              initialViewState={{
-                longitude: -100,
-                latitude: 40,
-                zoom: 3.5,
-              }}
-              style={{ width: '100%', height: 500 }}
-              mapStyle="mapbox://styles/mapbox/dark-v11"
-              mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-              attributionControl={false}
-              onClick={handleClick}
-            >   
-            <Source
-                id="charities"
-                type="geojson"
-                data={geojsonData}
-                cluster={true}
-                clusterMaxZoom={14}
-                clusterRadius={50}
-              >
-                <Layer {...clusterLayer} />
-                <Layer {...clusterCountLayer} />
-                <Layer {...unclusteredPointLayer} />
-              </Source>
-            </Map> */}
           </Center>
         </div>
       </Stack>
