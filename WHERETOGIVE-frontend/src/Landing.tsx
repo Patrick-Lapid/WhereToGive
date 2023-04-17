@@ -32,6 +32,7 @@ import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import allyProfilePicture from '../public/Ally_Profile_Picture.png';
 
 type Props = {};
 
@@ -493,9 +494,9 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Ai-Linh Nguyen"
                 role="Frontend Developer"
-                image={noProfilePicture}
-                info=""
-                url=""
+                image={allyProfilePicture}
+                info="Developed charity exploratory dashboard, user login and authentication flow with Google Firebase, charity search and filter, and interactive charity clustermapping and search with Mapbox. Oversaw Front-end design choices."
+                url="https://github.com/anguyen777"
               />
               <DeveloperCard
                 name="Deep Patel"

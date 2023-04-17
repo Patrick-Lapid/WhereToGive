@@ -2,13 +2,14 @@ import {
   Avatar,
   Button,
   Center,
+  Loader,
   Stack,
   Text,
   Title,
   useMantineTheme,
 } from '@mantine/core';
 import { createStyles } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Autocomplete, Paper, Col } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import MultiSelectAutocomplete from './components/MultiSelectAutocomplete';
@@ -16,10 +17,21 @@ import { Container } from '@mantine/core';
 import { ChevronRight } from 'tabler-icons-react';
 import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
-import Map, { Layer, Source } from 'react-map-gl';
+import Map, {
+  GeoJSONSource,
+  Layer,
+  MapLayerMouseEvent,
+  Source,
+} from 'react-map-gl';
 import { MAPBOX_ACCESS_TOKEN } from '../config.js';
 import { LINKS, useNavigateContext } from '../ts/navigate';
 import { geojsonData } from '../models/ChartiesGeoJSON';
+import {
+  clusterLayer,
+  clusterCountLayer,
+  unclusteredPointLayer,
+} from './components/layers';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -146,6 +158,9 @@ interface Charity {
 export default function CharitySearch({}: CharitySearchProps) {
   const { classes } = useStyles();
 
+  // Create a map reference
+  const mapRef = useRef(null);
+
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
   const [selectedTags, setSelectedTags] = React.useState([]);
@@ -153,6 +168,60 @@ export default function CharitySearch({}: CharitySearchProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [charities, setCharities] = useState<CharityCardProps[]>([]);
   const { updateLink } = useNavigateContext();
+
+  const initializeGeocoder = () => {
+    const map = mapRef.current.getMap();
+
+    const geocoder = new MapboxGeocoder({
+      accessToken: MAPBOX_ACCESS_TOKEN,
+      mapboxgl: mapRef.current.getMap(),
+    });
+
+    geocoder.on('result', (result) => {
+      // handle the geocoder result
+      console.log(result);
+    });
+
+    map.addControl(geocoder, 'top-left');
+  };
+
+  const handleClick = async (event: MapLayerMouseEvent) => {
+    const map = event.target;
+
+    const features = map.queryRenderedFeatures(event.point, {
+      layers: ['clusters', 'unclustered-point'],
+    });
+
+    if (features.length) {
+      const feature = features[0];
+
+      if (feature.properties.point_count) {
+        const clusterId = feature.properties.cluster_id;
+        const mapboxSource = map.getSource(
+          'charities'
+        ) as unknown as GeoJSONSource;
+
+        mapboxSource.getClusterLeaves(
+          clusterId,
+          Infinity,
+          0,
+          (err: any, leaves: any) => {
+            if (err) {
+              console.error('Error getting cluster leaves:', err);
+              return;
+            }
+
+            console.log(
+              'Charities in the selected cluster:',
+              leaves.map((leave: { properties: any }) => leave.properties)
+            );
+          }
+        );
+      } else {
+        console.log('Selected charity:', feature.properties);
+      }
+    }
+  };
 
   // fetch all tags from database then use the tags to filter the charities in search
   useEffect(() => {
@@ -171,6 +240,24 @@ export default function CharitySearch({}: CharitySearchProps) {
     };
     fetchTags();
   }, []);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current.getMap();
+
+      const geocoder = new MapboxGeocoder({
+        accessToken: MAPBOX_ACCESS_TOKEN,
+        mapboxgl: mapRef.current.getMap(),
+      });
+
+      geocoder.on('result', (result) => {
+        // handle the geocoder result
+        console.log(result);
+      });
+
+      map.addControl(geocoder, 'top-left');
+    }
+  }, [mapRef]);
 
   async function getCharities() {
     try {
@@ -245,7 +332,15 @@ export default function CharitySearch({}: CharitySearchProps) {
             </Text>
           </Button>
         </Center>
-        {isLoading && <div>Loading...</div>}
+        {isLoading && (
+          <div style={{ backgroundColor: 'white', height: '50rem' }}>
+            <Center h={500}>
+              <div>
+                <Loader size="xl" color="teal" variant="dots" />
+              </div>
+            </Center>
+          </div>
+        )}
         {charities.length > 0 && (
           <Carousel
             slideSize="33.33%"
@@ -271,6 +366,7 @@ export default function CharitySearch({}: CharitySearchProps) {
         <div data-cy="map">
           <Center>
             <Map
+              ref={mapRef}
               initialViewState={{
                 longitude: -100,
                 latitude: 40,
@@ -280,24 +376,49 @@ export default function CharitySearch({}: CharitySearchProps) {
               mapStyle="mapbox://styles/mapbox/dark-v11"
               mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
               attributionControl={false}
+              onClick={handleClick}
+              onLoad={initializeGeocoder}
             >
-              {/* <Geocoder
-          mapRef={mapRef}
-          onViewportChange={handleViewportChange}
-          mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-          position="top-left"
-        /> */}
-              <Source id="charities" type="geojson" data={geojsonData}>
-                <Layer
-                  id="charities-layer"
-                  type="circle"
-                  paint={{
-                    'circle-radius': 6,
-                    'circle-color': '#B42222',
-                  }}
-                />
+              <Source
+                id="charities"
+                type="geojson"
+                data={geojsonData}
+                cluster={true}
+                clusterMaxZoom={14}
+                clusterRadius={50}
+              >
+                <Layer {...clusterLayer} />
+                <Layer {...clusterCountLayer} />
+                <Layer {...unclusteredPointLayer} />
               </Source>
             </Map>
+
+            {/* <Map
+              ref={mapRef}
+              initialViewState={{
+                longitude: -100,
+                latitude: 40,
+                zoom: 3.5,
+              }}
+              style={{ width: '100%', height: 500 }}
+              mapStyle="mapbox://styles/mapbox/dark-v11"
+              mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+              attributionControl={false}
+              onClick={handleClick}
+            >   
+            <Source
+                id="charities"
+                type="geojson"
+                data={geojsonData}
+                cluster={true}
+                clusterMaxZoom={14}
+                clusterRadius={50}
+              >
+                <Layer {...clusterLayer} />
+                <Layer {...clusterCountLayer} />
+                <Layer {...unclusteredPointLayer} />
+              </Source>
+            </Map> */}
           </Center>
         </div>
       </Stack>
