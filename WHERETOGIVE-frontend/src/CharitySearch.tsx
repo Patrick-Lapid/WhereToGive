@@ -389,18 +389,18 @@ export default function CharitySearch({}: CharitySearchProps) {
             {slides}
           </Carousel>
         )}
-        
+
         <Center>
-        <Tooltip label="Tips: Autocomplete location search will bring map into focus on target location. Selecting a cluster will display the corresponding charity tiles." >
-        <Title
-            className="mt-5"
-            variant="gradient"
-            gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-            sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-            fw={700}
-          >
-            Location Search
-          </Title>
+          <Tooltip label="Tips: Autocomplete location search will bring map into focus on target location. Selecting a cluster will display the corresponding charity tiles.">
+            <Title
+              className="mt-5"
+              variant="gradient"
+              gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+              sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+              fw={700}
+            >
+              Location Search
+            </Title>
           </Tooltip>
         </Center>
 
