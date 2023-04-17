@@ -2,14 +2,37 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 
 	"net/http"
-	// "strconv"
 
-	// "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 
 	"github.com/Patrick-Lapid/WhereToGive/WHERETOGIVE-backend/models"
 )
+
+func GetRecurringDonationsByUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+
+	vars := mux.Vars(r)
+	userID, ok := vars["userID"]
+
+	// Check if id is passed
+	if !ok {
+		w.WriteHeader(400)
+		w.Write([]byte("Missing parameter userID"))
+		return
+	}
+
+	donations := models.GetAllRecurringDonationsByUser(userID);
+
+	errAdd := json.NewEncoder(w).Encode(donations)
+
+	if errAdd != nil {
+		log.Fatalln("Error encoding donations")
+	}
+}
 
 func CreateRecurringDonation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
