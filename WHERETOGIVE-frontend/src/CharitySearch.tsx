@@ -146,14 +146,26 @@ function handleMoreClick(websiteURL: string) {
   window.location.replace(`${websiteURL}`);
 }
 
-type CharitySearchProps = {};
+function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
+  const { id, charityName, descriptionShort, logoURL, websiteURL, ...rest } =
+    properties;
 
-interface Charity {
-  id: number;
-  name: string;
-  description: string;
-  tags: string; // Add other properties as needed
+  // Map the properties to match the CharityCardProps interface
+  return {
+    DescriptionLong: '', // Add appropriate value if available in the data
+    DescriptionShort: descriptionShort,
+    ID: id,
+    Location: '', // Add appropriate value if available in the data
+    LogoURL: logoURL,
+    Name: charityName,
+    Tags: [], // Add appropriate value if available in the data
+    WebsiteURL: websiteURL,
+    EIN: '', // Add appropriate value if available in the data
+    ...rest,
+  };
 }
+
+type CharitySearchProps = {};
 
 export default function CharitySearch({}: CharitySearchProps) {
   const { classes } = useStyles();
@@ -196,6 +208,7 @@ export default function CharitySearch({}: CharitySearchProps) {
       const feature = features[0];
 
       if (feature.properties.point_count) {
+        // cluster selected
         const clusterId = feature.properties.cluster_id;
         const mapboxSource = map.getSource(
           'charities'
@@ -211,14 +224,43 @@ export default function CharitySearch({}: CharitySearchProps) {
               return;
             }
 
-            console.log(
-              'Charities in the selected cluster:',
-              leaves.map((leave: { properties: any }) => leave.properties)
+            let charityCardPropsArray = leaves.map(
+              (leave: { properties: any }) => {
+                const {
+                  id,
+                  charityName,
+                  descriptionShort,
+                  logoURL,
+                  websiteURL,
+                  ...rest
+                } = leave.properties;
+
+                // Map the properties to match the CharityCardProps interface
+                return {
+                  DescriptionLong: '', // Add appropriate value if available in the data
+                  DescriptionShort: descriptionShort,
+                  ID: id,
+                  Location: '', // Add appropriate value if available in the data
+                  LogoURL: logoURL,
+                  Name: charityName,
+                  Tags: [], // Add appropriate value if available in the data
+                  WebsiteURL: websiteURL,
+                  EIN: '', // Add appropriate value if available in the data
+                  ...rest,
+                };
+              }
             );
+
+            setCharities(charityCardPropsArray);
           }
         );
       } else {
-        console.log('Selected charity:', feature.properties);
+        // single charity selected
+
+        const singleCharity = mapCharityPropertiesToCardProps(
+          feature.properties
+        );
+        setCharities([singleCharity]);
       }
     }
   };
@@ -248,11 +290,6 @@ export default function CharitySearch({}: CharitySearchProps) {
       const geocoder = new MapboxGeocoder({
         accessToken: MAPBOX_ACCESS_TOKEN,
         mapboxgl: mapRef.current.getMap(),
-      });
-
-      geocoder.on('result', (result) => {
-        // handle the geocoder result
-        console.log(result);
       });
 
       map.addControl(geocoder, 'top-left');
@@ -354,7 +391,7 @@ export default function CharitySearch({}: CharitySearchProps) {
         )}
         <Center>
           <Title
-            size="sm"
+            size="lg"
             variant="gradient"
             gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
             sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
