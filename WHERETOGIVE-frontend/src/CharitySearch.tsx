@@ -2,23 +2,36 @@ import {
   Avatar,
   Button,
   Center,
+  Loader,
   Stack,
   Text,
   Title,
   useMantineTheme,
 } from '@mantine/core';
 import { createStyles } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Autocomplete, Paper, Col } from '@mantine/core';
-import { useDebouncedValue, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import MultiSelectAutocomplete from './components/MultiSelectAutocomplete';
-import { Container } from '@mantine/core';
+import { Container, Tooltip } from '@mantine/core';
 import { ChevronRight } from 'tabler-icons-react';
 import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
-import Map from 'react-map-gl';
+import Map, {
+  GeoJSONSource,
+  Layer,
+  MapLayerMouseEvent,
+  Source,
+} from 'react-map-gl';
 import { MAPBOX_ACCESS_TOKEN } from '../config.js';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import { geojsonData } from '../models/ChartiesGeoJSON';
+import {
+  clusterLayer,
+  clusterCountLayer,
+  unclusteredPointLayer,
+} from './components/layers';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -133,17 +146,32 @@ function handleMoreClick(websiteURL: string) {
   window.location.replace(`${websiteURL}`);
 }
 
-type CharitySearchProps = {};
+function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
+  const { id, charityName, descriptionShort, logoURL, websiteURL, ...rest } =
+    properties;
 
-interface Charity {
-  id: number;
-  name: string;
-  description: string;
-  tags: string; // Add other properties as needed
+  // Map the properties to match the CharityCardProps interface
+  return {
+    DescriptionLong: '', // Add appropriate value if available in the data
+    DescriptionShort: descriptionShort,
+    ID: id,
+    Location: '', // Add appropriate value if available in the data
+    LogoURL: logoURL,
+    Name: charityName,
+    Tags: [], // Add appropriate value if available in the data
+    WebsiteURL: websiteURL,
+    EIN: '', // Add appropriate value if available in the data
+    ...rest,
+  };
 }
+
+type CharitySearchProps = {};
 
 export default function CharitySearch({}: CharitySearchProps) {
   const { classes } = useStyles();
+
+  // Create a map reference
+  const mapRef = useRef(null);
 
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
@@ -153,10 +181,93 @@ export default function CharitySearch({}: CharitySearchProps) {
   const [charities, setCharities] = useState<CharityCardProps[]>([]);
   const { updateLink } = useNavigateContext();
 
+  const initializeGeocoder = () => {
+    const map = mapRef.current.getMap();
+
+    const geocoder = new MapboxGeocoder({
+      accessToken: MAPBOX_ACCESS_TOKEN,
+      mapboxgl: mapRef.current.getMap(),
+    });
+
+    geocoder.on('result', (result) => {
+      // handle the geocoder result
+      console.log(result);
+    });
+
+    map.addControl(geocoder, 'top-left');
+  };
+
+  const handleClick = async (event: MapLayerMouseEvent) => {
+    const map = event.target;
+
+    const features = map.queryRenderedFeatures(event.point, {
+      layers: ['clusters', 'unclustered-point'],
+    });
+
+    if (features.length) {
+      const feature = features[0];
+
+      if (feature.properties.point_count) {
+        // cluster selected
+        const clusterId = feature.properties.cluster_id;
+        const mapboxSource = map.getSource(
+          'charities'
+        ) as unknown as GeoJSONSource;
+
+        mapboxSource.getClusterLeaves(
+          clusterId,
+          Infinity,
+          0,
+          (err: any, leaves: any) => {
+            if (err) {
+              console.error('Error getting cluster leaves:', err);
+              return;
+            }
+
+            let charityCardPropsArray = leaves.map(
+              (leave: { properties: any }) => {
+                const {
+                  id,
+                  charityName,
+                  descriptionShort,
+                  logoURL,
+                  websiteURL,
+                  ...rest
+                } = leave.properties;
+
+                // Map the properties to match the CharityCardProps interface
+                return {
+                  DescriptionLong: '', // Add appropriate value if available in the data
+                  DescriptionShort: descriptionShort,
+                  ID: id,
+                  Location: '', // Add appropriate value if available in the data
+                  LogoURL: logoURL,
+                  Name: charityName,
+                  Tags: [], // Add appropriate value if available in the data
+                  WebsiteURL: websiteURL,
+                  EIN: '', // Add appropriate value if available in the data
+                  ...rest,
+                };
+              }
+            );
+
+            setCharities(charityCardPropsArray);
+          }
+        );
+      } else {
+        // single charity selected
+
+        const singleCharity = mapCharityPropertiesToCardProps(
+          feature.properties
+        );
+        setCharities([singleCharity]);
+      }
+    }
+  };
 
   // fetch all tags from database then use the tags to filter the charities in search
   useEffect(() => {
-    updateLink(LINKS.SEARCH)
+    updateLink(LINKS.SEARCH);
     const fetchTags = async () => {
       try {
         const response = await fetch(
@@ -171,6 +282,19 @@ export default function CharitySearch({}: CharitySearchProps) {
     };
     fetchTags();
   }, []);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current.getMap();
+
+      const geocoder = new MapboxGeocoder({
+        accessToken: MAPBOX_ACCESS_TOKEN,
+        mapboxgl: mapRef.current.getMap(),
+      });
+
+      map.addControl(geocoder, 'top-left');
+    }
+  }, [mapRef]);
 
   async function getCharities() {
     try {
@@ -245,7 +369,15 @@ export default function CharitySearch({}: CharitySearchProps) {
             </Text>
           </Button>
         </Center>
-        {isLoading && <div>Loading...</div>}
+        {isLoading && (
+          <div style={{ backgroundColor: 'white', height: '50rem' }}>
+            <Center h={500}>
+              <div>
+                <Loader size="xl" color="teal" variant="dots" />
+              </div>
+            </Center>
+          </div>
+        )}
         {charities.length > 0 && (
           <Carousel
             slideSize="33.33%"
@@ -257,31 +389,51 @@ export default function CharitySearch({}: CharitySearchProps) {
             {slides}
           </Carousel>
         )}
+
         <Center>
-          <Title
-            size="sm"
-            variant="gradient"
-            gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
-            sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-            fw={400}
-          >
-            Charity Location Search
-          </Title>
+          <Tooltip label="Tips: Autocomplete location search will bring map into focus on target location. Selecting a cluster will display the corresponding charity tiles.">
+            <Title
+              className="mt-5"
+              variant="gradient"
+              gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+              sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+              fw={700}
+            >
+              Location Search
+            </Title>
+          </Tooltip>
         </Center>
+
         <div data-cy="map">
-        <Center>
+          <Center>
             <Map
+              ref={mapRef}
               initialViewState={{
                 longitude: -100,
                 latitude: 40,
                 zoom: 3.5,
               }}
-              style={{ width: '100%', height: 500 }}
-              mapStyle="mapbox://styles/mapbox/streets-v9"
+              style={{ width: '100%', height: 700 }}
+              mapStyle="mapbox://styles/mapbox/dark-v11"
               mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
               attributionControl={false}
-            />  
-        </Center>
+              onClick={handleClick}
+              onLoad={initializeGeocoder}
+            >
+              <Source
+                id="charities"
+                type="geojson"
+                data={geojsonData}
+                cluster={true}
+                clusterMaxZoom={14}
+                clusterRadius={50}
+              >
+                <Layer {...clusterLayer} />
+                <Layer {...clusterCountLayer} />
+                <Layer {...unclusteredPointLayer} />
+              </Source>
+            </Map>
+          </Center>
         </div>
       </Stack>
     </div>

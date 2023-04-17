@@ -10,7 +10,6 @@ import {
   Image,
   Loader,
   Center,
-  
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import {
@@ -33,6 +32,7 @@ import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import allyProfilePicture from '../public/Ally_Profile_Picture.png';
 
 type Props = {};
 
@@ -399,10 +399,10 @@ const Landing = (props: Props) => {
                   </Group>
 
                   <Text size="sm" color="dimmed">
-                    Ready to Give? We help find
-                    nonProfits that align with your interests. You will be
-                    able to browse our selection of charities and filter
-                    based off locations and tags that interest you.
+                    Ready to Give? We help find nonProfits that align with your
+                    interests. You will be able to browse our selection of
+                    charities and filter based off locations and tags that
+                    interest you.
                   </Text>
 
                   <Link className={classes.links} to={'/dashboard'}>
@@ -447,23 +447,23 @@ const Landing = (props: Props) => {
                     site. Your favorite charities will also be listed here.
                   </Text>
 
-                  
-                <Button
+                  <Button
                     variant="gradient"
                     gradient={{ from: 'teal', to: 'violet', deg: 20 }}
                     fullWidth
                     mt="md"
                     radius="md"
-                    onClick={()=>{window.location.replace('/profile')}}
-                >
+                    onClick={() => {
+                      window.location.replace('/profile');
+                    }}
+                  >
                     Track Donations
                     <ArrowRight
-                    style={{ marginLeft: '4px' }}
-                    size={18}
-                    strokeWidth={2.5}
+                      style={{ marginLeft: '4px' }}
+                      size={18}
+                      strokeWidth={2.5}
                     />
-                </Button>
-                  
+                  </Button>
                 </Card>
               </div>
             </div>
@@ -494,9 +494,9 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Ai-Linh Nguyen"
                 role="Frontend Developer"
-                image={noProfilePicture}
-                info=""
-                url=""
+                image={allyProfilePicture}
+                info="Developed charity exploratory dashboard, user login and authentication flow with Google Firebase, charity search and filter, and interactive charity clustermapping and search with Mapbox. Oversaw Front-end design choices."
+                url="https://github.com/anguyen777"
               />
               <DeveloperCard
                 name="Deep Patel"

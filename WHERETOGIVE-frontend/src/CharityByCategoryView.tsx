@@ -11,7 +11,6 @@ import { useMediaQuery } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import { useNavigateContext } from '../ts/navigate';
 
-
 interface CharityCardProps {
   DescriptionLong: string;
   DescriptionShort: string;
@@ -133,35 +132,44 @@ export default function CharityByCategory() {
     : null;
 
   return (
-    <div style={{ backgroundColor: 'white'}}>
-        <div className="container pt-4">
-            {isLoading && <div>Loading...</div>}
-            {data.length > 0 && (
-                <>
-                    <div className='mb-2'>
-                        <Title className='d-inline' variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 45 }} tt="capitalize" sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                        fw={700}>{paramValue}</Title>
-                        <Title 
-                        className='d-inline'
-                        sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                        fw={700}
-                        >  Charities 
-                        </Title>
-                    </div>
-                    
-                    <Carousel
-                    slideSize="33.33%"
-                    breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
-                    slideGap="xl"
-                    align="start"
-                    slidesToScroll={mobile ? 1 : 2}
-                    >
-                    {slides}
-                    </Carousel>
-                </>
-                
-            )}
-        </div>
+    <div style={{ backgroundColor: 'white' }}>
+      <div className="container pt-4">
+        {isLoading && <div>Loading...</div>}
+        {data.length > 0 && (
+          <>
+            <div className="mb-2">
+              <Title
+                className="d-inline"
+                variant="gradient"
+                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+                tt="capitalize"
+                sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                fw={700}
+              >
+                {paramValue}
+              </Title>
+              <Title
+                className="d-inline"
+                sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
+                fw={700}
+              >
+                {' '}
+                Charities
+              </Title>
+            </div>
+
+            <Carousel
+              slideSize="33.33%"
+              breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
+              slideGap="xl"
+              align="start"
+              slidesToScroll={mobile ? 1 : 2}
+            >
+              {slides}
+            </Carousel>
+          </>
+        )}
+      </div>
     </div>
   );
 }

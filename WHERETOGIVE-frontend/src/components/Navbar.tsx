@@ -158,12 +158,10 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const links = [
-    { link: '/', label: LINKS.LANDING },
-    { link: '/dashboard', label: LINKS.DASHBOARD },
-    { link: '/charitysearch', label: LINKS.SEARCH },
+  { link: '/', label: LINKS.LANDING },
+  { link: '/dashboard', label: LINKS.DASHBOARD },
+  { link: '/charitysearch', label: LINKS.SEARCH },
 ];
-
-
 
 export default function Navbar() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
@@ -171,7 +169,8 @@ export default function Navbar() {
   const { classes, theme, cx } = useStyles();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const { logout, loading, currentUser, switchAccount } = useAuth();
-  const { activeLink, updateLink, updateActiveProfileSection } = useNavigateContext();
+  const { activeLink, updateLink, updateActiveProfileSection } =
+    useNavigateContext();
 
   const items = links.map((link) => (
     <Link
@@ -236,7 +235,7 @@ export default function Navbar() {
                 <Menu
                   width={260}
                   position="bottom-end"
-                //   transition="pop-top-right"
+                  //   transition="pop-top-right"
                   onClose={() => setUserMenuOpened(false)}
                   onOpen={() => setUserMenuOpened(true)}
                 >
@@ -266,34 +265,47 @@ export default function Navbar() {
                     </UnstyledButton>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item icon={<LayoutDashboard size={14} />} onClick={() => {
-                  window.location.replace('/profile');
-                }}>
+                    <Menu.Item
+                      icon={<LayoutDashboard size={14} />}
+                      onClick={() => {
+                        window.location.replace('/profile');
+                      }}
+                    >
                       <Text>Dashboard</Text>
                     </Menu.Item>
-                    <Menu.Item icon={<WorldDownload size={14} />} onClick={() => {
-                    updateActiveProfileSection(LINKS.SAVED_CHARITIES);
-                    window.location.replace('/profile');
-                }}>
+                    <Menu.Item
+                      icon={<WorldDownload size={14} />}
+                      onClick={() => {
+                        updateActiveProfileSection(LINKS.SAVED_CHARITIES);
+                        window.location.replace('/profile');
+                      }}
+                    >
                       Saved charities
                     </Menu.Item>
-                    <Menu.Item icon={<PigMoney size={14} />} onClick={() => {
-                    updateActiveProfileSection(LINKS.USER_DASHBOARD);
-                    window.location.replace('/profile');
-                }}>
+                    <Menu.Item
+                      icon={<PigMoney size={14} />}
+                      onClick={() => {
+                        updateActiveProfileSection(LINKS.USER_DASHBOARD);
+                        window.location.replace('/profile');
+                      }}
+                    >
                       Your donations
                     </Menu.Item>
 
                     <Menu.Label>Settings</Menu.Label>
-                    <Menu.Item icon={<Settings size={14} />} onClick={() => {
-                    updateActiveProfileSection(LINKS.SETTINGS);
-                    window.location.replace('/profile');
-                }}>
+                    <Menu.Item
+                      icon={<Settings size={14} />}
+                      onClick={() => {
+                        updateActiveProfileSection(LINKS.SETTINGS);
+                        window.location.replace('/profile');
+                      }}
+                    >
                       Account settings
                     </Menu.Item>
-                    <Menu.Item 
+                    <Menu.Item
                       icon={<ArrowsExchange size={14} />}
-                      onClick={switchAccount}>
+                      onClick={switchAccount}
+                    >
                       Change account
                     </Menu.Item>
                     <Menu.Item
@@ -341,10 +353,18 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link to={'/dashboard'} className={classes.collapsedLink} onClick={closeDrawer}>
+          <Link
+            to={'/dashboard'}
+            className={classes.collapsedLink}
+            onClick={closeDrawer}
+          >
             Charity Dashboard
           </Link>
-          <Link to={'/charitysearch'} className={classes.collapsedLink} onClick={closeDrawer}>
+          <Link
+            to={'/charitysearch'}
+            className={classes.collapsedLink}
+            onClick={closeDrawer}
+          >
             Charity Search
           </Link>
 
@@ -353,10 +373,14 @@ export default function Navbar() {
             color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
           />
 
-         <Link to={'/profile'} className={classes.collapsedLink} onClick={() => {
-                  window.location.replace('/profile');
-                  closeDrawer();
-                }}>
+          <Link
+            to={'/profile'}
+            className={classes.collapsedLink}
+            onClick={() => {
+              window.location.replace('/profile');
+              closeDrawer();
+            }}
+          >
             User Dashboard
           </Link>
 

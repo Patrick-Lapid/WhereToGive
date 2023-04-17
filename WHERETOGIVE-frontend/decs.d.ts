@@ -24,11 +24,10 @@ declare module "*.png" {
     export default value;
   } 
 
-  
-
-    declare namespace Cypress {
-        export interface Chainable {
-        mount: typeof mount
-        }
+  declare namespace Cypress {
+    export interface Chainable {
+    mount: typeof mount
     }
+  }
     
+  declare module 'react-map-gl-geocoder';
