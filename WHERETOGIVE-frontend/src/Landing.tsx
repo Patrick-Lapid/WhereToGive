@@ -32,6 +32,7 @@ import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import patrickProfilePicture from "../public/Patrick_Profile_Picture.jpg";
 import allyProfilePicture from '../public/Ally_Profile_Picture.png';
 
 type Props = {};
@@ -487,8 +488,8 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Patrick Lapid"
                 role="Frontend Developer"
-                image={noProfilePicture}
-                info="Developed responsive landing page, user dashboard, and navigation bar. Oversaw Front-end design choices."
+                image={patrickProfilePicture}
+                info="Developed responsive landing page, user analytics dashboard, user context integrating Google Firebase, and site-wide navigation with protective routing. Oversaw Front-end design choices."
                 url="https://github.com/Patrick-Lapid"
               />
               <DeveloperCard

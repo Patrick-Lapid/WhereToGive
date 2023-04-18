@@ -516,7 +516,8 @@ export default function Dashboard() {
                 <Button
                   id="get-started-button"
                   className={classes.control}
-                  variant="white"
+                  variant="gradient"
+                  gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
                   size="lg"
                   onClick={handleGetStartedClick}
                 >

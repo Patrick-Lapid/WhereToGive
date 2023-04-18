@@ -6,10 +6,14 @@ import {
   Paper,
   useMantineTheme,
   Title,
+  ActionIcon,
+  Badge,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import { useNavigateContext } from '../ts/navigate';
+import { Star } from 'tabler-icons-react';
+import { useAuth } from '../ts/authenticate';
 
 interface CharityCardProps {
   DescriptionLong: string;
@@ -34,56 +38,83 @@ function CharityTile({
   WebsiteURL,
   EIN,
 }: CharityCardProps) {
-  return (
-    <Paper
-      radius="md"
-      withBorder
-      p="lg"
-      style={{
-        height: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Avatar src={`${LogoURL}`} size={50} radius={50} mx="auto" />
-      <Text color="black" align="center" size="lg" weight={500} mt="md">
-        {Name}
-      </Text>
-      <div
-        style={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          overflowY: 'auto',
-        }}
-      >
-        <Text align="center" color="dimmed" size="sm">
-          {DescriptionShort}
-        </Text>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button
-          data-cy="rating-info-button"
-          onClick={() => handleViewRatingClick(EIN)}
-          variant="default"
-          fullWidth
-          mt="md"
+    const {tagColors} = useAuth();
+    return (
+        <Paper
+            key={ID}
+            radius="md"
+            withBorder
+            shadow="sm"
+            p="lg"
+            style={{
+            height: '420px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            }}
         >
-          View Rating Information
-        </Button>
-        <Button
-          onClick={() => handleMoreClick(WebsiteURL)}
-          variant="default"
-          fullWidth
-          mt="md"
-        >
-          Visit Website
-        </Button>
-      </div>
-    </Paper>
-  );
+            {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
+            <Star color="gold" size="1.125rem" />
+            </ActionIcon> */}
+            <ActionIcon onClick={() => {}}>
+            <Star color="grey" size="1.125rem" />
+            </ActionIcon>
+            <Avatar
+            src={`${LogoURL}`}
+            size={50}
+            radius={50}
+            mx="auto"
+            />
+            <Text color="black" align="center" size="lg" weight={500} mt="md">
+            {Name}
+            </Text>
+            <div
+            style={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                overflowY: 'auto',
+            }}
+            >
+            <Text align="center" color="dimmed" size="sm">
+                {DescriptionShort}
+            </Text>
+            </div>
+
+            <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                overflowY: 'auto',
+                gap: "5px"
+            }}>
+            {Tags.map((tag, index) => {
+                if(index <= 5)
+                    return(<Badge color={tagColors[tag]}>{tag}</Badge>);
+            })}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Button
+                data-cy="rating-info-button"
+                onClick={() => handleViewRatingClick(EIN)}
+                variant="default"
+                fullWidth
+                className='mt-2'
+            >
+                View Rating Information
+            </Button>
+            <Button
+                onClick={() => handleMoreClick(WebsiteURL)}
+                variant="default"
+                fullWidth
+                className='mt-2'
+            >
+                Visit Website
+            </Button>
+            </div>
+        </Paper>
+    );
 }
 
 function handleViewRatingClick(EIN: string) {
