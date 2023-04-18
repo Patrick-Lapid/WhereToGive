@@ -17,7 +17,7 @@ select cron.schedule (
         AND DATE_PART('year', timezone(time_zones.name, CURRENT_TIMESTAMP)) = DATE_PART('year', date)
         );
 
-        SELECT * FROM active_donations;
+        -- SELECT * FROM active_donations;
 
         INSERT INTO donations (userid, charityid, amount, trans_date)
         SELECT userid, charityid, amount, date as trans_date 
