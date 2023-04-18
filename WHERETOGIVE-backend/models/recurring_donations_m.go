@@ -11,11 +11,12 @@ type RecurringDonation struct {
 	Charityid        int       		`json: "charityid"`
 	Amount			 int			`json: "amount"`
 	Date 	 	 	 datatypes.Date `json: "trans_date"`
-	Active			 bool			`json: "active"`	
+	Active			 *bool			`json: "active"`	
 }
 
 type RecurringDetailedDonation struct {
 	Id				 int 			`json: "id"`
+	Charityid        int       		`json: "charityid"`
 	Name      		 string         `json: "name"`
 	LogoURL          string         `gorm:"type:text" json: "logo_url"`
 	Amount			 int			`json: "amount"`
@@ -25,7 +26,7 @@ type RecurringDetailedDonation struct {
 
 func GetAllRecurringDonationsByUser(userid string) []RecurringDetailedDonation{
 	var donations []RecurringDetailedDonation
-	result := database.DB.Raw(`SELECT d.id, d.amount, d.date, d.active, c.name, c.logo_url 
+	result := database.DB.Raw(`SELECT d.id, d.charityid, d.amount, d.date, d.active, c.name, c.logo_url 
 							   FROM recurring_donations d 
 							   INNER JOIN charities c ON d.charityid = c.id
 							   WHERE d.userid = ?

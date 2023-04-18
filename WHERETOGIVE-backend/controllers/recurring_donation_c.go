@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -90,6 +91,7 @@ func UpdateRecurringDonation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
 	var donation models.RecurringDonation
+	fmt.Print(donation.Active)
 	err := json.NewDecoder(r.Body).Decode(&donation);
 
 	if err != nil {
