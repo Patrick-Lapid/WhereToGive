@@ -138,10 +138,6 @@ const UserDashboard = () => {
     </a>
   ));
 
-  useEffect(() => {
-    console.log(activeProfileSection);
-  }, [activeProfileSection]);
-
   return (
     <>
       {!loading && (
