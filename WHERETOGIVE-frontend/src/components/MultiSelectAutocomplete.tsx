@@ -16,7 +16,7 @@ const MultiSelectAutocomplete = (props: any) => {
   }
 
   return (
-    <div>
+    <div data-cy="multi-select-input">
       <Select
         isMulti
         name="colors"
