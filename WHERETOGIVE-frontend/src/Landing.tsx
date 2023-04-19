@@ -32,8 +32,9 @@ import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
 import { LINKS, useNavigateContext } from '../ts/navigate';
-import patrickProfilePicture from "../public/Patrick_Profile_Picture.jpg";
+import patrickProfilePicture from '../public/Patrick_Profile_Picture.jpg';
 import allyProfilePicture from '../public/Ally_Profile_Picture.png';
+import deepProfilePicture from '../public/Deep_Profile_Pic.jpg';
 
 type Props = {};
 
@@ -502,9 +503,9 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Deep Patel"
                 role="Backend Developer"
-                image={noProfilePicture}
-                info=""
-                url=""
+                image={deepProfilePicture}
+                info="Hello! I worked on setting up the backend using Golang and populated the database using a script to grab various charities. I also worked on the charities, users, donations, and recurring donation endpoints, as well as translating them to documentation."
+                url="https://github.com/DeepP2667"
               />
               <div className={classes.responsiveGridDeveloperCard}>
                 <DeveloperCard
