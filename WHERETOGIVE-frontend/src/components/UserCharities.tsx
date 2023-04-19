@@ -7,8 +7,11 @@ import {
   Badge,
   Paper,
   Avatar,
+  ActionIcon,
 } from '@mantine/core';
 import React from 'react';
+import { Star, StarOff } from 'tabler-icons-react';
+import { useAuth } from '../../ts/authenticate';
 
 type Props = {};
 
@@ -101,6 +104,9 @@ const data = [
 ];
 
 const UserCharities = (props: Props) => {
+
+    const {tagColors} = useAuth();
+
   function handleViewRatingClick(EIN: string) {
     window.location.replace(`https://www.charitynavigator.org/ein/${EIN}`);
   }
@@ -120,12 +126,18 @@ const UserCharities = (props: Props) => {
               shadow="sm"
               p="lg"
               style={{
-                height: '400px',
+                height: '420px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
               }}
             >
+              {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
+                <Star color="gold" size="1.125rem" />
+              </ActionIcon> */}
+              <ActionIcon onClick={() => {}}>
+                <Star color="grey" size="1.125rem" />
+              </ActionIcon>
               <Avatar
                 src={`${charity.LogoURL}`}
                 size={50}
@@ -148,13 +160,26 @@ const UserCharities = (props: Props) => {
                   {charity.DescriptionShort}
                 </Text>
               </div>
+
+              <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  overflowY: 'auto',
+                  gap: "5px"
+                }}>
+                {charity.Tags.map((tag, index) => {
+                    if(index <= 5)
+                        return(<Badge color={tagColors[tag]}>{tag}</Badge>);
+                })}
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <Button
                   data-cy="rating-info-button"
                   onClick={() => handleViewRatingClick(charity.EIN)}
                   variant="default"
                   fullWidth
-                  mt="md"
+                  className='mt-2'
                 >
                   View Rating Information
                 </Button>
@@ -162,7 +187,7 @@ const UserCharities = (props: Props) => {
                   onClick={() => handleMoreClick(charity.WebsiteURL)}
                   variant="default"
                   fullWidth
-                  mt="md"
+                  className='mt-1'
                 >
                   Visit Website
                 </Button>

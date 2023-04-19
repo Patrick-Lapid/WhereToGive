@@ -32,8 +32,10 @@ import { Link } from 'react-router-dom';
 import DeveloperCard from './components/Card';
 import { useAuth } from '../ts/authenticate';
 import { LINKS, useNavigateContext } from '../ts/navigate';
+import patrickProfilePicture from '../public/Patrick_Profile_Picture.jpg';
 import allyProfilePicture from '../public/Ally_Profile_Picture.png';
-
+import deepProfilePicture from '../public/Deep_Profile_Pic.jpg';
+import micaiahProfilePicture from '../public/micaiah.jpg';
 type Props = {};
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -487,8 +489,8 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Patrick Lapid"
                 role="Frontend Developer"
-                image={noProfilePicture}
-                info="Developed responsive landing page, user dashboard, and navigation bar. Oversaw Front-end design choices."
+                image={patrickProfilePicture}
+                info="Developed responsive landing page, user analytics dashboard, user context integrating Google Firebase, and site-wide navigation with protective routing. Oversaw Front-end design choices."
                 url="https://github.com/Patrick-Lapid"
               />
               <DeveloperCard
@@ -501,17 +503,17 @@ const Landing = (props: Props) => {
               <DeveloperCard
                 name="Deep Patel"
                 role="Backend Developer"
-                image={noProfilePicture}
-                info=""
-                url=""
+                image={deepProfilePicture}
+                info="Hello! I worked on setting up the backend using Golang and populated the database using a script to grab various charities. I also worked on the charities, users, donations, and recurring donation endpoints, as well as translating them to documentation."
+                url="https://github.com/DeepP2667"
               />
               <div className={classes.responsiveGridDeveloperCard}>
                 <DeveloperCard
                   name="Micaiah Kennedy"
                   role="Backend Developer"
-                  image={noProfilePicture}
-                  info=""
-                  url=""
+                  image={micaiahProfilePicture}
+                  info="Worked on backend development, database design, in addition developed search and favoriting features."
+                  url="https://github.com/sethMKennedy"
                 />
               </div>
             </div>

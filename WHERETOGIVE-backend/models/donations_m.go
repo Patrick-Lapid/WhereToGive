@@ -6,7 +6,7 @@ import (
 )
 
 type Donation struct {
-	Userid      	 string        	`gorm:"type:text" json: "logo_url"`
+	Userid      	 string        	`gorm:"type:text" json: "userid"`
 	Charityid        int       		`json: "charityid"`
 	Amount			 int			`json: "amount"`
 	TransDate 	 	 datatypes.Date `json: "trans_date"`
