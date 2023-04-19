@@ -38,8 +38,8 @@ describe('UserDashboard Analytics Page', () => {
 
       it("Tests simple search", () =>{
         cy.visit('http://localhost:8080/profile')
-        cy.get('.mantine-hzudtq > :nth-child(2)').click();
-        cy.get('#mantine-r3-target').trigger('mouseover');
+        cy.contains('Analytics').click();
+        cy.contains('Choose Charity').trigger('mouseover');
         cy.get("input[id=simpleSearch]").click().type("Amer");
         cy.contains("Whitney Museum").click();
       })
