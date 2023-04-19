@@ -403,7 +403,7 @@ export default function CharitySearch({}: CharitySearchProps) {
               <MultiSelectAutocomplete
                 tags={tags}
                 setSelectedTags={setSelectedTags}
-              />
+            />
             </div>
           </Container>
         </Center>
@@ -433,7 +433,7 @@ export default function CharitySearch({}: CharitySearchProps) {
           </div>
         )}
         {charities.length > 0 && (
-            <div className="mx-4 mt-1">
+            <div className="mx-4 mt-1" data-cy="carousel">
                 <Carousel
                     slideSize="33.33%"
                     breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
@@ -464,6 +464,7 @@ export default function CharitySearch({}: CharitySearchProps) {
           {/* <Center> */}
             <Map
               ref={mapRef}
+              data-cy="map-rendered"
               initialViewState={{
                 longitude: -100,
                 latitude: 40,
@@ -484,9 +485,9 @@ export default function CharitySearch({}: CharitySearchProps) {
                 clusterMaxZoom={14}
                 clusterRadius={50}
               >
-                <Layer {...clusterLayer} />
+                <Layer {...clusterLayer} data-cy="cluster-layer"/>
                 <Layer {...clusterCountLayer} />
-                <Layer {...unclusteredPointLayer} />
+                <Layer {...unclusteredPointLayer} data-cy="unclustered-point-layer"/>
               </Source>
             </Map>
           {/* </Center> */}
