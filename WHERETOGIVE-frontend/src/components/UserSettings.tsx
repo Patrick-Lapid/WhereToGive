@@ -441,6 +441,7 @@ const UserSettings = (props: Props) => {
                     : currentUser.email}
                 </Text>
                 <Button
+                  id="editEmail"
                   size="xs"
                   variant="outline"
                   color="gray"
@@ -454,6 +455,7 @@ const UserSettings = (props: Props) => {
             {editEmail && (
               <Group>
                 <TextInput
+                  id="emailField"
                   size="md"
                   placeholder="Email"
                   value={email}
@@ -465,6 +467,7 @@ const UserSettings = (props: Props) => {
                     size="md"
                     variant="outline"
                     color="green"
+                    id="updateEmail"
                     onClick={() => handleEmailChange()}
                   >
                     <Check size="0.8rem" />
@@ -483,6 +486,7 @@ const UserSettings = (props: Props) => {
 
             {!editPassword && (
               <Button
+                id="editPassword"
                 variant="outline"
                 color="gray"
                 onClick={() => toggleEditPassword(true)}
@@ -494,6 +498,7 @@ const UserSettings = (props: Props) => {
             {editPassword && (
               <Group>
                 <TextInput
+                  id="passwordField"
                   type="password"
                   placeholder="Password"
                   value={password}
@@ -506,6 +511,7 @@ const UserSettings = (props: Props) => {
                 />
                 <Group>
                   <Button
+                    id="updatePassword"
                     size="md"
                     variant="outline"
                     color="green"

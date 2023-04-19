@@ -268,10 +268,10 @@ export default function UserAnalytics() {
                         
                         <td>
                             <Group>
-                                <ActionIcon onClick={() => deleteReocurringDonation(donation.Id)}>
-                                    <Trash color="red" size="1.125rem" />
+                                <ActionIcon onClick={() => deleteReocurringDonation(donation.Id)} id="trashBtn">
+                                    <Trash color="red" size="1.125rem"  />
                                 </ActionIcon>
-                                <ActionIcon onClick={() => updateReocurringDonation({
+                                <ActionIcon id="activeBtn" onClick={() => updateReocurringDonation({
                                     ID: donation.Id,
                                     status: !donation.Active
                                 })}>
@@ -345,7 +345,7 @@ export default function UserAnalytics() {
                 </Badge>
                 </td>
                 <td>
-                <ActionIcon onClick={() => deleteDonation(donation.ID)}>
+                <ActionIcon onClick={() => deleteDonation(donation.ID)} id="trashBtn">
                     <Trash color="red" size="1.125rem" />
                 </ActionIcon>
                 </td>
@@ -649,6 +649,7 @@ export default function UserAnalytics() {
                   <HoverCard width={450} shadow="md">
                     <HoverCard.Target>
                       <Text
+                        id="hoverCard"
                         color="black"
                         align="center"
                         size="lg"
@@ -725,6 +726,7 @@ export default function UserAnalytics() {
                     onClick={onDonate}
                     variant="gradient"
                     gradient={{ from: 'teal', to: 'blue', deg: 60 }}
+                    style={{zIndex : 300}}
                     fullWidth
                     mt="sm"
                     mb="sm"

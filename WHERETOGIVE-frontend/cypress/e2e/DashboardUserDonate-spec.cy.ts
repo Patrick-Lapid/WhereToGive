@@ -1,7 +1,7 @@
 import Chance from "chance";
 const chance = new Chance();
 
-describe('User Dashboard Settings', () => {
+describe('UserDashboard Analytics Page', () => {
     const email = "CYPRESS-" + chance.email();
     const name = "CypressTester"
     const pass = "ValidPassword23";
@@ -36,31 +36,24 @@ describe('User Dashboard Settings', () => {
         cy.visit('http://localhost:8080/profile')
       })
 
-      it("Change Display Name", () =>{
+      it("Tests donation", () =>{
         cy.visit('http://localhost:8080/profile')
-        cy.contains('User Settings').click();
-        cy.get('button[id=editDisplayName]').click();
-        cy.get('input[id=DisplayName]').click().type("Cypress Display Name Change");
-        cy.get('#updateDisplayName').click()
-        cy.contains("Your Display Name was saved")
+        cy.contains('Analytics').click();
+        cy.contains('Choose Charity').trigger('mouseover');
+        cy.get("input[id=simpleSearch]").click().type("Amer");
+        cy.contains("Whitney Museum").click();
+        cy.contains('Analytics').trigger('mouseover');
+        cy.contains("Donate").click();
+        cy.wait(300)
+        cy.contains("Total Donations:")
       })
 
-      it("Change Email", () =>{
+      it("Tests donation delete", () =>{
         cy.visit('http://localhost:8080/profile')
-        cy.contains('User Settings').click();
-        cy.get('button[id=editEmail]').click();
-        cy.get('input[id=emailField]').click().type(`New-Cypress-Email` + chance.email());
-        cy.get('#updateEmail').click()
-        cy.contains("Your Email was saved")
+        cy.contains('Analytics').click();
+        cy.get('button[id=trashBtn]').click();
+        cy.wait(300)
+        cy.contains("No Donation Data")
       })
-
-      it("Change Password", () =>{
-        cy.visit('http://localhost:8080/profile')
-        cy.contains('User Settings').click();
-        cy.get('button[id=editPassword]').click();
-        cy.get('input[id=passwordField]').click().type("testing123");
-        cy.get('#updatePassword').click()
-        cy.contains("Your Password was")
-      })
-      
+  
   })
