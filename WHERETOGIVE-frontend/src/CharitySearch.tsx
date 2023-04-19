@@ -91,6 +91,7 @@ function CharityTile({
   EIN,
 }: CharityCardProps) {
   const {tagColors} = useAuth();
+  
   return (
     <Paper
         key={ID}
@@ -180,6 +181,13 @@ function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
   const { id, charityName, descriptionShort, logoURL, websiteURL, ein, tags, ...rest } =
     properties;
 
+    notifications.show({
+        title: 'Updated!',
+        color:"green",
+        icon: <Search size="1rem" color='white' />,
+        message: `Showing 1 result`,
+    });
+
   // Map the properties to match the CharityCardProps interface
   return {
     DescriptionLong: '', // Add appropriate value if available in the data
@@ -188,7 +196,7 @@ function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
     Location: '', // Add appropriate value if available in the data
     LogoURL: logoURL,
     Name: charityName,
-    Tags: tags, // Add appropriate value if available in the data
+    Tags: JSON.parse(tags), // Add appropriate value if available in the data
     WebsiteURL: websiteURL,
     EIN: ein, // Add appropriate value if available in the data
     ...rest,

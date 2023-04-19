@@ -210,7 +210,7 @@ export default function UserAnalytics() {
   };
 
   const getUserDonations = async () => {
-    toggleHasReoccurringPayment(false);
+    
     try {
       const response = await fetch(
         `http://localhost:8000/api/donations/getdonations/${currentUser.uid}`
@@ -233,7 +233,7 @@ export default function UserAnalytics() {
         setDoughnutChartData(null);
         setLineChartData(null);
         updateUserDonationList([]);
-        if(reoccurringJsonData && !jsonData){
+        if(reoccurringJsonData){
             toggleHasReoccurringPayment(true);
             reoccurringJsonData.forEach((donation : any, index : number) => {
                 tableRow.push(
@@ -282,7 +282,9 @@ export default function UserAnalytics() {
                     </tr>
                 );
             });
-          }
+        } else {
+            toggleHasReoccurringPayment(false);
+        }
           updateUserDonationList(tableRow);
         setloading(false);
         return;
@@ -400,6 +402,8 @@ export default function UserAnalytics() {
                     </tr>
                 );
             });
+        } else {
+            toggleHasReoccurringPayment(false);
         }
 
         // generates map array for line chart
