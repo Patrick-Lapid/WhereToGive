@@ -512,8 +512,8 @@ const Landing = (props: Props) => {
                   name="Micaiah Kennedy"
                   role="Backend Developer"
                   image={noProfilePicture}
-                  info=""
-                  url=""
+                  info="Worked on backend development, database design, in addition developed search and favoriting features."
+                  url="https://github.com/sethMKennedy"
                 />
               </div>
             </div>
