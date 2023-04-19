@@ -170,11 +170,11 @@ function CharityTile({
   );
 }
 function handleViewRatingClick(EIN: string) {
-  window.location.replace(`https://www.charitynavigator.org/ein/${EIN}`);
+  window.open(`https://www.charitynavigator.org/ein/${EIN}`);
 }
 
 function handleMoreClick(websiteURL: string) {
-  window.location.replace(`${websiteURL}`);
+  window.open(`${websiteURL}`);
 }
 
 function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
@@ -351,6 +351,12 @@ export default function CharitySearch({}: CharitySearchProps) {
       );
       const jsonData = await response.json();
       setCharities(jsonData);
+      notifications.show({
+        title: 'Updated!',
+        color:"green",
+        icon: <Search size="1rem" color='white' />,
+        message: `Showing ${jsonData && jsonData.length} result`,
+    });
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

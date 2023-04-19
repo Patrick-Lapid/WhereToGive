@@ -12,7 +12,9 @@ interface AuthContextInterface {
     logout : () => void;
     switchAccount : () => void;
     resetPassword : (email: string) => void;
-    toggleCharityFavorite : (charityID : number) => string;
+    toggleCharityFavorite : (charityID : number) => Promise<string>;
+    getFavoriteCharities : () => Promise<any[]>;
+    getFavoriteCharityIDs : () => Promise<any[]>;
 
     invalidPassword : boolean;
     invalidEmail : boolean;
@@ -162,8 +164,59 @@ export function AuthProvider({ children } : any) {
 
 
     // returns "Added" or "Removed" 
-    const toggleCharityFavorite = (charityID : number) => {
-        return "Added"
+    const toggleCharityFavorite = async (charityID : number) : Promise<string> => {
+        await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}/${charityID}`, {
+            method: 'PUT',
+            body: JSON.stringify({}),
+        }).then(async payload => {
+            const response = await payload.json();
+            console.log("TOGGLE CHARITY: ", response);
+            return response;
+        });
+
+        return;
+    }
+
+    const getFavoriteCharities = async () : Promise<any[]> => {
+        fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
+            method: 'GET',
+        }).then(async payload => {
+            const response =  await payload.json();
+            console.log("GET FAVORITE CHARITIES", response);
+            // loop through id array and generate
+            const charityArray : any[] = [];
+            response.forEach(async (charityID : any) => {
+                const charity = await fetch(`http://localhost:8000/api/charities/${charityID}`);
+                charityArray.push(charity);
+            })
+            console.log("CHARITY ARRAY", charityArray);
+            return charityArray;
+        }).catch((err) => {
+            console.log(err);
+            return [];
+        })
+
+        return [];
+    }
+
+    const getFavoriteCharityIDs = async () : Promise<any[]> => {
+
+        // let returnPayload : any[] = [];
+
+        await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
+            method: 'GET',
+        }).then(async payload => {
+            const response =  await payload.json();
+            console.log("Get Charity IDs", response);
+            return response;
+        }).catch((err) => {
+            console.log(err);
+            return;
+        })
+
+        console.log("early")
+        return;
+    
     }
 
     useEffect(() => {
@@ -279,7 +332,9 @@ export function AuthProvider({ children } : any) {
         setEmailSent : setEmailSent,
         setResetPasswordClicked: setResetPasswordClicked,
         setModalIsOpen : setModalIsOpen,
-        toggleCharityFavorite : toggleCharityFavorite
+        toggleCharityFavorite : toggleCharityFavorite,
+        getFavoriteCharities : getFavoriteCharities,
+        getFavoriteCharityIDs : getFavoriteCharityIDs
     }
 
     return (
