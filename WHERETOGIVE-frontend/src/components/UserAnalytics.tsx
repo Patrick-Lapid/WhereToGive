@@ -13,12 +13,13 @@ import {
   Paper,
   ScrollArea,
   Select,
+  Switch,
   Table,
   Text,
   Title,
 } from '@mantine/core';
 import React, { forwardRef, useEffect, useState } from 'react';
-import { CaretDown, Check, Trash, X } from 'tabler-icons-react';
+import { CaretDown, Check, PlayerRecord, Trash, X } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
 
 import {
@@ -58,6 +59,9 @@ const useStyles = createStyles(() => ({
     //     height : '45rem'
     // }
   },
+  disabledDonation : {
+
+  }
 }));
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -131,9 +135,11 @@ export default function UserAnalytics() {
   const [loading, setloading] = useState<boolean>(true);
   const [selectedCharityID, setCharityID] = useState<number | null>(null);
   const [selectedCharity, setSelectedCharity] = useState<charity | null>(null);
-  const [date, setDate] = useState<Date | null>(new Date());
+  const [date, setDate] = useState<Date>(new Date());
   const [donationAmt, setDonationAmt] = useState<number | ''>(50);
   const [userTotal, setUserTotal] = useState<number>(0);
+  const [reoccurring, setReoccurring] = useState<boolean>(false);
+  const [hasReoccurringPayment, toggleHasReoccurringPayment] = useState<boolean>(false);
   const [donationList, updateUserDonationList] = useState([]);
   const [lineChartData, setLineChartData] = useState<any>(null);
   const [doughnutChartData, setDoughnutChartData] = useState<any>(null);
@@ -149,6 +155,12 @@ export default function UserAnalytics() {
     }
   }, []);
 
+  useEffect(() => {
+    if(reoccurring){
+        setDate(new Date());
+    }
+  }, [reoccurring])
+
   const deleteDonation = (donationID: number) => {
     try {
       fetch(`http://localhost:8000/api/donations/delete/${donationID}`, {
@@ -161,7 +173,44 @@ export default function UserAnalytics() {
     }
   };
 
+  const deleteReocurringDonation = (donationID: number) => {
+    try {
+      fetch(`http://localhost:8000/api/reccuringdonations/delete/${donationID}`, {
+        method: 'DELETE',
+      }).then(() => {
+        getUserDonations();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateReocurringDonation = (donation: any) => {
+    try {
+      fetch(`http://localhost:8000/api/reccuringdonations/update`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            Id : donation.ID,
+            Active : donation.status,
+            }),
+      }).then(() => {
+        getUserDonations();
+        notifications.show({
+            autoClose: 5000,
+            title: 'Updated!',
+            message: `Your recurring donation was set to ${donation.status ? "active" : "inactive"}!`,
+            color: 'green',
+            icon: <Check color="white" />,
+            className: 'my-notification-class',
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getUserDonations = async () => {
+    toggleHasReoccurringPayment(false);
     try {
       const response = await fetch(
         `http://localhost:8000/api/donations/getdonations/${currentUser.uid}`
@@ -169,144 +218,252 @@ export default function UserAnalytics() {
       const userTotalResponse = await fetch(
         `http://localhost:8000/api/donations/getamount/${currentUser.uid}`
       );
+      const userReoccurringResponse = await fetch(
+        `http://localhost:8000/api/recurringdonations/getdonations/${currentUser.uid}`
+      );
       const userTotalPayload = await userTotalResponse.json();
       setUserTotal(userTotalPayload.TotalAmount);
       const jsonData = await response.json();
+      const reoccurringJsonData = await userReoccurringResponse.json();
+
+
+      const tableRow: JSX.Element[] = [];
+
       if (!jsonData) {
         setDoughnutChartData(null);
         setLineChartData(null);
         updateUserDonationList([]);
+        if(reoccurringJsonData && !jsonData){
+            toggleHasReoccurringPayment(true);
+            reoccurringJsonData.forEach((donation : any, index : number) => {
+                tableRow.push(
+                    <tr key={donation.ID}>
+                        <td>
+                        <Group spacing="sm">
+                            <Avatar size={30} src={donation.LogoURL} radius={30} />
+                            <Text fz="sm" fw={500}>
+                            {donation.Name.length > 40
+                                ? `${donation.Name.substring(0, 40)}...`
+                                : donation.Name}
+                            </Text>
+                        </Group>
+                        </td>
+    
+                        <td>{`${donation.Date.substring(
+                        5,
+                        7
+                        )}/${donation.Date.substring(
+                        8,
+                        10
+                        )}/${donation.Date.substring(2, 4)}`}</td>
+                        <td>{`$ ${donation.Amount}`}</td>
+                        <td>
+                        <Badge
+                            variant="gradient"
+                            gradient={{ from: 'teal', to: 'violet', deg: 60 }}
+                        >
+                            Monthly
+                        </Badge>
+                        </td>
+                        
+                        <td>
+                            <Group>
+                                <ActionIcon onClick={() => deleteReocurringDonation(donation.Id)}>
+                                    <Trash color="red" size="1.125rem" />
+                                </ActionIcon>
+                                <ActionIcon onClick={() => updateReocurringDonation({
+                                    ID: donation.Id,
+                                    status: !donation.Active
+                                })}>
+                                    <PlayerRecord color={`${donation.Active ? "green" : "red"}`} size="1.125rem" />
+                                </ActionIcon>
+                            </Group>
+                        </td>
+                    </tr>
+                );
+            });
+          }
+          updateUserDonationList(tableRow);
         setloading(false);
         return;
-      }
+      } else {
+        const donationMap = new Map<string, number>();
+        const charityMap = new Map<string, number>();
+        let lineLabels: string[] = [];
+        let donationData: number[] = [];
+        const charityLabels: string[] = [];
+        const charityData: number[] = [];
+        
 
-      const donationMap = new Map<string, number>();
-      const charityMap = new Map<string, number>();
-      let lineLabels: string[] = [];
-      let donationData: number[] = [];
-      const charityLabels: string[] = [];
-      const charityData: number[] = [];
-      const tableRow: JSX.Element[] = [];
+        // generate donation map from user donations
+        jsonData.forEach((donation: any, index: number) => {
+            if (donationMap.has(donation.TransDate.substring(0, 10))) {
+            donationMap.set(
+                donation.TransDate.substring(0, 10),
+                donationMap.get(donation.TransDate.substring(0, 10)) +
+                donation.Amount
+            );
+            } else {
+            donationMap.set(donation.TransDate.substring(0, 10), donation.Amount);
+            }
 
-      // generate donation map from user donations
-      jsonData.forEach((donation: any, index: number) => {
-        if (donationMap.has(donation.TransDate.substring(0, 10))) {
-          donationMap.set(
-            donation.TransDate.substring(0, 10),
-            donationMap.get(donation.TransDate.substring(0, 10)) +
-              donation.Amount
-          );
-        } else {
-          donationMap.set(donation.TransDate.substring(0, 10), donation.Amount);
+            if (charityMap.has(donation.Name)) {
+            charityMap.set(
+                donation.Name,
+                charityMap.get(donation.Name) + donation.Amount
+            );
+            } else {
+            charityMap.set(donation.Name, donation.Amount);
+            }
+
+            tableRow.push(
+            <tr key={donation.ID}>
+                <td>
+                <Group spacing="sm">
+                    <Avatar size={30} src={donation.LogoURL} radius={30} />
+                    <Text fz="sm" fw={500}>
+                    {donation.Name.length > 40
+                        ? `${donation.Name.substring(0, 40)}...`
+                        : donation.Name}
+                    </Text>
+                </Group>
+                </td>
+
+                <td>{`${donation.TransDate.substring(
+                5,
+                7
+                )}/${donation.TransDate.substring(
+                8,
+                10
+                )}/${donation.TransDate.substring(2, 4)}`}</td>
+                <td>{`$ ${donation.Amount}`}</td>
+                <td>
+                <Badge>
+                    One-Time
+                </Badge>
+                </td>
+                <td>
+                <ActionIcon onClick={() => deleteDonation(donation.ID)}>
+                    <Trash color="red" size="1.125rem" />
+                </ActionIcon>
+                </td>
+            </tr>
+            );
+        });
+        
+        if(reoccurringJsonData){
+            toggleHasReoccurringPayment(true);
+            reoccurringJsonData.forEach((donation : any, index : number) => {
+                tableRow.unshift(
+                    <tr key={donation.ID}>
+                        <td>
+                        <Group spacing="sm">
+                            <Avatar size={30} src={donation.LogoURL} radius={30} />
+                            <Text fz="sm" fw={500}>
+                            {donation.Name.length > 40
+                                ? `${donation.Name.substring(0, 40)}...`
+                                : donation.Name}
+                            </Text>
+                        </Group>
+                        </td>
+    
+                        <td>{`${donation.Date.substring(
+                        5,
+                        7
+                        )}/${donation.Date.substring(
+                        8,
+                        10
+                        )}/${donation.Date.substring(2, 4)}`}</td>
+                        <td>{`$ ${donation.Amount}`}</td>
+                        <td>
+                        <Badge
+                            variant="gradient"
+                            gradient={{ from: 'teal', to: 'violet', deg: 60 }}
+                        >
+                            Monthly
+                        </Badge>
+                        </td>
+                        <td>
+                            <Group>
+                                <ActionIcon onClick={() => deleteReocurringDonation(donation.Id)}>
+                                    <Trash color="red" size="1.125rem" />
+                                </ActionIcon>
+                                <ActionIcon onClick={() => updateReocurringDonation({
+                                    ID: donation.Id,
+                                    status: !donation.Active
+                                })}>
+                                    <PlayerRecord color={`${donation.Active ? "green" : "red"}`} size="1.125rem" />
+                                </ActionIcon>
+                            </Group>
+                            
+                        </td>
+                    </tr>
+                );
+            });
         }
 
-        if (charityMap.has(donation.Name)) {
-          charityMap.set(
-            donation.Name,
-            charityMap.get(donation.Name) + donation.Amount
-          );
-        } else {
-          charityMap.set(donation.Name, donation.Amount);
-        }
+        // generates map array for line chart
+        donationMap.forEach((donation, label) => {
+            lineLabels.push(
+            `${label.substring(5, 7)}/${label.substring(8, 10)}/${label.substring(
+                2,
+                4
+            )}`
+            );
+            donationData.push(donation);
+        });
 
-        tableRow.push(
-          <tr key={donation.ID}>
-            <td>
-              <Group spacing="sm">
-                <Avatar size={30} src={donation.LogoURL} radius={30} />
-                <Text fz="sm" fw={500}>
-                  {donation.Name.length > 40
-                    ? `${donation.Name.substring(0, 40)}...`
-                    : donation.Name}
-                </Text>
-              </Group>
-            </td>
+        // generates map array for doughnut chart
+        charityMap.forEach((donation, label) => {
+            charityLabels.push(label);
+            charityData.push(donation);
+        });
 
-            <td>{`${donation.TransDate.substring(
-              5,
-              7
-            )}/${donation.TransDate.substring(
-              8,
-              10
-            )}/${donation.TransDate.substring(2, 4)}`}</td>
-            <td>{`$ ${donation.Amount}`}</td>
-            <td>
-              <Badge
-                variant="gradient"
-                gradient={{ from: 'teal', to: 'violet', deg: 60 }}
-              >
-                One-Time
-              </Badge>
-            </td>
-            <td>
-              <ActionIcon onClick={() => deleteDonation(donation.ID)}>
-                <Trash color="red" size="1.125rem" />
-              </ActionIcon>
-            </td>
-          </tr>
+        // reverses arrays
+        lineLabels = lineLabels.map(
+            (val, index, array) => array[array.length - 1 - index]
         );
-      });
-
-      // generates map array for line chart
-      donationMap.forEach((donation, label) => {
-        lineLabels.push(
-          `${label.substring(5, 7)}/${label.substring(8, 10)}/${label.substring(
-            2,
-            4
-          )}`
+        donationData = donationData.map(
+            (val, index, array) => array[array.length - 1 - index]
         );
-        donationData.push(donation);
-      });
 
-      // generates map array for doughnut chart
-      charityMap.forEach((donation, label) => {
-        charityLabels.push(label);
-        charityData.push(donation);
-      });
-
-      // reverses arrays
-      lineLabels = lineLabels.map(
-        (val, index, array) => array[array.length - 1 - index]
-      );
-      donationData = donationData.map(
-        (val, index, array) => array[array.length - 1 - index]
-      );
-
-      // sets doughnut chartData
-      setDoughnutChartData({
-        labels: charityLabels,
-        datasets: [
-          {
-            label: 'Donations ($)',
-            data: charityData,
-            backgroundColor: [
-              'rgb(32, 133, 236)',
-              'rgb(114, 180, 235)',
-              'rgb(10, 65, 122)',
-              'rgb(132, 100, 160)',
-              'rgb(206, 169, 188)',
-              'rgb(252, 189, 156)',
-              'rgb(170, 87, 159)',
-              'rgb(142, 165, 204)	',
-              'rgb(76, 50, 92)',
+        // sets doughnut chartData
+        setDoughnutChartData({
+            labels: charityLabels,
+            datasets: [
+            {
+                label: 'Donations ($)',
+                data: charityData,
+                backgroundColor: [
+                'rgb(32, 133, 236)',
+                'rgb(114, 180, 235)',
+                'rgb(10, 65, 122)',
+                'rgb(132, 100, 160)',
+                'rgb(206, 169, 188)',
+                'rgb(252, 189, 156)',
+                'rgb(170, 87, 159)',
+                'rgb(142, 165, 204)	',
+                'rgb(76, 50, 92)',
+                ],
+                hoverOffset: 4,
+            },
             ],
-            hoverOffset: 4,
-          },
-        ],
-      });
+        });
 
-      // sets line chartData
-      setLineChartData({
-        labels: lineLabels,
-        datasets: [
-          {
-            label: 'Donations ($)',
-            data: donationData,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-        ],
-      });
+        // sets line chartData
+        setLineChartData({
+            labels: lineLabels,
+            datasets: [
+            {
+                label: 'Donations ($)',
+                data: donationData,
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            },
+            ],
+        });
+
+      }
 
       updateUserDonationList(tableRow);
 
@@ -335,8 +492,6 @@ export default function UserAnalytics() {
           `http://localhost:8000/api/charities/search/?terms=${searchParam}`
         );
         const jsonData: searchResultType[] = await response.json();
-        console.log(jsonData);
-
         const cleanedArray: ItemProps[] = [];
 
         jsonData.forEach((val) => {
@@ -359,39 +514,63 @@ export default function UserAnalytics() {
   const onDonate = async () => {
     // send json to endpoint
     if (selectedCharityID) {
-      // console.log(JSON.stringify({
-      //     Userid: currentUser.uid,
-      //     Charityid : selectedCharityID,
-      //     Amount : donationAmt,
-      //     TransDate : date
-      // }));
+      
+      if(!reoccurring){
+        fetch(`http://localhost:8000/api/donations/add`, {
+            method: 'POST',
+            body: JSON.stringify({
+            Userid: currentUser.uid,
+            Charityid: selectedCharityID,
+            Amount: donationAmt,
+            TransDate: date,
+            }),
+        }).then(() => {
+            setSelectedCharity(null);
+            setCharityID(null);
+            setReoccurring(false);
+            updateSearchResults([]);
+            notifications.show({
+            autoClose: 5000,
+            title: 'Success!',
+            message: 'Your donation was processed :)',
+            color: 'green',
+            icon: <Check color="white" />,
+            className: 'my-notification-class',
+            });
 
-      fetch(`http://localhost:8000/api/donations/add`, {
-        method: 'POST',
-        body: JSON.stringify({
-          Userid: currentUser.uid,
-          Charityid: selectedCharityID,
-          Amount: donationAmt,
-          TransDate: date,
-        }),
-      }).then((response) => {
-        const payload = response;
-        console.log(payload);
-        setSelectedCharity(null);
-        setCharityID(null);
-        updateSearchResults([]);
-        notifications.show({
-          autoClose: 5000,
-          title: 'Success!',
-          message: 'Your donation was processed :)',
-          color: 'green',
-          icon: <Check color="white" />,
-          className: 'my-notification-class',
+            // repull trx data
+            getUserDonations();
         });
+      } else {
+        fetch(`http://localhost:8000/api/recurringdonations/add`, {
+            method: 'POST',
+            body: JSON.stringify({
+            Userid: currentUser.uid,
+            Charityid: selectedCharityID,
+            Amount: donationAmt,
+            Date: date,
+            Active: true
+            }),
+        }).then(() => {
+            setSelectedCharity(null);
+            setReoccurring(false);
+            setCharityID(null);
+            updateSearchResults([]);
+            notifications.show({
+            autoClose: 5000,
+            title: 'Success!',
+            message: 'Your reocurring donation was processed and set to Active',
+            color: 'green',
+            icon: <Check color="white" />,
+            className: 'my-notification-class',
+            });
 
-        // repull trx data
-        getUserDonations();
-      });
+            // repull trx data
+            getUserDonations();
+        });
+      }
+      
+
     } else {
       notifications.show({
         autoClose: 5000,
@@ -426,7 +605,7 @@ export default function UserAnalytics() {
                 shadow="sm"
                 p="lg"
                 style={{
-                  height: '350px',
+                  height: '385px',
                   width: '100%',
                   padding: '35px',
                 }}
@@ -449,7 +628,7 @@ export default function UserAnalytics() {
                 shadow="sm"
                 p="lg"
                 style={{
-                  height: '350px',
+                  height: '385px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -507,14 +686,16 @@ export default function UserAnalytics() {
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {selectedCharityID && (
                     <>
+                      
                       <DateInput
                         value={date}
                         onChange={setDate}
                         label="Donation Date"
                         placeholder="Date input"
+                        minDate={reoccurring ? new Date() : null}
                         mt="md"
                       />
-
+                      <Switch label={"Reoccurring (Monthly)"} className='mt-3 pb-0' checked={reoccurring} onChange={(event) => setReoccurring(event.currentTarget.checked)} />
                       <NumberInput
                         label="Donation Amount"
                         value={donationAmt}
@@ -533,6 +714,7 @@ export default function UserAnalytics() {
                         stepHoldDelay={500}
                         stepHoldInterval={(t) => Math.max(1000 / t ** 2, 25)}
                       />
+                      
                     </>
                   )}
                   <Button
@@ -612,7 +794,7 @@ export default function UserAnalytics() {
                         <th>Posted Date</th>
                         <th>Donation</th>
                         <th>Type</th>
-                        <th></th>
+                        <th>Update</th>
                       </tr>
                     </thead>
 
@@ -622,6 +804,18 @@ export default function UserAnalytics() {
               </Paper>
             </div>
           </div>
+
+          <div className="d-flex">
+            <div className="col-5"></div>
+            <div className="col-7 p-1">
+                {hasReoccurringPayment &&
+                    <Text fz="xs" c="dimmed" ta={"center"}>* Recurring Payments execute on the Posted Date and create a one-time donation at 11:59pm if active.
+                    Once the one-time donation has been posted, the Posted Date is moved forward to the next month.</Text>
+                }
+                
+            </div>
+          </div>
+
         </div>
       )}
     </div>
