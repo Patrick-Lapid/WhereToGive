@@ -12,6 +12,7 @@ interface AuthContextInterface {
     logout : () => void;
     switchAccount : () => void;
     resetPassword : (email: string) => void;
+    toggleCharityFavorite : (charityID : number) => string;
 
     invalidPassword : boolean;
     invalidEmail : boolean;
@@ -20,6 +21,7 @@ interface AuthContextInterface {
     resetPasswordClicked : boolean;
     modalIsOpen : boolean;
     loading : boolean;
+    tagColors : any;
 
     setInvalidPassword : React.Dispatch<React.SetStateAction<boolean>>;
     setInvalidEmail : React.Dispatch<React.SetStateAction<boolean>>;
@@ -158,19 +160,15 @@ export function AuthProvider({ children } : any) {
         });
     }
 
-    //   function updateEmail(email : string) {
-    //     return currentUser.updateEmail(email)
-    //   }
 
-    //   function updatePassword(password : string) {
-    //     return currentUser.updatePassword(password)
-    //   }
-
+    // returns "Added" or "Removed" 
+    const toggleCharityFavorite = (charityID : number) => {
+        return "Added"
+    }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if(user){
-                console.log("UPDATING CURRENTUSER");
                 setCurrentUser(user)
             } else {
                 setCurrentUser(null)
@@ -182,6 +180,78 @@ export function AuthProvider({ children } : any) {
             unsubscribe();
         }
     }, []);
+
+    const tagColors = {
+    "aapi-led" : "gray",
+    "adoption" : "red",
+    "afghanistan": "pink",
+    "animals": "indigo",
+    "athletics": "blue",
+    "autism": "grape",
+    "black-led": "teal",
+    "buddhism": "green",
+    "cancer": "lime",
+    "cats": "yellow",
+    "christianity": "orange",
+    "climate": "grey",
+    "conservation": "red",
+    "coronavirus": "pink",
+    "culture": "indigo",
+    "dance": "blue",
+    "disabilities": "grape",
+    "disease": "teal",
+    "dogs": "green",
+    "education": "lime",
+    "environment": "yellow",
+    "filmandtv": "orange",
+    "food-security": "grey",
+    "freepress": "red",
+    "gender-equality": "pink",
+    "health": "indigo",
+    "hinduism": "blue",
+    "housing": "grape",
+    "humans": "teal",
+    "hurricane-ian": "green",
+    "hurricane-laura": "lime",
+    "immigrants": "yellow",
+    "indigenous-led": "orange",
+    "indigenous-peoples": "grey",
+    "islam": "red",
+    "judaism": "pink",
+    "justice": "indigo",
+    "latine-led": "blue",
+    "legal": "grape",
+    "lgbt": "teal",
+    "libraries": "green",
+    "mental-health": "lime",
+    "middle-east": "yellow",
+    "museums": "orange",
+    "music": "grey",
+    "oceans": "red",
+    "parks": "pink",
+    "poverty": "indigo",
+    "racial-justice": "blue",
+    "radio": "grape",
+    "refugees": "teal",
+    "religion": "green",
+    "reproductive-justice": "lime",
+    "research": "yellow",
+    "science": "orange",
+    "seniors": "grey",
+    "space": "red",
+    "theater": "pink",
+    "transgender": "indigo",
+    "ukraine": "blue",
+    "veterans": "grape",
+    "visualart": "teal",
+    "votingrights": "green",
+    "water": "lime",
+    "wildfires": "yellow",
+    "wildlife": "orange",
+    "women-led": "grey",
+    "womens-health": "red",
+    "youth": "pink"
+    }
 
     const value : AuthContextInterface = {
         currentUser,
@@ -201,6 +271,7 @@ export function AuthProvider({ children } : any) {
         resetPasswordClicked : resetPasswordClicked,
         modalIsOpen : modalIsOpen,
         loading : loading,
+        tagColors : tagColors,
 
         setInvalidPassword : setInvalidPassword,
         setInvalidEmail : setInvalidEmail,
@@ -208,6 +279,7 @@ export function AuthProvider({ children } : any) {
         setEmailSent : setEmailSent,
         setResetPasswordClicked: setResetPasswordClicked,
         setModalIsOpen : setModalIsOpen,
+        toggleCharityFavorite : toggleCharityFavorite
     }
 
     return (

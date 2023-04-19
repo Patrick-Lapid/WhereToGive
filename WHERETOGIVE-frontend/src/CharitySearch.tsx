@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
   Avatar,
   Button,
   Center,
@@ -8,13 +9,13 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { createStyles } from '@mantine/core';
+import { createStyles, Badge } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { Autocomplete, Paper, Col } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import MultiSelectAutocomplete from './components/MultiSelectAutocomplete';
 import { Container, Tooltip } from '@mantine/core';
-import { ChevronRight } from 'tabler-icons-react';
+import { ChevronRight, Search, Star } from 'tabler-icons-react';
 import { Carousel } from '@mantine/carousel';
 import earthimage from '../public/space_background.png';
 import Map, {
@@ -32,6 +33,8 @@ import {
   unclusteredPointLayer,
 } from './components/layers';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import { useAuth } from '../ts/authenticate';
+import { notifications } from '@mantine/notifications';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -87,54 +90,81 @@ function CharityTile({
   WebsiteURL,
   EIN,
 }: CharityCardProps) {
+  const {tagColors} = useAuth();
   return (
     <Paper
-      radius="md"
-      withBorder
-      p="lg"
-      style={{
-        height: '100%',
+        key={ID}
+        radius="md"
+        withBorder
+        shadow="sm"
+        p="lg"
+        style={{
+        height: '420px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-      }}
-    >
-      <Avatar src={`${LogoURL}`} size={50} radius={50} mx="auto" />
-      <Text color="black" align="center" size="lg" weight={500} mt="md">
-        {Name}
-      </Text>
-      <div
-        style={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          overflowY: 'auto',
         }}
-      >
-        <Text align="center" color="dimmed" size="sm">
-          {DescriptionShort}
+    >
+        {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
+        <Star color="gold" size="1.125rem" />
+        </ActionIcon> */}
+        <ActionIcon onClick={() => {}}>
+        <Star color="grey" size="1.125rem" />
+        </ActionIcon>
+        <Avatar
+        src={`${LogoURL}`}
+        size={50}
+        radius={50}
+        mx="auto"
+        />
+        <Text color="black" align="center" size="lg" weight={500} mt="md">
+        {Name}
         </Text>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button
-          data-cy="rating-info-button"
-          onClick={() => handleViewRatingClick(EIN)}
-          variant="default"
-          fullWidth
-          mt="md"
+        <div
+        style={{
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            overflowY: 'auto',
+        }}
         >
-          View Rating Information
+        <Text align="center" color="dimmed" size="sm">
+            {DescriptionShort}
+        </Text>
+        </div>
+
+        <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            overflowY: 'auto',
+            gap: "5px"
+        }}>
+        {Tags && Tags.length > 0 && Tags.map((tag, index) => {
+            if(index <= 5)
+                return(<Badge color={tagColors[tag]}>{tag}</Badge>);
+        })}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Button
+            data-cy="rating-info-button"
+            onClick={() => handleViewRatingClick(EIN)}
+            variant="default"
+            fullWidth
+            className='mt-2'
+        >
+            View Rating Information
         </Button>
         <Button
-          onClick={() => handleMoreClick(WebsiteURL)}
-          variant="default"
-          fullWidth
-          mt="md"
+            onClick={() => handleMoreClick(WebsiteURL)}
+            variant="default"
+            fullWidth
+            className='mt-2'
         >
-          Visit Website
+            Visit Website
         </Button>
-      </div>
+        </div>
     </Paper>
   );
 }
@@ -147,7 +177,7 @@ function handleMoreClick(websiteURL: string) {
 }
 
 function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
-  const { id, charityName, descriptionShort, logoURL, websiteURL, ...rest } =
+  const { id, charityName, descriptionShort, logoURL, websiteURL, ein, tags, ...rest } =
     properties;
 
   // Map the properties to match the CharityCardProps interface
@@ -158,9 +188,9 @@ function mapCharityPropertiesToCardProps(properties: any): CharityCardProps {
     Location: '', // Add appropriate value if available in the data
     LogoURL: logoURL,
     Name: charityName,
-    Tags: [], // Add appropriate value if available in the data
+    Tags: tags, // Add appropriate value if available in the data
     WebsiteURL: websiteURL,
-    EIN: '', // Add appropriate value if available in the data
+    EIN: ein, // Add appropriate value if available in the data
     ...rest,
   };
 }
@@ -191,7 +221,7 @@ export default function CharitySearch({}: CharitySearchProps) {
 
     geocoder.on('result', (result) => {
       // handle the geocoder result
-      console.log(result);
+      
     });
 
     map.addControl(geocoder, 'top-left');
@@ -232,6 +262,8 @@ export default function CharitySearch({}: CharitySearchProps) {
                   descriptionShort,
                   logoURL,
                   websiteURL,
+                  tags,
+                  ein,
                   ...rest
                 } = leave.properties;
 
@@ -243,15 +275,21 @@ export default function CharitySearch({}: CharitySearchProps) {
                   Location: '', // Add appropriate value if available in the data
                   LogoURL: logoURL,
                   Name: charityName,
-                  Tags: [], // Add appropriate value if available in the data
+                  Tags: tags, // Add appropriate value if available in the data
                   WebsiteURL: websiteURL,
-                  EIN: '', // Add appropriate value if available in the data
+                  EIN: ein, // Add appropriate value if available in the data
                   ...rest,
                 };
               }
             );
-
             setCharities(charityCardPropsArray);
+            notifications.show({
+                title: 'Updated!',
+                color:"green",
+                icon: <Search size="1rem" color='white' />,
+                message: `Showing ${leaves.length} results`,
+            });
+    
           }
         );
       } else {
@@ -326,7 +364,7 @@ export default function CharitySearch({}: CharitySearchProps) {
           <Title
             className="mt-5"
             variant="gradient"
-            gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+            gradient={{ from: 'white', to: 'cyan', deg: 45 }}
             sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
             fw={700}
           >
@@ -336,8 +374,9 @@ export default function CharitySearch({}: CharitySearchProps) {
         <Center>
           <Title
             size="sm"
-            variant="gradient"
-            gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
+            color='white'
+            // variant="gradient"
+            // gradient={{ from: 'cyan', to: 'indigo', deg: 45 }}
             sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
             fw={400}
           >
@@ -359,7 +398,8 @@ export default function CharitySearch({}: CharitySearchProps) {
           <Button
             onClick={getCharities}
             variant="gradient"
-            gradient={{ from: 'teal', to: 'blue', deg: 60 }}
+            gradient={{ from: 'rgb(220,220,220)', to: 'cyan', deg: 45 }}
+            color='black'
           >
             <ChevronRight size={16} strokeWidth={2.5} />
             Find the perfect charities
@@ -379,23 +419,25 @@ export default function CharitySearch({}: CharitySearchProps) {
           </div>
         )}
         {charities.length > 0 && (
-          <Carousel
-            slideSize="33.33%"
-            breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
-            slideGap="xl"
-            align="start"
-            slidesToScroll={mobile ? 1 : 2}
-          >
-            {slides}
-          </Carousel>
+            <div className="mx-4 mt-1">
+                <Carousel
+                    slideSize="33.33%"
+                    breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 1 }]}
+                    slideGap="xl"
+                    align="start"
+                    slidesToScroll={mobile ? 1 : 2}
+                >
+                    {slides}
+                </Carousel>
+            </div>
+          
         )}
 
         <Center>
           <Tooltip label="Tips: Autocomplete location search will bring map into focus on target location. Selecting a cluster will display the corresponding charity tiles.">
             <Title
               className="mt-5"
-              variant="gradient"
-              gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+              color='white'
               sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
               fw={700}
             >
@@ -405,7 +447,7 @@ export default function CharitySearch({}: CharitySearchProps) {
         </Center>
 
         <div data-cy="map">
-          <Center>
+          {/* <Center> */}
             <Map
               ref={mapRef}
               initialViewState={{
@@ -433,7 +475,7 @@ export default function CharitySearch({}: CharitySearchProps) {
                 <Layer {...unclusteredPointLayer} />
               </Source>
             </Map>
-          </Center>
+          {/* </Center> */}
         </div>
       </Stack>
     </div>
