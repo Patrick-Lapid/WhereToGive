@@ -41,34 +41,33 @@ function CharityTile({
 }: CharityCardProps ) {
     const {tagColors, getFavoriteCharityIDs, toggleCharityFavorite} = useAuth();
 
-    const [favoriteArray, setFavoriteArray] = useState([]);
+    // const [favoriteArray, setFavoriteArray] = useState([]);
 
-    async function getFavorites() {
-        const favorites = await getFavoriteCharityIDs();
-        
-        console.log("test", favorites)
-        setFavoriteArray(favorites);
-        return;
+    // async function getFavorites() {
+    //     const favorites = await getFavoriteCharityIDs();
+    //     console.log("test", favorites)
+    //     setFavoriteArray(favorites);
+    //     return;
        
-    }
+    // }
 
-    async function handleCharityToggle() {
-        await toggleCharityFavorite(ID);
-        await getFavorites();
+    // async function handleCharityToggle() {
+    //     await toggleCharityFavorite(ID);
+    //     await getFavorites();
 
-        notifications.show({
-            title: 'Success!',
-            message: 'Your Charity was Favorited',
-            color: 'gold',
-            icon: <Star color="white" />,
-        });
+    //     notifications.show({
+    //         title: 'Success!',
+    //         message: 'Your Charity was Favorited',
+    //         color: 'gold',
+    //         icon: <Star color="white" />,
+    //     });
         
         
-    }
+    // }
 
-    useEffect(() => {
-        getFavorites();
-    });
+    // useEffect(() => {
+    //     getFavorites();
+    // });
 
     return (
         <Paper
@@ -84,7 +83,7 @@ function CharityTile({
             justifyContent: 'space-between',
             }}
         >
-            {favoriteArray && favoriteArray.includes(ID) && 
+            {/* {favoriteArray && favoriteArray.includes(ID) && 
                 <ActionIcon variant="light" color="yellow" onClick={ () => { handleCharityToggle(); }}>
                     <Star color="gold" size="1.125rem" />
                 </ActionIcon>
@@ -94,7 +93,7 @@ function CharityTile({
                 <ActionIcon onClick={ () => {handleCharityToggle();}}>
                     <Star color="grey" size="1.125rem" />
                 </ActionIcon>
-            }
+            } */}
             
             <Avatar
             src={`${LogoURL}`}

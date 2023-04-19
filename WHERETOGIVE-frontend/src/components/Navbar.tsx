@@ -273,7 +273,7 @@ export default function Navbar() {
                     >
                       <Text>Dashboard</Text>
                     </Menu.Item>
-                    <Menu.Item
+                    {/* <Menu.Item
                       icon={<WorldDownload size={14} />}
                       onClick={() => {
                         updateActiveProfileSection(LINKS.SAVED_CHARITIES);
@@ -281,7 +281,7 @@ export default function Navbar() {
                       }}
                     >
                       Saved charities
-                    </Menu.Item>
+                    </Menu.Item> */}
                     <Menu.Item
                       icon={<PigMoney size={14} />}
                       onClick={() => {

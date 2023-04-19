@@ -109,9 +109,9 @@ function CharityTile({
         {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
         <Star color="gold" size="1.125rem" />
         </ActionIcon> */}
-        <ActionIcon onClick={() => {}}>
+        {/* <ActionIcon onClick={() => {}}>
         <Star color="grey" size="1.125rem" />
-        </ActionIcon>
+        </ActionIcon> */}
         <Avatar
         src={`${LogoURL}`}
         size={50}

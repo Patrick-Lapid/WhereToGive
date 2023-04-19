@@ -14,7 +14,7 @@ interface AuthContextInterface {
     resetPassword : (email: string) => void;
     toggleCharityFavorite : (charityID : number) => Promise<string>;
     getFavoriteCharities : () => Promise<any[]>;
-    getFavoriteCharityIDs : () => Promise<any[]>;
+    getFavoriteCharityIDs : () => Promise<number[]>;
 
     invalidPassword : boolean;
     invalidEmail : boolean;
@@ -199,20 +199,27 @@ export function AuthProvider({ children } : any) {
         return [];
     }
 
-    const getFavoriteCharityIDs = async () : Promise<any[]> => {
+    const getFavoriteCharityIDs = async () : Promise<number[]> => {
 
-        // let returnPayload : any[] = [];
+        let returnPayload : any[] = [];
 
-        await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
+        try{
+            await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
             method: 'GET',
-        }).then(async payload => {
-            const response =  await payload.json();
-            console.log("Get Charity IDs", response);
-            return response;
-        }).catch((err) => {
+            })
+            .then(async payload => {
+                const response = await payload.json();
+               
+                console.log(response);
+                return response;
+                
+            }).catch((err) => {
+                console.log(err);
+                return;
+            })
+        } catch (err) {
             console.log(err);
-            return;
-        })
+        }
 
         console.log("early")
         return;
