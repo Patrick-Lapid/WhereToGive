@@ -35,7 +35,7 @@ import { LINKS, useNavigateContext } from '../ts/navigate';
 import patrickProfilePicture from '../public/Patrick_Profile_Picture.jpg';
 import allyProfilePicture from '../public/Ally_Profile_Picture.png';
 import deepProfilePicture from '../public/Deep_Profile_Pic.jpg';
-
+import micaiahProfilePicture from '../public/micaiah.jpg';
 type Props = {};
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -511,9 +511,9 @@ const Landing = (props: Props) => {
                 <DeveloperCard
                   name="Micaiah Kennedy"
                   role="Backend Developer"
-                  image={noProfilePicture}
-                  info=""
-                  url=""
+                  image={micaiahProfilePicture}
+                  info="Worked on backend development, database design, in addition developed search and favoriting features."
+                  url="https://github.com/sethMKennedy"
                 />
               </div>
             </div>
