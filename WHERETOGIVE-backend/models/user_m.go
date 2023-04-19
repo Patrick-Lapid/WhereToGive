@@ -2,12 +2,13 @@ package models
 
 import (
 	"github.com/Patrick-Lapid/WhereToGive/WHERETOGIVE-backend/database"
+	pq "github.com/lib/pq"
 )
 
 type User struct {
-	Userid            string `gorm:"type:text" json: "user_id"`
-	DisplayName       string `gorm:"type:text" json: "display_name"`
-	FavoriteCharities []int  `gorm:"type:integer[]" json:"favorites"`
+	Userid      string        `gorm:"type:text" json: "user_id"`
+	DisplayName string        `gorm:"type:text" json: "display_name"`
+	Favorites   pq.Int64Array `gorm:"type:integer[]" json:"favorites"`
 }
 
 func GetUser(userid string) User {
@@ -45,20 +46,23 @@ func DeleteUser(userid string) bool {
 	return true
 }
 
-func ToggleFav(userid int, charid int) bool { //should be string or int?
+func ToggleFav(userid string, charid int) bool { //should be string or int?
 	var user User
-	err := database.DB.Find(&user, userid).Error
-	if err == nil {
+	//database.DB.Raw("SELECT * FROM users WHERE userid = ?", userid).Scan(&user)
+	err := database.DB.Where("userid = ?", userid).First(&user).Error
+	if err != nil {
 		return false
 	}
 
-	favorites := user.FavoriteCharities
+	favorites := user.Favorites
 
 	for i, fav := range favorites {
-		if fav == charid {
+		if int(fav) == charid {
 			favorites = append(favorites[:i], favorites[i+1:]...)
-			user.FavoriteCharities = favorites
-			err = database.DB.Save(&user).Error
+			//user.Favorites = favorites
+			//err := database.DB.Save(&user).Error
+			database.DB.Exec("UPDATE users SET favorites = ? WHERE userid = ?", favorites, userid)
+			print("? removed!", charid)
 			if err == nil {
 				return true
 			}
@@ -66,16 +70,16 @@ func ToggleFav(userid int, charid int) bool { //should be string or int?
 		}
 	}
 	//If matching not found, add
-	favorites = append(favorites[:], charid)
-	user.FavoriteCharities = favorites
-	err = database.DB.Save(&user).Error
-	if err == nil {
-		return false
-	}
+	favorites = append(favorites[:], int64(charid))
+	//database.DB.Raw("UPDATE users SET favorites = ? WHERE userid = ?", favorites, userid)
+	database.DB.Exec("UPDATE users SET favorites = ? WHERE userid = ?", favorites, userid)
+	//user.Favorites = favorites
+	//err = database.DB.Save(&user).Error
+
 	return false
 }
 
-func GetFav(userid string) []int {
+func GetFav(userid string) []int64 {
 	print(userid)
 	var user User
 	database.DB.Raw("SELECT * FROM users WHERE userid = ?", userid).Scan(&user)
@@ -84,5 +88,6 @@ func GetFav(userid string) []int {
 
 		return user.FavoriteCharities
 	}*/
-	return user.FavoriteCharities
+	print(user.Favorites)
+	return user.Favorites
 }

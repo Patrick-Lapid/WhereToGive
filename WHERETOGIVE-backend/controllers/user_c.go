@@ -112,26 +112,27 @@ func ToggleFav(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, err := strconv.Atoi(userID)
+	/*uid, err := strconv.Atoi(userID)
+	print(uid)
 	if err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid userID"))
 		return
 	}
 
-	cid, err := strconv.Atoi(charityID)
+	*/cid, err := strconv.Atoi(charityID)
 	if err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid charityID"))
 		return
 	}
 
-	if models.ToggleFav(uid, cid) {
-		w.WriteHeader(200)
-		w.Write([]byte(`{"status": "added"}`))
-	} else {
+	if models.ToggleFav(userID, cid) {
 		w.WriteHeader(200)
 		w.Write([]byte(`{"status": "removed"}`))
+	} else {
+		w.WriteHeader(200)
+		w.Write([]byte(`{"status": "added"}`))
 	}
 }
 
@@ -155,7 +156,6 @@ func GetFav(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	favorites := models.GetFav(userID)
-
 	errAdd := json.NewEncoder(w).Encode(favorites)
 
 	if errAdd != nil {
