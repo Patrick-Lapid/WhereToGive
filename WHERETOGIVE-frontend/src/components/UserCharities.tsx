@@ -10,8 +10,9 @@ import {
   ActionIcon,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { Star, StarOff } from 'tabler-icons-react';
+import { Search, ShoppingCart, Star, StarOff } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
+import { notifications } from '@mantine/notifications';
 
 type Props = {};
 
@@ -29,25 +30,31 @@ interface CharityCardProps {
 
 const UserCharities = (props: Props) => {
 
-    const {tagColors, getFavoriteCharities, toggleCharityFavorite} = useAuth();
+    const {tagColors, getFavoriteCharities, toggleCharityFavorite, favoriteCharityCards} = useAuth();
     const [data, setData] = useState(null);
 
-    async function getFavorites() {
-        const favorites = await getFavoriteCharities();
+    async function handleCharityToggle(ID : number) {
+        const response = await toggleCharityFavorite(ID); // returns 'added' or 'removed'
+        await getFavoriteCharities(); // repulls all user favorites
 
-        if(favorites && favorites.length > 0){
-            setData(favorites);
-        } else {
-            setData(null);
-        }
-
+        notifications.show({
+            title: 'Updated!',
+            message: `Your Charity was  ${response.status === "removed" ? "Unfavorited" : "Favorited"}`,
+            color: response.status === "removed" ? "gray" : "yellow",
+            icon: <Star color="white" />,
+        });
+        
     }
 
     useEffect(() => {
-    
-        getFavorites();
-        
-    });
+        getFavoriteCharities();
+        console.log("COMPONENT CARDS", favoriteCharityCards);
+    }, []);
+
+    useEffect(() => {
+        console.log("HIT");
+        setData(favoriteCharityCards);
+    }, [favoriteCharityCards]);
 
     const slides = data
     ? data.map((charity : any) => (
@@ -55,16 +62,15 @@ const UserCharities = (props: Props) => {
               key={charity.ID}
               radius="md"
               withBorder
-              shadow="sm"
+              shadow="lg"
               p="lg"
               style={{
-                height: '420px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
               }}
             >
-              <ActionIcon variant="light" color="yellow" onClick={async () => {await toggleCharityFavorite(charity.ID); await getFavorites();}}>
+              <ActionIcon variant="light" color="yellow" onClick={() => {handleCharityToggle(charity.ID);}}>
                 <Star color="gold" size="1.125rem" />
               </ActionIcon>
               <Avatar
@@ -123,7 +129,7 @@ const UserCharities = (props: Props) => {
               </div>
         </Paper>
       ))
-    : null;
+    : [];
 
     function handleViewRatingClick(EIN: string) {
         window.open(`https://www.charitynavigator.org/ein/${EIN}`);
@@ -134,9 +140,46 @@ const UserCharities = (props: Props) => {
       }
 
   return (
-    <div className="d-flex" style={{ width: '95%', margin: '1rem auto 0' }}>
-      {slides ? slides : <Text className='mt-3' c="dimmed" ta={"center"}>Navigate to Charity Dashboard or Charity Search to Favorite Charities</Text> }
-    </div>
+    <>
+        <div style={{ width: '95%', margin: '1rem auto 0', display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gridTemplateRows: "repeat(2, 0.85fr)", gridColumnGap: "20px", gridRowGap: "20px",
+        }}>
+        {slides.length > 0 && slides }
+        </div>
+        {slides.length == 0 &&
+        <div className='d-flex flex-column '>
+            <Text className='mt-3' c="dimmed" ta={"center"}>Navigate to Charity Dashboard or Charity Search to Favorite Charities</Text> 
+            <Group className='mx-auto mt-3'>
+                <Button
+                size="sm"
+                className='mr-4'
+                onClick={() => {
+                    window.location.replace('/dashboard');
+                }}
+                >
+                    <ShoppingCart size={16} className='mr-1' />
+                    Browse Charities
+                </Button>
+                <Button
+                size="sm"
+                onClick={() => {
+                    window.location.replace('/charitysearch');
+                }}
+                >
+                        <Search size={16} className='mr-1' />
+                        <span>
+                            Search Charities
+                        </span>
+                        
+                </Button>
+            </Group>
+            
+        </div>
+            
+
+        }
+        
+    </>
+        
   );
 };
 

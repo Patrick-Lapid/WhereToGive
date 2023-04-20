@@ -316,7 +316,7 @@ const Landing = (props: Props) => {
                     className="mt-5"
                   >
                     <ChevronRight size={16} strokeWidth={2.5} />
-                    Find the perfect charity for you
+                    Find the perfect charity
                     <Text td="underline" style={{ marginLeft: '3px' }}>
                       {' '}
                       for you

@@ -116,7 +116,7 @@ const UserDashboard = () => {
     useNavigateContext();
 
   const tabs = [
-    // { link: '', label: LINKS.SAVED_CHARITIES, icon: LayoutList },
+    { link: '', label: LINKS.SAVED_CHARITIES, icon: LayoutList },
     { link: '', label: LINKS.USER_DASHBOARD, icon: DeviceDesktopAnalytics },
     { link: '', label: LINKS.SETTINGS, icon: Settings },
   ];
@@ -185,11 +185,11 @@ const UserDashboard = () => {
           </Navbar>
 
           <div className={classes.componentSection}>
-            {/* {activeProfileSection === LINKS.SAVED_CHARITIES && (
+            {activeProfileSection === LINKS.SAVED_CHARITIES && (
               <p>
                 <UserCharities />
               </p>
-            )} */}
+            )}
             {activeProfileSection === LINKS.USER_DASHBOARD && <UserAnalytics />}
             {activeProfileSection === LINKS.SETTINGS && (
               <UserSettings bubbleProfileState={setProfile} />

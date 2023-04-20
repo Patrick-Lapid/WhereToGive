@@ -39,35 +39,21 @@ function CharityTile({
   WebsiteURL,
   EIN,
 }: CharityCardProps ) {
-    const {tagColors, getFavoriteCharityIDs, toggleCharityFavorite} = useAuth();
 
-    // const [favoriteArray, setFavoriteArray] = useState([]);
+    const {tagColors, getFavoriteCharityIDs, toggleCharityFavorite, favoriteCharities} = useAuth();
+    
+    async function handleCharityToggle() {
+        const response = await toggleCharityFavorite(ID); // returns 'added' or 'removed'
+        await getFavoriteCharityIDs(); // repulls all user favorites
 
-    // async function getFavorites() {
-    //     const favorites = await getFavoriteCharityIDs();
-    //     console.log("test", favorites)
-    //     setFavoriteArray(favorites);
-    //     return;
-       
-    // }
-
-    // async function handleCharityToggle() {
-    //     await toggleCharityFavorite(ID);
-    //     await getFavorites();
-
-    //     notifications.show({
-    //         title: 'Success!',
-    //         message: 'Your Charity was Favorited',
-    //         color: 'gold',
-    //         icon: <Star color="white" />,
-    //     });
+        notifications.show({
+            title: 'Updated!',
+            message: `Your Charity was  ${response.status === "removed" ? "Unfavorited" : "Favorited"}`,
+            color: response.status === "removed" ? "gray" : "yellow",
+            icon: <Star color="white" />,
+        });
         
-        
-    // }
-
-    // useEffect(() => {
-    //     getFavorites();
-    // });
+    }
 
     return (
         <Paper
@@ -83,17 +69,17 @@ function CharityTile({
             justifyContent: 'space-between',
             }}
         >
-            {/* {favoriteArray && favoriteArray.includes(ID) && 
+            {favoriteCharities && favoriteCharities.includes(ID) && 
                 <ActionIcon variant="light" color="yellow" onClick={ () => { handleCharityToggle(); }}>
                     <Star color="gold" size="1.125rem" />
                 </ActionIcon>
             }
             
-            {!favoriteArray &&
+            {favoriteCharities && !favoriteCharities.includes(ID) &&
                 <ActionIcon onClick={ () => {handleCharityToggle();}}>
                     <Star color="grey" size="1.125rem" />
                 </ActionIcon>
-            } */}
+            }
             
             <Avatar
             src={`${LogoURL}`}
@@ -171,9 +157,11 @@ export default function CharityByCategory() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { updateLink } = useNavigateContext();
+  const {getFavoriteCharityIDs} = useAuth();
 
   useEffect(() => {
     updateLink(null);
+    
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -188,6 +176,7 @@ export default function CharityByCategory() {
       }
     };
     fetchData();
+    getFavoriteCharityIDs();
   }, []);
 
   const slides = data

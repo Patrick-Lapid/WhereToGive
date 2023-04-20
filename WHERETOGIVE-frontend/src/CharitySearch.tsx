@@ -90,7 +90,21 @@ function CharityTile({
   WebsiteURL,
   EIN,
 }: CharityCardProps) {
-  const {tagColors} = useAuth();
+
+    const {tagColors, getFavoriteCharityIDs, toggleCharityFavorite, favoriteCharities} = useAuth();
+    
+    async function handleCharityToggle() {
+        const response = await toggleCharityFavorite(ID); // returns 'added' or 'removed'
+        await getFavoriteCharityIDs(); // repulls all user favorites
+
+        notifications.show({
+            title: 'Updated!',
+            message: `Your Charity was  ${response.status === "removed" ? "Unfavorited" : "Favorited"}`,
+            color: response.status === "removed" ? "gray" : "yellow",
+            icon: <Star color="white" />,
+        });
+        
+    }
   
   return (
     <Paper
@@ -106,12 +120,17 @@ function CharityTile({
         justifyContent: 'space-between',
         }}
     >
-        {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
-        <Star color="gold" size="1.125rem" />
-        </ActionIcon> */}
-        {/* <ActionIcon onClick={() => {}}>
-        <Star color="grey" size="1.125rem" />
-        </ActionIcon> */}
+        {favoriteCharities && favoriteCharities.includes(ID) && 
+            <ActionIcon variant="light" color="yellow" onClick={ () => { handleCharityToggle(); }}>
+                <Star color="gold" size="1.125rem" />
+            </ActionIcon>
+        }
+            
+        {favoriteCharities && !favoriteCharities.includes(ID) &&
+            <ActionIcon onClick={ () => {handleCharityToggle();}}>
+                <Star color="grey" size="1.125rem" />
+            </ActionIcon>
+        }
         <Avatar
         src={`${LogoURL}`}
         size={50}
@@ -218,6 +237,8 @@ export default function CharitySearch({}: CharitySearchProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [charities, setCharities] = useState<CharityCardProps[]>([]);
   const { updateLink } = useNavigateContext();
+  const {getFavoriteCharityIDs} = useAuth();
+
 
   const initializeGeocoder = () => {
     const map = mapRef.current.getMap();
@@ -314,6 +335,7 @@ export default function CharitySearch({}: CharitySearchProps) {
   // fetch all tags from database then use the tags to filter the charities in search
   useEffect(() => {
     updateLink(LINKS.SEARCH);
+    getFavoriteCharityIDs();
     const fetchTags = async () => {
       try {
         const response = await fetch(

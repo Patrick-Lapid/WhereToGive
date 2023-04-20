@@ -12,9 +12,9 @@ interface AuthContextInterface {
     logout : () => void;
     switchAccount : () => void;
     resetPassword : (email: string) => void;
-    toggleCharityFavorite : (charityID : number) => Promise<string>;
-    getFavoriteCharities : () => Promise<any[]>;
-    getFavoriteCharityIDs : () => Promise<number[]>;
+    toggleCharityFavorite : (charityID : number) => Promise<any>;
+    getFavoriteCharities : () => Promise<void>;
+    getFavoriteCharityIDs : () => Promise<void>;
 
     invalidPassword : boolean;
     invalidEmail : boolean;
@@ -24,6 +24,8 @@ interface AuthContextInterface {
     modalIsOpen : boolean;
     loading : boolean;
     tagColors : any;
+    favoriteCharities : any[];
+    favoriteCharityCards : any[];
 
     setInvalidPassword : React.Dispatch<React.SetStateAction<boolean>>;
     setInvalidEmail : React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,6 +54,8 @@ export function AuthProvider({ children } : any) {
     const [emailSent, setEmailSent] = useState(false);
     const [resetPasswordClicked, setResetPasswordClicked] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [favoriteCharities, setFavoriteCharities] = useState([]);
+    const [favoriteCharityCards, setFavoriteCharityCards] = useState([]);
 
     function signup(email : string, password : string, name : string) {
         return createUserWithEmailAndPassword(auth, email, password)
@@ -164,44 +168,60 @@ export function AuthProvider({ children } : any) {
 
 
     // returns "Added" or "Removed" 
-    const toggleCharityFavorite = async (charityID : number) : Promise<string> => {
-        await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}/${charityID}`, {
-            method: 'PUT',
-            body: JSON.stringify({}),
-        }).then(async payload => {
-            const response = await payload.json();
-            console.log("TOGGLE CHARITY: ", response);
-            return response;
-        });
+    const toggleCharityFavorite = async (charityID : number) : Promise<any> => {
 
-        return;
+        try{
+            const response = await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}/${charityID}`, {
+                method: 'PUT',
+                body: JSON.stringify({}),
+            });
+
+            const status = response.json();
+
+            console.log("TOGGLE CHARITY: ", status);
+            return status;
+        } catch (err) {
+            console.log("err");
+            return;
+        }
+
     }
 
-    const getFavoriteCharities = async () : Promise<any[]> => {
-        fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
-            method: 'GET',
-        }).then(async payload => {
-            const response =  await payload.json();
-            console.log("GET FAVORITE CHARITIES", response);
-            // loop through id array and generate
-            const charityArray : any[] = [];
-            response.forEach(async (charityID : any) => {
-                const charity = await fetch(`http://localhost:8000/api/charities/${charityID}`);
-                charityArray.push(charity);
-            })
-            console.log("CHARITY ARRAY", charityArray);
-            return charityArray;
-        }).catch((err) => {
+    const getFavoriteCharities = async () : Promise<void> => {
+
+        const charityArray : any[] = [];
+
+        try {
+
+            await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
+                method: 'GET',
+            }).then(async (payload) => {
+                const ids = await payload.json();
+                console.log("CHARITY IDS", ids);
+
+                for(const id of ids){
+                    await fetch(`http://localhost:8000/api/charities/${id}`).then(async (payload) => {
+                        const charity = await payload.json();
+                        charityArray.push(charity);
+                        console.log("CHARITY ARRAY", charityArray);
+                    })
+                }
+
+                setFavoriteCharityCards(charityArray);
+                return;
+
+            });
+            
+        } catch (err) {
             console.log(err);
-            return [];
-        })
+            return;
+        }
 
-        return [];
+        
+
     }
 
-    const getFavoriteCharityIDs = async () : Promise<number[]> => {
-
-        let returnPayload : any[] = [];
+    const getFavoriteCharityIDs = async () : Promise<void> => {
 
         try{
             await fetch(`http://localhost:8000/api/favorites/${currentUser.uid}`, {
@@ -211,7 +231,10 @@ export function AuthProvider({ children } : any) {
                 const response = await payload.json();
                
                 console.log(response);
-                return response;
+                const newFavoriteList :any[] = [];
+                response.forEach((charityID : any) => newFavoriteList.push(charityID));
+                setFavoriteCharities(newFavoriteList);
+                
                 
             }).catch((err) => {
                 console.log(err);
@@ -221,7 +244,6 @@ export function AuthProvider({ children } : any) {
             console.log(err);
         }
 
-        console.log("early")
         return;
     
     }
@@ -341,7 +363,10 @@ export function AuthProvider({ children } : any) {
         setModalIsOpen : setModalIsOpen,
         toggleCharityFavorite : toggleCharityFavorite,
         getFavoriteCharities : getFavoriteCharities,
-        getFavoriteCharityIDs : getFavoriteCharityIDs
+        getFavoriteCharityIDs : getFavoriteCharityIDs,
+
+        favoriteCharities : favoriteCharities,
+        favoriteCharityCards : favoriteCharityCards
     }
 
     return (
