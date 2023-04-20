@@ -12,8 +12,9 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import { useNavigateContext } from '../ts/navigate';
-import { Star } from 'tabler-icons-react';
+import { Check, Star } from 'tabler-icons-react';
 import { useAuth } from '../ts/authenticate';
+import { notifications } from '@mantine/notifications';
 
 interface CharityCardProps {
   DescriptionLong: string;
@@ -37,8 +38,23 @@ function CharityTile({
   Tags,
   WebsiteURL,
   EIN,
-}: CharityCardProps) {
-    const {tagColors} = useAuth();
+}: CharityCardProps ) {
+
+    const {tagColors, getFavoriteCharityIDs, toggleCharityFavorite, favoriteCharities} = useAuth();
+    
+    async function handleCharityToggle() {
+        const response = await toggleCharityFavorite(ID); // returns 'added' or 'removed'
+        await getFavoriteCharityIDs(); // repulls all user favorites
+
+        notifications.show({
+            title: 'Updated!',
+            message: `Your Charity was  ${response.status === "removed" ? "Unfavorited" : "Favorited"}`,
+            color: response.status === "removed" ? "gray" : "yellow",
+            icon: <Star color="white" />,
+        });
+        
+    }
+
     return (
         <Paper
             key={ID}
@@ -53,12 +69,18 @@ function CharityTile({
             justifyContent: 'space-between',
             }}
         >
-            {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
-            <Star color="gold" size="1.125rem" />
-            </ActionIcon> */}
-            <ActionIcon onClick={() => {}}>
-            <Star color="grey" size="1.125rem" />
-            </ActionIcon>
+            {favoriteCharities && favoriteCharities.includes(ID) && 
+                <ActionIcon variant="light" color="yellow" onClick={ () => { handleCharityToggle(); }}>
+                    <Star color="gold" size="1.125rem" />
+                </ActionIcon>
+            }
+            
+            {favoriteCharities && !favoriteCharities.includes(ID) &&
+                <ActionIcon onClick={ () => {handleCharityToggle();}}>
+                    <Star color="grey" size="1.125rem" />
+                </ActionIcon>
+            }
+            
             <Avatar
             src={`${LogoURL}`}
             size={50}
@@ -118,12 +140,12 @@ function CharityTile({
 }
 
 function handleViewRatingClick(EIN: string) {
-  window.location.replace(`https://www.charitynavigator.org/ein/${EIN}`);
-}
-
-function handleMoreClick(websiteURL: string) {
-  window.location.replace(`${websiteURL}`);
-}
+    window.open(`https://www.charitynavigator.org/ein/${EIN}`);
+  }
+  
+  function handleMoreClick(websiteURL: string) {
+    window.open(`${websiteURL}`);
+  }
 
 export default function CharityByCategory() {
   const theme = useMantineTheme();
@@ -135,9 +157,11 @@ export default function CharityByCategory() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { updateLink } = useNavigateContext();
+  const {getFavoriteCharityIDs} = useAuth();
 
   useEffect(() => {
     updateLink(null);
+    
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -152,6 +176,7 @@ export default function CharityByCategory() {
       }
     };
     fetchData();
+    getFavoriteCharityIDs();
   }, []);
 
   const slides = data

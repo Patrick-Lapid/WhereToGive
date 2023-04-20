@@ -148,6 +148,7 @@ export default function UserAnalytics() {
 
   useEffect(() => {
     // pull in user donation data
+    console.log(new Date(new Date().getTime() - 5));
     try {
       getUserDonations();
     } catch (error) {
@@ -526,7 +527,7 @@ export default function UserAnalytics() {
             Userid: currentUser.uid,
             Charityid: selectedCharityID,
             Amount: donationAmt,
-            TransDate: date,
+            TransDate: new Date(date.getTime() - (24 * 60 * 60 * 1000)),
             }),
         }).then(() => {
             setSelectedCharity(null);
@@ -552,7 +553,7 @@ export default function UserAnalytics() {
             Userid: currentUser.uid,
             Charityid: selectedCharityID,
             Amount: donationAmt,
-            Date: date,
+            Date: new Date(date.getTime() - (24 * 60 * 60 * 1000)),
             Active: true
             }),
         }).then(() => {
@@ -726,7 +727,7 @@ export default function UserAnalytics() {
                     onClick={onDonate}
                     variant="gradient"
                     gradient={{ from: 'teal', to: 'blue', deg: 60 }}
-                    style={{zIndex : 300}}
+                    // style={{zIndex : 300}}
                     fullWidth
                     mt="sm"
                     mb="sm"

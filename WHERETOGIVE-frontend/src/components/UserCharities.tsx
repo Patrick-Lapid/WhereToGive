@@ -9,9 +9,10 @@ import {
   Avatar,
   ActionIcon,
 } from '@mantine/core';
-import React from 'react';
-import { Star, StarOff } from 'tabler-icons-react';
+import React, { useEffect, useState } from 'react';
+import { Search, ShoppingCart, Star, StarOff } from 'tabler-icons-react';
 import { useAuth } from '../../ts/authenticate';
+import { notifications } from '@mantine/notifications';
 
 type Props = {};
 
@@ -27,116 +28,50 @@ interface CharityCardProps {
   EIN: string;
 }
 
-const data = [
-  {
-    ID: 27,
-    Name: 'Asian Pacific Community Fund',
-    DescriptionShort:
-      'Cultivate philanthropists to invest in organizations that empower underserved Asian and Pacific Islanders (API).',
-    DescriptionLong:
-      'APCF was founded in 1990 by API community leaders in response to the need for alternative funding for Los Angeles-based nonprofit organizations serving API communities. Prior to its incorporation, less than 0.3% of all local foundation funds went to API agencies, according to a 1988 study by AAPI Equality Alliance (formerly known as A3PCON - Asian Pacific Policy \u0026 Planning Council). In 1986, the United Way of Greater Los Angeles funded only five organizations serving APIs. To raise funds for community organizations serving API communities, APCF initiated employee giving campaigns at various workplaces, including private companies, federal agencies, state agencies, county agencies, city agencies, and nonprofit organizations.\n\nIn the past decade, APCF has diversified its fundraising efforts by developing other avenues for giving. With the growth of donor-advised funds, giving circles, grant making, scholarship funds, and capacity building initiatives, APCF has been able to cultivate philanthropy among APIs while providing multiple vehicles for donors to support the community.\n\nAs the only community-based fund serving API communities in Southern California since 1990, APCF is dedicated to increasing philanthropy amongst Asian Americans in order to build healthier communities, create a stronger unified voice, and develop leaders. Annually APCF and our 74 Network Agencies serve over 4.9 million people, over 82% of whom live at or below poverty income levels, in 47 API languages in addition to English and Spanish.',
-    Location: 'Los Angeles, California, 90017 United States',
-    WebsiteURL: 'http://www.apcf.org',
-    LogoURL:
-      'https://res.cloudinary.com/everydotorg/image/upload/c_lfill,w_24,h_24,dpr_2/c_crop,ar_24:24/q_auto,f_auto,fl_progressive/faja_profile/agfchg6gnodtibcji1cx',
-    Tags: [
-      'food-security',
-      'adoption',
-      'culture',
-      'health',
-      'women-led',
-      'aapi-led',
-      'racial-justice',
-    ],
-    EIN: '954257997',
-  },
-  {
-    ID: 24,
-    Name: 'Identity Mission',
-    DescriptionShort:
-      'Identity Mission supports vulnerable children in Honduras by providing family-based care solutions alongside the local church. ',
-    DescriptionLong:
-      "80% of children in an orphanage have a living parent or relative.  We work to keep children in families by two main approaches.\n\nFAMILY PRESERVATION\nIn effort to prevent children from ever experiencing separation from their families, at-risk families are identified, and IM comes alongside the family to provide the support needed to prevent separation.  Our family preservation Director evaluates the family's situation and meets their immediate needs, preventing deep trauma to the child and family.  Once the crisis is averted, IM then walks alongside the family to discover the best means for sustainability\n\nFOSTER CARE\nAs God has equipped us, we now have an operating foster family program in three regions of Honduras. Our foster families are supported by IDENTITY MISSION caseworkers, regular training, assistance with resources, a LOCAL PARTNER church that grasps the vision of family-based care and who is committed to serving the families who care for orphans, and family support events.\n\n",
-    Location: 'Lowville, NY, USA',
-    WebsiteURL: 'https://www.identitymission.org/',
-    LogoURL:
-      'https://res.cloudinary.com/everydotorg/image/upload/c_lfill,w_24,h_24,dpr_2/c_crop,ar_24:24/q_auto,f_auto,fl_progressive/profile_pics/yiv0lw0rqzjmvqxdjvew',
-    Tags: ['youth', 'poverty', 'religion', 'adoption', 'christianity'],
-    EIN: '473061155',
-  },
-  {
-    ID: 26,
-    Name: 'Kids In Crisis International, Inc',
-    DescriptionShort:
-      'Kids In Crisis International is a nonprofit organization focused on international issues. It is based in Hazelwood, NC. It received its nonprofit status in 2001.',
-    DescriptionLong:
-      'Kids In Crisis International, Inc. is a faith-based 501(c)(3) non-profit charitable organization established in the year 2000. We are dedicated to changing the lives of impoverished children around the world with the love of Jesus Christ. We consider it a joy and a privilege to demonstrate the love of God by helping children and their families to break out of illiteracy, poverty, hunger, and hopelessness.\n\nThe name Kids In Crisis originated as a result of what the founders witnessed in the late 1990s in Gypsy communities in northwest Romania. They witnessed children truly in crisis. Children are so impoverished it was not unusual to see them walking barefoot in the snow. All were illiterate and hopelessness was everywhere you looked.\n\nThis endeavor is close to the Father’s heart. Luke 18:16 reads, “But Jesus called the children to Him and said, ‘Let the little children come to me, and do not hinder them, for the kingdom of God belongs to such as these.’ Bring the little children unto me.’” This is our call and commission to bring the Love of Jesus to children in need.',
-    Location: 'Asheville, NC, USA',
-    WebsiteURL: 'https://www.kidsincrisis.com',
-    LogoURL:
-      'https://res.cloudinary.com/everydotorg/image/upload/c_lfill,w_24,h_24,dpr_2/c_crop,ar_24:24/q_auto,f_auto,fl_progressive/profile_pics/iecamtpfbwgcmq3dxf4d',
-    Tags: [
-      'poverty',
-      'food-security',
-      'housing',
-      'water',
-      'youth',
-      'adoption',
-      'indigenous-peoples',
-      'humans',
-    ],
-    EIN: '650998013',
-  },
-  {
-    ID: 28,
-    Name: 'A Family for Every Orphan',
-    DescriptionShort:
-      'Helping orphans find loving families in their home countries.',
-    DescriptionLong:
-      'A Family for Every Orphan is a Christian organization that helps orphans find loving families in their home countries. Our vision is a world without orphans!',
-    Location: 'SEATTLE, WA',
-    WebsiteURL: 'http://www.afamilyforeveryorphan.org',
-    LogoURL:
-      'https://res.cloudinary.com/everydotorg/image/upload/c_lfill,w_24,h_24,dpr_2/c_crop,ar_24:24/q_auto,f_auto,fl_progressive/faja_profile/n0ys7x6abzqfuwzf7fas',
-    Tags: ['youth', 'refugees', 'ukraine', 'adoption', 'humans'],
-    EIN: '264015124',
-  },
-];
-
 const UserCharities = (props: Props) => {
 
-    const {tagColors} = useAuth();
+    const {tagColors, getFavoriteCharities, toggleCharityFavorite, favoriteCharityCards} = useAuth();
+    const [data, setData] = useState(null);
 
-  function handleViewRatingClick(EIN: string) {
-    window.location.replace(`https://www.charitynavigator.org/ein/${EIN}`);
-  }
+    async function handleCharityToggle(ID : number) {
+        const response = await toggleCharityFavorite(ID); // returns 'added' or 'removed'
+        await getFavoriteCharities(); // repulls all user favorites
 
-  function handleMoreClick(websiteURL: string) {
-    window.location.replace(`${websiteURL}`);
-  }
+        notifications.show({
+            title: 'Updated!',
+            message: `Your Charity was  ${response.status === "removed" ? "Unfavorited" : "Favorited"}`,
+            color: response.status === "removed" ? "gray" : "yellow",
+            icon: <Star color="white" />,
+        });
+        
+    }
 
-  return (
-    <div className="d-flex" style={{ width: '95%', margin: '1rem auto 0' }}>
-      {data.map((charity, index) => {
-        return (
-          <div key={index} className="col-3 p-1">
-            <Paper
+    useEffect(() => {
+        getFavoriteCharities();
+        console.log("COMPONENT CARDS", favoriteCharityCards);
+    }, []);
+
+    useEffect(() => {
+        console.log("HIT");
+        setData(favoriteCharityCards);
+    }, [favoriteCharityCards]);
+
+    const slides = data
+    ? data.map((charity : any) => (
+        <Paper
+              key={charity.ID}
               radius="md"
               withBorder
-              shadow="sm"
+              shadow="lg"
               p="lg"
               style={{
-                height: '420px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
               }}
             >
-              {/* <ActionIcon variant="light" color="yellow" onClick={() => {}}>
+              <ActionIcon variant="light" color="yellow" onClick={() => {handleCharityToggle(charity.ID);}}>
                 <Star color="gold" size="1.125rem" />
-              </ActionIcon> */}
-              <ActionIcon onClick={() => {}}>
-                <Star color="grey" size="1.125rem" />
               </ActionIcon>
               <Avatar
                 src={`${charity.LogoURL}`}
@@ -167,7 +102,7 @@ const UserCharities = (props: Props) => {
                   overflowY: 'auto',
                   gap: "5px"
                 }}>
-                {charity.Tags.map((tag, index) => {
+                {charity.Tags.map((tag : any, index : number) => {
                     if(index <= 5)
                         return(<Badge color={tagColors[tag]}>{tag}</Badge>);
                 })}
@@ -192,11 +127,59 @@ const UserCharities = (props: Props) => {
                   Visit Website
                 </Button>
               </div>
-            </Paper>
-          </div>
-        );
-      })}
-    </div>
+        </Paper>
+      ))
+    : [];
+
+    function handleViewRatingClick(EIN: string) {
+        window.open(`https://www.charitynavigator.org/ein/${EIN}`);
+      }
+      
+      function handleMoreClick(websiteURL: string) {
+        window.open(`${websiteURL}`);
+      }
+
+  return (
+    <>
+        <div style={{ width: '95%', margin: '1rem auto 0', display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gridTemplateRows: "repeat(2, 0.85fr)", gridColumnGap: "20px", gridRowGap: "20px",
+        }}>
+        {slides.length > 0 && slides }
+        </div>
+        {slides.length == 0 &&
+        <div className='d-flex flex-column '>
+            <Text className='mt-3' c="dimmed" ta={"center"}>Navigate to Charity Dashboard or Charity Search to Favorite Charities</Text> 
+            <Group className='mx-auto mt-3'>
+                <Button
+                size="sm"
+                className='mr-4'
+                onClick={() => {
+                    window.location.replace('/dashboard');
+                }}
+                >
+                    <ShoppingCart size={16} className='mr-1' />
+                    Browse Charities
+                </Button>
+                <Button
+                size="sm"
+                onClick={() => {
+                    window.location.replace('/charitysearch');
+                }}
+                >
+                        <Search size={16} className='mr-1' />
+                        <span>
+                            Search Charities
+                        </span>
+                        
+                </Button>
+            </Group>
+            
+        </div>
+            
+
+        }
+        
+    </>
+        
   );
 };
 
